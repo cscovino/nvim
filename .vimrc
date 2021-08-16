@@ -7,6 +7,7 @@ set showcmd
 set ruler
 set encoding=utf-8
 set showmatch
+set cursorline
 set sw=2
 set relativenumber
 set laststatus=2
