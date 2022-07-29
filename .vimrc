@@ -4,6 +4,7 @@ set numberwidth=1
 set clipboard=unnamed
 syntax enable
 set showcmd
+set cmdheight=2
 set ruler
 set encoding=utf-8
 set showmatch
@@ -40,6 +41,7 @@ Plug 'stsewd/fzf-checkout.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'brooth/far.vim'
+Plug 'APZelos/blamer.nvim'
 
 call plug#end()
 
@@ -54,6 +56,7 @@ nmap <leader>nt :NERDTreeFind<CR>
 
 nmap <leader>w :w<CR>
 nmap <leader>q :q<CR>
+nmap <leader>qu :q!<CR>
 
 " Airline
 let g:airline_theme='murmur'
@@ -71,6 +74,13 @@ nmap <leader>gs :G<CR>
 nmap <leader>gm :G commit<CR>
 nmap <leader>gp :G push<CR>
 nmap <leader>gl :G pull<CR>
+nmap <leader>gst :G stash<CR>
+nmap <leader>gsp :G stash pop<CR>
+
+" Blamer
+let g:blamer_enable = 1
+let g:blamer_show_in_inser_modes = 0
+let g:blamer_relative_time = 1
 
 " Ag
 let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -160,15 +170,15 @@ let g:WebDevIconsDefaultFileSymbolColor = s:blue
 
 " NERDTree Git Plugin
 let g:NERDTreeGitStatusIndicatorMapCustom = {
-    \ "Modified"  : "✹",
-    \ "Staged"    : "✚",
-    \ "Untracked" : "✭",
-    \ "Renamed"   : "➜",
-    \ "Unmerged"  : "═",
-    \ "Deleted"   : "✖",
-    \ "Dirty"     : "✗",
-    \ "Clean"     : "✔︎",
-    \ 'Ignored'   : '☒',
+    \ "Modified"  : "‚úπ",
+    \ "Staged"    : "‚úö",
+    \ "Untracked" : "‚ú≠",
+    \ "Renamed"   : "‚ûú",
+    \ "Unmerged"  : "‚ïê",
+    \ "Deleted"   : "‚úñ",
+    \ "Dirty"     : "‚úó",
+    \ "Clean"     : "‚úîÔ∏é",
+    \ 'Ignored'   : '‚òí',
     \ "Unknown"   : "?"
     \ }
 
@@ -176,8 +186,8 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 let g:ale_fixers = {
  \ 'javascript': ['eslint']
  \ }
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
+let g:ale_sign_error = '‚ùå'
+let g:ale_sign_warning = '‚ö†Ô∏è'
 let g:ale_fix_on_save = 1
 " COC
 " " COC extension
@@ -237,7 +247,7 @@ nmap <leader>rn <Plug>(coc-rename)
 
 " " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected
+nmap <leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
