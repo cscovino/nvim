@@ -78,8 +78,8 @@ nmap <leader>gst :G stash<CR>
 nmap <leader>gsp :G stash pop<CR>
 
 " Blamer
-let g:blamer_enable = 1
-let g:blamer_show_in_inser_modes = 0
+let g:blamer_enabled = 1
+let g:blamer_show_in_insert_modes = 0
 let g:blamer_relative_time = 1
 
 " Ag
