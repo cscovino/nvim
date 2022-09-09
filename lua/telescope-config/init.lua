@@ -1,4 +1,14 @@
 require('telescope').setup({
+  defaults = {
+    mappings = {
+      ['<C-t>'] = 'git_track_branch',
+      ['<C-r>'] = 'git_rebase_branch',
+      ['<C-b>'] = 'git_create_branch',
+      ['<C-s>'] = 'git_switch_branch',
+      ['<C-d>'] = 'git_delete_branch',
+      ['<C-e>'] = 'git_merge_branch',
+    },
+  },
   extensions = {
     fzf = {
       fuzzy = true, -- false will only do exact matching
