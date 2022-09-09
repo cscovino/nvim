@@ -22,6 +22,7 @@ return require('packer').startup(function(use)
   use('APZelos/blamer.nvim')
   use('sunjon/shade.nvim')
   use('tpope/vim-fugitive')
+  use('mbbill/undotree')
 
   -- File Explorer plugins
   use({ 'kyazdani42/nvim-tree.lua', run = ':TSUpdate' })

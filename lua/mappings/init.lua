@@ -28,6 +28,9 @@ map('n', '<leader>fh', '<Cmd>Telescope help_tags<CR>', opts)
 map('n', '<leader>cs', '<Cmd>Telescope colorscheme<CR>', opts)
 map('n', '<leader>ch', '<Cmd>Telescope command_history<CR>', opts)
 
+-- Undotree mappings
+map('n', '<leader>ut', '<Cmd>UndotreeShow<CR>', opts)
+
 -- Barbar mappings
 map('n', '<leader>,', '<Cmd>BufferPrevious<CR>', opts)
 map('n', '<leader>.', '<Cmd>BufferNext<CR>', opts)

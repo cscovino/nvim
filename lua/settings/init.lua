@@ -28,6 +28,8 @@ set.splitbelow = true
 set.splitright = true
 set.tabstop = 2
 set.termguicolors = true
+set.undodir = 'undodir'
+set.undofile = true
 set.wrap = false
 
 vim.cmd('syntax enable')
