@@ -28,7 +28,7 @@ set.splitbelow = true
 set.splitright = true
 set.tabstop = 2
 set.termguicolors = true
-set.undodir = 'undodir'
+set.undodir = vim.fn.expand('~/.config/nvim/undodir')
 set.undofile = true
 set.wrap = false
 
