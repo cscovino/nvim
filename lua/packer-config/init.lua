@@ -1,6 +1,9 @@
 return require('packer').startup(function(use)
   use('wbthomason/packer.nvim')
 
+  -- Game plugin
+  use('ThePrimeagen/vim-be-good')
+
   -- Style plugins
   use('EdenEast/nightfox.nvim')
   use('ellisonleao/gruvbox.nvim')
@@ -23,6 +26,7 @@ return require('packer').startup(function(use)
   use('sunjon/shade.nvim')
   use('tpope/vim-fugitive')
   use('mbbill/undotree')
+  use('Yggdroot/indentLine')
 
   -- File Explorer plugins
   use({ 'kyazdani42/nvim-tree.lua', run = ':TSUpdate' })
