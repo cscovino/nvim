@@ -8,6 +8,7 @@ map('n', '<leader>w', '<Cmd>w<CR>', opts)
 map('n', '<leader>wq', '<Cmd>wq<CR>', opts)
 map('n', '<leader>q', '<Cmd>q<CR>', opts)
 map('n', '<leader>qu', '<Cmd>q!<CR>', opts)
+map('n', '<leader>tt', '<Cmd>tab ter<CR>', opts)
 
 -- Fugitive mappings
 map('n', '<leader>gj', '<Cmd>diffget //3<CR>', opts)
