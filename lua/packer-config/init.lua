@@ -7,6 +7,8 @@ return require('packer').startup(function(use)
   -- Style plugins
   use('EdenEast/nightfox.nvim')
   use('ellisonleao/gruvbox.nvim')
+  use('folke/tokyonight.nvim')
+  use({ 'catppuccin/nvim', as = 'catppuccin' })
   use('kyazdani42/nvim-web-devicons')
   use('onsails/lspkind.nvim')
   use('rcarriga/nvim-notify')
