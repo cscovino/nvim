@@ -33,6 +33,9 @@ map('n', '<leader>gc', '<Cmd>Telescope git_branches<CR>', opts)
 -- Undotree mappings
 map('n', '<leader>ut', '<Cmd>UndotreeShow<CR>', opts)
 
+-- CodeActionMenu mappings
+map('n', '<leader>ca', '<Cmd>CodeActionMenu<CR>', opts)
+
 -- Barbar mappings
 map('n', '<leader>,', '<Cmd>BufferPrevious<CR>', opts)
 map('n', '<leader>.', '<Cmd>BufferNext<CR>', opts)

@@ -18,8 +18,12 @@ return require('packer').startup(function(use)
   -- IDE plugins
   use('nvim-treesitter/nvim-treesitter')
   use('nvim-treesitter/nvim-treesitter-refactor')
-  use('folke/twilight.nvim')
+  -- use('folke/twilight.nvim')
   use('folke/trouble.nvim')
+  use({
+    'weilbith/nvim-code-action-menu',
+    cmd = 'CodeActionMenu',
+  })
   use('windwp/nvim-ts-autotag')
   use('nvim-treesitter/nvim-treesitter-context')
   use('tpope/vim-commentary')

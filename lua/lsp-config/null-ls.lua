@@ -1,11 +1,12 @@
 local null_ls = require('null-ls')
 local formatting = null_ls.builtins.formatting
-local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
+local code_actions = null_ls.builtins.code_actions
+local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
+  code_actions.eslint_d,
   formatting.eslint_d,
   formatting.autopep8,
   formatting.stylua,
-  formatting.json_tool,
   formatting.prettier_d_slim,
 }
 
@@ -13,13 +14,13 @@ null_ls.setup({
   sources = sources,
   on_attach = function(client, bufnr)
     if client.supports_method('textDocument/formatting') then
-      vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+      vim.api.nvim_clear_autocmds({ group = augroup_formatting, buffer = bufnr })
       vim.api.nvim_create_autocmd('BufWritePre', {
-        group = augroup,
+        group = augroup_formatting,
         buffer = bufnr,
         callback = function()
           -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-          vim.lsp.buf.formatting_sync()
+          vim.lsp.buf.formatting_sync(nil, 2000)
         end,
       })
     end
