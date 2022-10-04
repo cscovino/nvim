@@ -1,12 +1,25 @@
-require('telescope').setup({
+local telescope = require('telescope')
+local actions = require('telescope.actions')
+
+telescope.setup({
   defaults = {
     mappings = {
-      ['<C-t>'] = 'git_track_branch',
-      ['<C-r>'] = 'git_rebase_branch',
-      ['<C-b>'] = 'git_create_branch',
-      ['<C-s>'] = 'git_switch_branch',
-      ['<C-d>'] = 'git_delete_branch',
-      ['<C-e>'] = 'git_merge_branch',
+      n = {
+        ['<C-t>'] = actions.git_track_branch,
+        ['<C-r>'] = actions.git_rebase_branch,
+        ['<C-b>'] = actions.git_create_branch,
+        ['<C-s>'] = actions.git_switch_branch,
+        ['<C-d>'] = actions.git_delete_branch,
+        ['<C-e>'] = actions.git_merge_branch,
+      },
+      i = {
+        ['<C-t>'] = actions.git_track_branch,
+        ['<C-r>'] = actions.git_rebase_branch,
+        ['<C-b>'] = actions.git_create_branch,
+        ['<C-s>'] = actions.git_switch_branch,
+        ['<C-d>'] = actions.git_delete_branch,
+        ['<C-e>'] = actions.git_merge_branch,
+      },
     },
   },
   extensions = {
