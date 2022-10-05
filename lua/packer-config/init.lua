@@ -30,10 +30,14 @@ return require('packer').startup(function(use)
   use('JoosepAlviste/nvim-ts-context-commentstring')
   use('jose-elias-alvarez/null-ls.nvim')
   use('APZelos/blamer.nvim')
-  use('sunjon/shade.nvim')
   use('tpope/vim-fugitive')
   use('mbbill/undotree')
   use('Yggdroot/indentLine')
+  use('cohama/lexima.vim')
+  use({
+    'NTBBloodbath/rest.nvim',
+    requires = { 'nvim-lua/plenary.nvim' },
+  })
 
   -- File Explorer plugins
   use({ 'kyazdani42/nvim-tree.lua', run = ':TSUpdate' })
@@ -48,7 +52,10 @@ return require('packer').startup(function(use)
   -- LSP plugins
   use('neovim/nvim-lspconfig')
   use('hrsh7th/nvim-cmp')
+  use('hrsh7th/cmp-path')
+  use('hrsh7th/cmp-buffer')
   use('hrsh7th/cmp-nvim-lsp')
+  use('hrsh7th/cmp-nvim-lua')
   use('saadparwaiz1/cmp_luasnip')
   use('L3MON4D3/LuaSnip')
 end)

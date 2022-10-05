@@ -6,6 +6,7 @@ require('nvim-treesitter.configs').setup({
     'gitignore',
     'html',
     'javascript',
+    'http',
     'json',
     'markdown',
     'python',
