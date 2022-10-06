@@ -38,7 +38,8 @@ map('n', '<leader>ds', '<Cmd>Telescope lsp_document_symbols<CR>', opts)
 map('n', '<leader>ut', '<Cmd>UndotreeShow<CR>', opts)
 
 -- CodeActionMenu mappings
-map('n', '<leader>ca', '<Cmd>CodeActionMenu<CR>', opts)
+-- map('n', '<leader>ca', '<Cmd>CodeActionMenu<CR>', opts)
+map('n', '<leader>ca', '<Cmd>lua vim.lsp.buf.code_action()<CR>', opts)
 
 -- Barbar mappings
 map('n', '<leader>,', '<Cmd>BufferPrevious<CR>', opts)

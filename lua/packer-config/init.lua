@@ -14,6 +14,7 @@ return require('packer').startup(function(use)
   use('rcarriga/nvim-notify')
   use('nvim-lualine/lualine.nvim')
   use('romgrk/barbar.nvim')
+  use('stevearc/dressing.nvim')
 
   -- IDE plugins
   use('nvim-treesitter/nvim-treesitter')
@@ -38,6 +39,26 @@ return require('packer').startup(function(use)
     'NTBBloodbath/rest.nvim',
     requires = { 'nvim-lua/plenary.nvim' },
   })
+  use({
+    'nvim-neotest/neotest',
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+      'antoinemadec/FixCursorHold.nvim',
+      'nvim-neotest/neotest-plenary',
+      'nvim-neotest/neotest-vim-test',
+      'haydenmeade/neotest-jest',
+      'marilari88/neotest-vitest',
+    },
+  })
+  -- use({
+  --   'phaazon/mind.nvim',
+  --   branch = 'v2.2',
+  --   requires = { 'nvim-lua/plenary.nvim' },
+  --   config = function()
+  --     require('mind').setup()
+  --   end,
+  -- })
 
   -- File Explorer plugins
   use({ 'kyazdani42/nvim-tree.lua', run = ':TSUpdate' })
@@ -47,6 +68,7 @@ return require('packer').startup(function(use)
     requires = { { 'nvim-lua/plenary.nvim' } },
   })
   use({ 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' })
+  use('nvim-telescope/telescope-ui-select.nvim')
   use('christoomey/vim-tmux-navigator')
 
   -- LSP plugins
