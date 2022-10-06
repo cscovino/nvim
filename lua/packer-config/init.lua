@@ -19,7 +19,7 @@ return require('packer').startup(function(use)
   use('nvim-treesitter/nvim-treesitter')
   use('nvim-treesitter/nvim-treesitter-refactor')
   -- use('folke/twilight.nvim')
-  use('folke/trouble.nvim')
+  -- use('folke/trouble.nvim')
   use({
     'weilbith/nvim-code-action-menu',
     cmd = 'CodeActionMenu',

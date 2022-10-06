@@ -29,6 +29,9 @@ map('n', '<leader>fh', '<Cmd>Telescope help_tags<CR>', opts)
 map('n', '<leader>cs', '<Cmd>Telescope colorscheme<CR>', opts)
 map('n', '<leader>ch', '<Cmd>Telescope command_history<CR>', opts)
 map('n', '<leader>gc', '<Cmd>Telescope git_branches<CR>', opts)
+map('n', '<leader>dd', '<Cmd>Telescope diagnostics<CR>', opts)
+map('n', '<leader>gr', '<Cmd>Telescope lsp_references<CR>', opts)
+map('n', '<leader>ds', '<Cmd>Telescope lsp_document_symbols<CR>', opts)
 
 -- Undotree mappings
 map('n', '<leader>ut', '<Cmd>UndotreeShow<CR>', opts)
