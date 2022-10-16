@@ -11,25 +11,23 @@ return require('packer').startup(function(use)
   use({ 'catppuccin/nvim', as = 'catppuccin' })
   use('kyazdani42/nvim-web-devicons')
   use('onsails/lspkind.nvim')
-  use('rcarriga/nvim-notify')
   use('romgrk/barbar.nvim')
-  use('stevearc/dressing.nvim')
   use('glepnir/oceanic-material')
   use('Yggdroot/indentLine')
   use('voldikss/vim-floaterm')
+  use('norcalli/nvim-colorizer.lua')
   use('nvim-lualine/lualine.nvim')
-  -- use({
-  --   'folke/noice.nvim',
-  --   event = 'VimEnter',
-  --   config = function()
-  --     require('noice').setup()
-  --   end,
-  --   requires = {
-  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-  --     'MunifTanjim/nui.nvim',
-  --     'rcarriga/nvim-notify',
-  --   },
-  -- })
+  use({
+    'folke/noice.nvim',
+    event = 'VimEnter',
+    config = function()
+      require('noice').setup()
+    end,
+    requires = {
+      'MunifTanjim/nui.nvim',
+      'rcarriga/nvim-notify',
+    },
+  })
 
   -- IDE plugins
   use('nvim-treesitter/nvim-treesitter')

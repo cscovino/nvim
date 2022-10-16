@@ -4,7 +4,7 @@ vim.notify = require('notify')
 
 set.background = 'dark'
 set.clipboard = 'unnamed'
-set.cmdheight = 2
+set.cmdheight = 1
 set.cursorline = true
 set.encoding = 'utf-8'
 set.expandtab = true
