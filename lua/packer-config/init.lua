@@ -9,7 +9,7 @@ return require('packer').startup(function(use)
   use('ellisonleao/gruvbox.nvim')
   use('folke/tokyonight.nvim')
   use({ 'catppuccin/nvim', as = 'catppuccin' })
-  use('kyazdani42/nvim-web-devicons')
+  use('nvim-tree/nvim-web-devicons')
   use('onsails/lspkind.nvim')
   use('romgrk/barbar.nvim')
   use('glepnir/oceanic-material')
@@ -48,6 +48,13 @@ return require('packer').startup(function(use)
   use('mbbill/undotree')
   use('cohama/lexima.vim')
   use({
+    'kylechui/nvim-surround',
+    tag = '*',
+    config = function()
+      require('nvim-surround').setup({})
+    end,
+  })
+  use({
     'NTBBloodbath/rest.nvim',
     requires = { 'nvim-lua/plenary.nvim' },
   })
@@ -73,7 +80,7 @@ return require('packer').startup(function(use)
   -- })
 
   -- File Explorer plugins
-  use({ 'kyazdani42/nvim-tree.lua', run = ':TSUpdate' })
+  use({ 'nvim-tree/nvim-tree.lua', requires = { 'nvim-tree/nvim-web-devicons' } })
   use({
     'nvim-telescope/telescope.nvim',
     tag = '0.1.0',
@@ -85,11 +92,11 @@ return require('packer').startup(function(use)
 
   -- LSP plugins
   use('neovim/nvim-lspconfig')
+  use('L3MON4D3/LuaSnip')
   use('hrsh7th/nvim-cmp')
   use('hrsh7th/cmp-path')
   use('hrsh7th/cmp-buffer')
   use('hrsh7th/cmp-nvim-lsp')
   use('hrsh7th/cmp-nvim-lua')
   use('saadparwaiz1/cmp_luasnip')
-  use('L3MON4D3/LuaSnip')
 end)
