@@ -38,13 +38,14 @@ cmp.setup({
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
+    { name = 'buffer' },
   },
   formatting = {
     format = lspkind.cmp_format({
       mode = 'symbol',
       maxwidth = 50,
 
-      before = function(entry, vim_item)
+      before = function(_, vim_item)
         return vim_item
       end,
     }),

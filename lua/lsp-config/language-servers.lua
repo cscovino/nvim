@@ -4,7 +4,7 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>lc', vim.diagnostic.setloclist, opts)
 
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
@@ -28,7 +28,7 @@ end
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
-local servers = { 'luau_lsp', 'pyright', 'tsserver', 'cssls', 'dockerls', 'html', 'jsonls', 'glslls' }
+local servers = { 'sumneko_lua', 'pyright', 'tsserver', 'cssls', 'dockerls', 'html', 'jsonls', 'glslls' }
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup({
@@ -37,6 +37,25 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   })
 end
+
+lspconfig.sumneko_lua.setup({
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        globals = { 'vim' },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file('', true),
+      },
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+})
 
 local signs = { Error = ' ', Warn = ' ', Hint = 'ﯦ ', Info = ' ' }
 for type, icon in pairs(signs) do
