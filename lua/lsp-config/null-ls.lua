@@ -1,7 +1,7 @@
 local null_ls = require('null-ls')
 local formatting = null_ls.builtins.formatting
 local code_actions = null_ls.builtins.code_actions
--- local diagnostics = null_ls.builtins.diagnostics
+local diagnostics = null_ls.builtins.diagnostics
 -- local completion = null_ls.builtins.completion
 local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
@@ -10,6 +10,7 @@ local sources = {
   formatting.autopep8,
   formatting.stylua,
   formatting.prettier_d_slim,
+  diagnostics.yamllint,
 }
 
 null_ls.setup({
