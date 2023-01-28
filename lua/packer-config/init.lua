@@ -28,6 +28,7 @@ return require('packer').startup(function(use)
       'rcarriga/nvim-notify',
     },
   })
+  use('xiyaowong/nvim-transparent')
 
   -- IDE plugins
   use('nvim-treesitter/nvim-treesitter')
