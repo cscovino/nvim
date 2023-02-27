@@ -6,10 +6,14 @@ local diagnostics = null_ls.builtins.diagnostics
 local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
   code_actions.eslint_d,
+  code_actions.gomodifytags,
   formatting.eslint_d,
   formatting.autopep8,
   formatting.stylua,
   formatting.prettier_d_slim,
+  formatting.goimports_reviser,
+  formatting.golines,
+  diagnostics.golangci_lint,
   diagnostics.yamllint,
 }
 

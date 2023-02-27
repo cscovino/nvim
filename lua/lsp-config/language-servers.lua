@@ -28,7 +28,8 @@ end
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
-local servers = { 'sumneko_lua', 'pyright', 'tsserver', 'cssls', 'dockerls', 'html', 'jsonls', 'glslls' }
+local servers =
+  { 'lua_ls', 'pyright', 'tsserver', 'cssls', 'dockerls', 'html', 'jsonls', 'glslls', 'golangci_lint_ls', 'gopls' }
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup({
@@ -38,7 +39,7 @@ for _, lsp in ipairs(servers) do
   })
 end
 
-lspconfig.sumneko_lua.setup({
+lspconfig.lua_ls.setup({
   settings = {
     Lua = {
       runtime = {
