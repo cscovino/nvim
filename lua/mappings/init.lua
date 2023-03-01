@@ -14,6 +14,16 @@ map('n', '<leader>rd', '<Cmd>e!<CR>', opts)
 map('n', '<leader>rf', '<Cmd>e<CR>', opts)
 map('t', '<Esc>', '<C-\\><C-N>', opts)
 
+-- Neotest mappings
+map('n', '<leader>ts', function()
+  require('neotest').summary.toggle()
+  local win = vim.fn.bufwinid('Neotest Summary')
+  if win > -1 then
+    vim.api.nvim_set_current_win(win)
+  end
+end, opts)
+map('n', '<leader>rt', '<Cmd>lua require("neotest").run.run()<CR>', opts)
+
 -- Fugitive mappings
 map('n', '<leader>gj', '<Cmd>diffget //3<CR>', opts)
 map('n', '<leader>gf', '<Cmd>diffget //2<CR>', opts)

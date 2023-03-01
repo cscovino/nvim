@@ -66,10 +66,49 @@ return require('packer').startup(function(use)
       'nvim-treesitter/nvim-treesitter',
       'antoinemadec/FixCursorHold.nvim',
       'nvim-neotest/neotest-plenary',
-      'nvim-neotest/neotest-vim-test',
-      'haydenmeade/neotest-jest',
+      -- 'nvim-neotest/neotest-vim-test',
+      'nvim-neotest/neotest-go',
+      -- 'haydenmeade/neotest-jest',
       'marilari88/neotest-vitest',
     },
+    config = function()
+      -- get neotest namespace (api call creates or returns namespace)
+      local neotest_ns = vim.api.nvim_create_namespace('neotest')
+      vim.diagnostic.config({
+        virtual_text = {
+          format = function(diagnostic)
+            local message = diagnostic.message:gsub('\n', ' '):gsub('\t', ' '):gsub('%s+', ' '):gsub('^%s+', '')
+            return message
+          end,
+        },
+      }, neotest_ns)
+      local neotest = require('neotest')
+      neotest.setup({
+        -- your neotest config here
+        adapters = {
+          require('neotest-go'),
+        },
+        consumers = {
+          always_open_output = function(client)
+            local async = require('neotest.async')
+
+            client.listeners.results = function(adapter_id, results)
+              local file_path = async.fn.expand('%:p')
+              local row = async.fn.getpos('.')[2] - 1
+              local position = client:get_nearest(file_path, row, {})
+              if not position then
+                return
+              end
+              local pos_id = position:data().id
+              if not results[pos_id] then
+                return
+              end
+              neotest.output_panel.open({ position_id = pos_id, adapter = adapter_id })
+            end
+          end,
+        },
+      })
+    end,
   })
   -- use({
   --   'phaazon/mind.nvim',
