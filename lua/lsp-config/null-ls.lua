@@ -10,7 +10,7 @@ local sources = {
   formatting.eslint_d,
   formatting.autopep8,
   formatting.stylua,
-  formatting.prettier_d_slim,
+  formatting.prettierd,
   formatting.goimports_reviser,
   formatting.golines,
   diagnostics.golangci_lint,
