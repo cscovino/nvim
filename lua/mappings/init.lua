@@ -22,6 +22,14 @@ map('n', '<leader>ts', function()
     vim.api.nvim_set_current_win(win)
   end
 end, opts)
+map('n', '<leader>to', function()
+  require('neotest').output_panel.toggle()
+  local win = vim.fn.bufwinid('Neotest Output Panel')
+  if win > -1 then
+    vim.api.nvim_set_current_win(win)
+  end
+end, opts)
+map('n', '<leader>tu', '<Cmd>lua require("neotest").status<CR>', opts)
 map('n', '<leader>rt', '<Cmd>lua require("neotest").run.run()<CR>', opts)
 
 -- Fugitive mappings
