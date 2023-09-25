@@ -1,5 +1,5 @@
-require('settings')
 require('packer-config')
+require('settings')
 -- require('colorschemes-config.nightfox')
 -- require('colorschemes-config.nordfox')
 require('colorschemes-config.tokyonight-moon')
