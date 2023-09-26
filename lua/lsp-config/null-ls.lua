@@ -7,6 +7,7 @@ local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
   code_actions.eslint_d,
   code_actions.gomodifytags,
+  code_actions.cspell,
   formatting.eslint_d,
   formatting.autopep8,
   formatting.stylua,
@@ -15,6 +16,7 @@ local sources = {
   formatting.golines,
   diagnostics.golangci_lint,
   diagnostics.yamllint,
+  diagnostics.cspell,
 }
 
 null_ls.setup({
