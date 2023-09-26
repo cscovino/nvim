@@ -7,7 +7,13 @@ local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
   code_actions.eslint_d,
   code_actions.gomodifytags,
-  code_actions.cspell,
+  code_actions.cspell.with({
+    config = {
+      find_json = function(cwd)
+        return vim.fn.expand(cwd .. '/cspell.json')
+      end,
+    },
+  }),
   formatting.eslint_d,
   formatting.autopep8,
   formatting.stylua,
