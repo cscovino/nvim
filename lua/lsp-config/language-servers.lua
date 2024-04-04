@@ -28,8 +28,18 @@ end
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
-local servers =
-  { 'lua_ls', 'pyright', 'tsserver', 'cssls', 'dockerls', 'html', 'jsonls', 'glslls', 'golangci_lint_ls', 'gopls' }
+local servers = {
+  'cssls',
+  'dockerls',
+  'glsl_analyzer',
+  'golangci_lint_ls',
+  'gopls',
+  'html',
+  'jsonls',
+  'lua_ls',
+  'pyright',
+  'tsserver',
+}
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup({

@@ -1,4 +1,5 @@
-require('packer-config')
+-- require('packer-config')
+require('lazy-config')
 require('settings')
 -- require('colorschemes-config.nightfox')
 -- require('colorschemes-config.nordfox')

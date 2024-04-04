@@ -26,10 +26,6 @@ require('nvim-treesitter.configs').setup({
     enable = true,
   },
 
-  context_commentstring = {
-    enable = true,
-  },
-
   refactor = {
     highlight_definitions = {
       enable = true,
