@@ -5,14 +5,15 @@ local diagnostics = null_ls.builtins.diagnostics
 -- local completion = null_ls.builtins.completion
 local augroup_formatting = vim.api.nvim_create_augroup('LspFormatting', {})
 local sources = {
-  code_actions.eslint_d,
   code_actions.gomodifytags,
-  formatting.eslint_d,
-  formatting.autopep8,
-  formatting.stylua,
-  formatting.prettierd,
+  require('none-ls.code_actions.eslint_d'),
+  require('none-ls.formatting.eslint_d'),
   formatting.goimports_reviser,
   formatting.golines,
+  formatting.stylua,
+  formatting.prettierd,
+  require('none-ls.diagnostics.eslint_d'),
+  diagnostics.glslc,
   diagnostics.golangci_lint,
   diagnostics.yamllint,
 }
