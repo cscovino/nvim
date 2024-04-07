@@ -62,7 +62,7 @@ require('lazy').setup({
   'nvim-treesitter/nvim-treesitter-context',
   'tpope/vim-commentary',
   'JoosepAlviste/nvim-ts-context-commentstring',
-  'jose-elias-alvarez/null-ls.nvim',
+  'nvimtools/none-ls.nvim',
   'APZelos/blamer.nvim',
   'tpope/vim-fugitive',
   'mbbill/undotree',
