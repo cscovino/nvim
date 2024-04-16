@@ -41,6 +41,7 @@ map('n', '<leader>gp', '<Cmd>G push<CR>', opts)
 map('n', '<leader>gl', '<Cmd>G pull<CR>', opts)
 map('n', '<leader>gst', '<Cmd>G stash<CR>', opts)
 map('n', '<leader>gsp', '<Cmd>G stash pop<CR>', opts)
+map('n', '<leader>gdf', '<Cmd>Gdiffsplit<CR>', opts)
 
 -- Navigation mappings
 map('n', '<leader>nt', '<Cmd>NvimTreeToggle<CR>', opts)

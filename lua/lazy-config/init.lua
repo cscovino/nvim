@@ -21,7 +21,7 @@ require('lazy').setup({
 
   -- Style plugins
   'EdenEast/nightfox.nvim',
-  'ellisonleao/gruvbox.nvim',
+  { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true },
   'folke/tokyonight.nvim',
   { 'catppuccin/nvim', as = 'catppuccin' },
   'nvim-tree/nvim-web-devicons',

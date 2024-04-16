@@ -3,7 +3,7 @@ local set = vim.opt
 vim.notify = require('notify')
 
 set.background = 'dark'
-set.clipboard = 'unnamed'
+set.clipboard = 'unnamedplus'
 set.cmdheight = 1
 set.cursorline = true
 set.encoding = 'utf-8'
@@ -18,7 +18,7 @@ set.number = true
 set.numberwidth = 1
 set.relativenumber = true
 set.ruler = true
-set.scrolloff = 5
+set.scrolloff = 10
 set.shiftwidth = 2
 set.showcmd = true
 set.showmatch = true
