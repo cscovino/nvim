@@ -161,6 +161,14 @@ require('lazy').setup({
     build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
   },
   'nvim-telescope/telescope-ui-select.nvim',
+  {
+    'olacin/telescope-gitmoji.nvim',
+    config = function()
+      require('telescope').load_extension('gitmoji')
+    end,
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+  },
+  { 'olacin/telescope-cc.nvim' },
   'christoomey/vim-tmux-navigator',
 
   -- LSP plugins
