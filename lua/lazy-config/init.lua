@@ -16,6 +16,8 @@ vim.g.mapleader = ' ' -- Make sure to set `mapleader` before lazy so your mappin
 vim.g.maplocalleader = '\\' -- Same for `maplocalleader`
 
 require('lazy').setup({
+  -- Copilot plugin
+  'github/copilot.vim',
   -- Game plugin
   'ThePrimeagen/vim-be-good',
 
