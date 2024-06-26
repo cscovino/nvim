@@ -16,9 +16,6 @@ vim.g.mapleader = ' ' -- Make sure to set `mapleader` before lazy so your mappin
 vim.g.maplocalleader = '\\' -- Same for `maplocalleader`
 
 require('lazy').setup({
-  rocks = {
-    enabled = false,
-  },
   spec = {
     -- Copilot plugin
     'github/copilot.vim',
@@ -28,9 +25,6 @@ require('lazy').setup({
       dependencies = {
         { 'github/copilot.vim' },
         { 'nvim-lua/plenary.nvim' },
-      },
-      opts = {
-        debug = true,
       },
     },
     -- Game plugin
@@ -99,6 +93,9 @@ require('lazy').setup({
       'vhyrro/luarocks.nvim',
       priority = 1000,
       config = true,
+      opts = {
+        rocks = { 'lua-curl', 'nvim-nio', 'mimetypes', 'xml2lua' },
+      },
     },
     {
       'rest-nvim/rest.nvim',
