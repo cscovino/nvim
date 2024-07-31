@@ -76,6 +76,7 @@ require('lazy').setup({
     { 'nvimtools/none-ls.nvim', dependencies = { 'nvimtools/none-ls-extras.nvim' } },
     'APZelos/blamer.nvim',
     'tpope/vim-fugitive',
+    'nvim-pack/nvim-spectre',
     'mbbill/undotree',
     'cohama/lexima.vim',
     'nvim-neotest/nvim-nio',

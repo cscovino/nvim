@@ -9,7 +9,7 @@ telescope.setup({
         ['<C-r>'] = actions.git_rebase_branch,
         ['<C-b>'] = actions.git_create_branch,
         ['<C-s>'] = actions.git_switch_branch,
-        ['<C-d>'] = actions.git_delete_branch,
+        -- ['<C-d>'] = actions.git_delete_branch,
         ['<C-e>'] = actions.git_merge_branch,
       },
       i = {
@@ -17,7 +17,7 @@ telescope.setup({
         ['<C-r>'] = actions.git_rebase_branch,
         ['<C-b>'] = actions.git_create_branch,
         ['<C-s>'] = actions.git_switch_branch,
-        ['<C-d>'] = actions.git_delete_branch,
+        -- ['<C-d>'] = actions.git_delete_branch,
         ['<C-e>'] = actions.git_merge_branch,
       },
     },
