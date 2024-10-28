@@ -38,7 +38,7 @@ local servers = {
   'jsonls',
   'lua_ls',
   'pyright',
-  'tsserver',
+  'ts_ls',
 }
 
 for _, lsp in ipairs(servers) do
