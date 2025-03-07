@@ -21,10 +21,9 @@ require('lazy').setup({
     'github/copilot.vim',
     {
       'CopilotC-Nvim/CopilotChat.nvim',
-      branch = 'canary',
       dependencies = {
         { 'github/copilot.vim' },
-        { 'nvim-lua/plenary.nvim' },
+        { 'nvim-lua/plenary.nvim', branch = 'master' },
       },
       build = 'make tiktoken',
     },
@@ -109,7 +108,7 @@ require('lazy').setup({
     },
     {
       'nvim-neotest/neotest',
-      requires = {
+      dependencies = {
         'nvim-neotest/nvim-nio',
         'nvim-lua/plenary.nvim',
         'nvim-treesitter/nvim-treesitter',
@@ -133,6 +132,14 @@ require('lazy').setup({
         }, neotest_ns)
         local neotest = require('neotest')
         neotest.setup({
+          adapters = {
+            require('neotest-vitest')({
+              -- Filter directories when searching for test files. Useful in large projects (see Filter directories notes).
+              filter_dir = function(name, rel_path, root)
+                return name ~= 'node_modules'
+              end,
+            }),
+          },
           -- your neotest config here
           consumers = {
             always_open_output = function(client)
@@ -159,14 +166,14 @@ require('lazy').setup({
     -- {
     --   'phaazon/mind.nvim',
     --   branch = 'v2.2',
-    --   requires = { 'nvim-lua/plenary.nvim' },
+    --   dependencies = { 'nvim-lua/plenary.nvim' },
     --   config = function()
     --     require('mind').setup()
     --   end,
     -- },
 
     -- File Explorer plugins
-    { 'nvim-tree/nvim-tree.lua', requires = { 'nvim-tree/nvim-web-devicons' } },
+    { 'nvim-tree/nvim-tree.lua', dependencies = { 'nvim-tree/nvim-web-devicons' } },
     {
       'nvim-telescope/telescope.nvim',
       tag = '0.1.6',
@@ -174,7 +181,7 @@ require('lazy').setup({
     },
     {
       'nvim-telescope/telescope-fzf-native.nvim',
-      build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+      build = 'make',
     },
     'nvim-telescope/telescope-ui-select.nvim',
     {

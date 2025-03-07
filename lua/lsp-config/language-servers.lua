@@ -29,6 +29,7 @@ local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
 local servers = {
+  'astro',
   'cssls',
   'dockerls',
   'glsl_analyzer',
