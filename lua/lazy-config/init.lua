@@ -116,7 +116,7 @@ require('lazy').setup({
         'nvim-neotest/neotest-plenary',
         -- 'nvim-neotest/neotest-vim-test',
         'nvim-neotest/neotest-go',
-        -- 'haydenmeade/neotest-jest',
+        'nvim-neotest/neotest-jest',
         'marilari88/neotest-vitest',
       },
       config = function()
@@ -137,6 +137,14 @@ require('lazy').setup({
               -- Filter directories when searching for test files. Useful in large projects (see Filter directories notes).
               filter_dir = function(name, rel_path, root)
                 return name ~= 'node_modules'
+              end,
+            }),
+            require('neotest-jest')({
+              jestCommand = 'npm run test',
+              jestConfigFile = 'package.json',
+              env = { CI = true },
+              cwd = function(path)
+                return vim.fn.getcwd()
               end,
             }),
           },
