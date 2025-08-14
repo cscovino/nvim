@@ -1,6 +1,8 @@
 local copilot = require('CopilotChat')
 
 copilot.setup({
+  model = 'claude-sonnet-4', -- Specify the model
+
   window = {
     layout = 'float',
     width = 0.5, -- Fixed width in columns
@@ -21,21 +23,10 @@ copilot.setup({
   mappings = {
     complete = {
       insert = '<C-s>',
-      callback = function()
-        copilot.trigger_complete()
-      end,
     },
     submit_prompt = {
       normal = '<CR>',
       insert = '<C-Space>',
-      callback = function()
-        local message = copilot.chat:get_closest_message('user')
-        if not message then
-          return
-        end
-
-        copilot.ask(message.content)
-      end,
     },
   },
 })

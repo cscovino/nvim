@@ -27,6 +27,16 @@ require('lazy').setup({
       },
       build = 'make tiktoken',
     },
+
+    -- MCP Hub
+    {
+      'ravitemer/mcphub.nvim',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+      },
+      build = 'npm install -g mcp-hub@latest', -- Installs `mcp-hub` node binary globally
+    },
+
     -- Game plugin
     'ThePrimeagen/vim-be-good',
 
