@@ -9,7 +9,7 @@ require('lualine').setup({
       'diff',
       {
         'diagnostics',
-        symbols = { error = ' ', warn = ' ', hint = 'ﯦ ', info = ' ' },
+        symbols = { error = '', warn = ' ', hint = '⚡', info = ' ' },
       },
     },
   },

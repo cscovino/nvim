@@ -1,8 +1,11 @@
-local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>lc', vim.diagnostic.setloclist, opts)
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<space>pd', function()
+  vim.diagnostic.jump({ count = -1 })
+end)
+vim.keymap.set('n', '<space>nd', function()
+  vim.diagnostic.jump({ count = 1 })
+end)
+vim.keymap.set('n', '<space>lc', vim.diagnostic.setloclist)
 
 local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -69,8 +72,24 @@ lspconfig.lua_ls.setup({
   },
 })
 
-local signs = { Error = ' ', Warn = ' ', Hint = 'ﯦ ', Info = ' ' }
-for type, icon in pairs(signs) do
-  local hl = 'DiagnosticSign' .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl })
-end
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '',
+      [vim.diagnostic.severity.WARN] = ' ',
+      [vim.diagnostic.severity.INFO] = ' ',
+      [vim.diagnostic.severity.HINT] = '⚡',
+    },
+  },
+  float = {
+    focusable = false,
+    style = 'minimal',
+    border = 'rounded',
+  },
+  severity_sort = {
+    [vim.diagnostic.severity.ERROR] = 1,
+    [vim.diagnostic.severity.WARN] = 2,
+    [vim.diagnostic.severity.INFO] = 3,
+    [vim.diagnostic.severity.HINT] = 4,
+  },
+})

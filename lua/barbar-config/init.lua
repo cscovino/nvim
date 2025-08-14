@@ -3,6 +3,7 @@ require('bufferline').setup({
   icons = {
     pinned = {
       button = '',
+      filename = true,
     },
     inactive = {
       separator = {
@@ -14,7 +15,7 @@ require('bufferline').setup({
         left = '',
       },
     },
-    button = '',
+    button = '',
     modified = {
       button = '',
     },

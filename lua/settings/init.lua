@@ -1,11 +1,10 @@
 local set = vim.opt
 
-vim.notify = require('notify')
-
 set.background = 'dark'
 set.clipboard = 'unnamedplus'
 set.cmdheight = 1
 set.cursorline = true
+set.cursorlineopt = 'both'
 set.encoding = 'utf-8'
 set.expandtab = true
 set.hlsearch = true

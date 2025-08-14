@@ -21,7 +21,7 @@ local sources = {
 null_ls.setup({
   sources = sources,
   on_attach = function(client, bufnr)
-    if client.supports_method('textDocument/formatting') then
+    if client:supports_method('textDocument/formatting') then
       vim.api.nvim_clear_autocmds({ group = augroup_formatting, buffer = bufnr })
       vim.api.nvim_create_autocmd('BufWritePre', {
         group = augroup_formatting,

@@ -11,10 +11,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Example using a list of specs with the default options
-vim.g.mapleader = ' ' -- Make sure to set `mapleader` before lazy so your mappings are correct
-vim.g.maplocalleader = '\\' -- Same for `maplocalleader`
-
 require('lazy').setup({
   spec = {
     -- Copilot plugin
@@ -47,7 +43,13 @@ require('lazy').setup({
     { 'catppuccin/nvim', as = 'catppuccin' },
     'nvim-tree/nvim-web-devicons',
     'onsails/lspkind.nvim',
-    'romgrk/barbar.nvim',
+    {
+      'romgrk/barbar.nvim',
+      dependencies = {
+        'lewis6991/gitsigns.nvim',
+        'nvim-tree/nvim-web-devicons',
+      },
+    },
     'glepnir/oceanic-material',
     'Yggdroot/indentLine',
     'voldikss/vim-floaterm',
@@ -57,7 +59,17 @@ require('lazy').setup({
       'folke/noice.nvim',
       event = 'VeryLazy',
       opts = {
-        -- add any options here
+        lsp = {
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+            ['cmp.entry.get_documentation'] = true,
+          },
+        },
+        presets = {
+          command_palette = true,
+          long_message_to_split = true,
+        },
       },
       dependencies = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
@@ -73,7 +85,7 @@ require('lazy').setup({
     -- IDE plugins
     'nvim-treesitter/nvim-treesitter',
     'nvim-treesitter/nvim-treesitter-refactor',
-    -- 'folke/twilight.nvim',
+    'folke/twilight.nvim',
     -- 'folke/trouble.nvim',
     {
       'weilbith/nvim-code-action-menu',
@@ -84,7 +96,16 @@ require('lazy').setup({
     'tpope/vim-commentary',
     'JoosepAlviste/nvim-ts-context-commentstring',
     { 'nvimtools/none-ls.nvim', dependencies = { 'nvimtools/none-ls-extras.nvim' } },
-    'APZelos/blamer.nvim',
+    {
+      'f-person/git-blame.nvim',
+      event = 'VeryLazy',
+      opts = {
+        enabled = true,
+        message_template = ' <summary> • <date> • <author> • <<sha>>',
+        date_format = '%d-%m-%Y %H:%M',
+        virtual_text_column = 1,
+      },
+    },
     'tpope/vim-fugitive',
     'nvim-pack/nvim-spectre',
     'mbbill/undotree',
@@ -214,7 +235,11 @@ require('lazy').setup({
 
     -- LSP plugins
     'neovim/nvim-lspconfig',
-    'L3MON4D3/LuaSnip',
+    {
+      'L3MON4D3/LuaSnip',
+      version = 'v2.*',
+      build = 'make install_jsregexp',
+    },
     'hrsh7th/nvim-cmp',
     'hrsh7th/cmp-path',
     'hrsh7th/cmp-buffer',

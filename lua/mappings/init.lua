@@ -1,4 +1,5 @@
 vim.g.mapleader = ' '
+vim.g.maplocalleader = '\\'
 
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
@@ -91,3 +92,6 @@ map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
 vim.g.copilot_no_tab_map = true
 map('i', '<C-y>', 'copilot#Accept("\\<CR>")', { expr = true, replace_keycodes = false })
 map('n', '<leader>cp', '<Cmd>CopilotChat<CR>', opts)
+
+-- Twilight mappings
+map('n', '<leader>tw', '<Cmd>Twilight<CR>', opts)
