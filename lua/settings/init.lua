@@ -31,4 +31,8 @@ set.undodir = vim.fn.expand('~/.config/nvim/undodir')
 set.undofile = true
 set.wrap = false
 
+set.foldmethod = 'expr'
+set.foldexpr = 'nvim_treesitter#foldexpr()'
+set.foldlevelstart = 99
+
 vim.cmd('syntax enable')
