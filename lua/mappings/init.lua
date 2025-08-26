@@ -90,7 +90,7 @@ map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
 
 -- Copilot mappings
 vim.g.copilot_no_tab_map = true
-map('i', '<C-y>', 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false })
+map('i', '<S-Tab><S-Tab>', 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false })
 map('n', '<leader>cp', '<Cmd>CopilotChat<CR>', opts)
 
 -- Twilight mappings
