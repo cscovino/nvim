@@ -1,7 +1,23 @@
 local copilot = require('CopilotChat')
 
+local system_prompt = require('CopilotChat.config.prompts').COPILOT_INSTRUCTIONS.system_prompt
+system_prompt = system_prompt
+  .. '\nYou are a helpful AI assistant integrated into Neovim. Use the files in the current working directory and subdirectories to answer my questions.'
+system_prompt = system_prompt
+  .. '\nDo not print your thoughts, only print the final answer. Unless I ask you to do so explicitly..'
+system_prompt = system_prompt
+  .. '\nDo not print the tools used in the final answer. Unless I ask you to do so explicitly.'
+system_prompt = system_prompt
+  .. '\nDo not print the content of files, only use them to answer my question. Unless I ask you to do so explicitly.'
+
 copilot.setup({
-  model = 'claude-sonnet-4', -- Specify the model
+  model = 'claude-sonnet-4',
+
+  system_prompt = system_prompt,
+
+  sticky = {
+    '##neovim://workspace',
+  },
 
   window = {
     layout = 'float',
