@@ -1,17 +1,18 @@
 require('nvim-treesitter.configs').setup({
   ensure_installed = {
     'astro',
-    'lua',
     'css',
     'dockerfile',
     'gitignore',
     'go',
     'html',
-    'javascript',
     'http',
+    'javascript',
     'json',
+    'lua',
     'markdown',
     'python',
+    'scss',
     'typescript',
   },
 
