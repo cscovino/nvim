@@ -28,7 +28,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', '<space>f', vim.lsp.buf.format, bufopts)
 end
 
-local lspconfig = require('lspconfig')
+local lspconfig = vim.lsp.config
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
 local servers = {
@@ -46,14 +46,14 @@ local servers = {
 }
 
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup({
+  lspconfig(lsp, {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
   })
 end
 
-lspconfig.lua_ls.setup({
+lspconfig('lua_ls', {
   settings = {
     Lua = {
       runtime = {

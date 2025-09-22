@@ -110,7 +110,7 @@ require('lazy').setup({
     'nvim-pack/nvim-spectre',
     'mbbill/undotree',
     'cohama/lexima.vim',
-    'nvim-neotest/nvim-nio',
+    { 'nvim-neotest/nvim-nio', lazy = true },
     {
       'kylechui/nvim-surround',
       version = '*', -- Use for stability; omit to use `main` branch for the latest features
