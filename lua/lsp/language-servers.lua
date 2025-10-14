@@ -1,11 +1,11 @@
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '<space>pd', function()
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>pd', function()
   vim.diagnostic.jump({ count = -1 })
 end)
-vim.keymap.set('n', '<space>nd', function()
+vim.keymap.set('n', '<leader>nd', function()
   vim.diagnostic.jump({ count = 1 })
 end)
-vim.keymap.set('n', '<space>lc', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist)
 
 local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -16,16 +16,16 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
   vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wl', function()
+  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-  -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+  -- vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
   -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<space>f', vim.lsp.buf.format, bufopts)
+  vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, bufopts)
 end
 
 local lspconfig = vim.lsp.config
@@ -46,14 +46,14 @@ local servers = {
 }
 
 for _, lsp in ipairs(servers) do
-  lspconfig(lsp, {
+  lspconfig[lsp] = {
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
-  })
+  }
 end
 
-lspconfig('lua_ls', {
+lspconfig.lua_ls = {
   settings = {
     Lua = {
       runtime = {
@@ -70,7 +70,7 @@ lspconfig('lua_ls', {
       },
     },
   },
-})
+}
 
 vim.diagnostic.config({
   signs = {
@@ -93,3 +93,7 @@ vim.diagnostic.config({
     [vim.diagnostic.severity.HINT] = 4,
   },
 })
+
+for _, lsp in ipairs(servers) do
+  vim.lsp.enable(lsp)
+end

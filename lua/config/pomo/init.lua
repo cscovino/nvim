@@ -1,4 +1,4 @@
-local PomoNotifier = require('pomo-config.notifier')
+local PomoNotifier = require('pomo.notifier')
 
 require('pomo').setup({
   update_interval = 1000,
