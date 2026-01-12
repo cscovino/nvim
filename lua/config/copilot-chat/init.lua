@@ -21,9 +21,10 @@ copilot.setup({
   },
 
   window = {
-    layout = 'float',
-    width = 0.8, -- Fixed width in columns
-    height = 0.8, -- Fixed height in rows
+    layout = 'horizontal',
+    width = 1, -- Fixed width in columns
+    height = 0.6, -- Fixed height in rows
+    -- Only applies to 'float' layout
     border = 'rounded', -- 'single', 'double', 'rounded', 'solid'
     title = '😎 AI Assistant',
     zindex = 1, -- Ensure window stays on top
