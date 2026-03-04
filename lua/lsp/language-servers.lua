@@ -1,25 +1,24 @@
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Diagnostic float' })
 vim.keymap.set('n', '<leader>pd', function()
   vim.diagnostic.jump({ count = -1 })
-end)
+end, { desc = 'Prev diagnostic' })
 vim.keymap.set('n', '<leader>nd', function()
   vim.diagnostic.jump({ count = 1 })
-end)
-vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist)
+end, { desc = 'Next diagnostic' })
+vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist, { desc = 'Diagnostic loclist' })
 
 local on_attach = function(_, bufnr)
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
   -- Only custom keymaps here; gd, gD, K, gi, gr, <C-k> are Neovim 0.11 defaults
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = 'Add workspace folder' })
+  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = 'Remove workspace folder' })
   vim.keymap.set('n', '<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, bufopts)
+  end, { buffer = bufnr, desc = 'List workspace folders' })
+  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, { buffer = bufnr, desc = 'Type definition' })
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = 'Rename symbol' })
+  vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { buffer = bufnr, desc = 'Format buffer' })
 end
 
 local lspconfig = vim.lsp.config

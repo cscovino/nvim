@@ -237,6 +237,15 @@ require('lazy').setup({
       },
     },
     {
+      'sindrets/diffview.nvim',
+      cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
+      keys = {
+        { '<leader>dv', '<Cmd>DiffviewOpen<CR>', desc = 'Diffview open' },
+        { '<leader>dh', '<Cmd>DiffviewFileHistory %<CR>', desc = 'Diffview file history' },
+      },
+      opts = {},
+    },
+    {
       'MagicDuck/grug-far.nvim',
       cmd = 'GrugFar',
       keys = {
@@ -272,6 +281,37 @@ require('lazy').setup({
           -- Configuration here, or leave empty to use defaults
         })
       end,
+    },
+    {
+      'folke/flash.nvim',
+      event = 'VeryLazy',
+      opts = {},
+      keys = {
+        {
+          's',
+          mode = { 'n', 'x', 'o' },
+          function()
+            require('flash').jump()
+          end,
+          desc = 'Flash',
+        },
+        {
+          'S',
+          mode = { 'n', 'x', 'o' },
+          function()
+            require('flash').treesitter()
+          end,
+          desc = 'Flash Treesitter',
+        },
+        {
+          '<c-s>',
+          mode = { 'c' },
+          function()
+            require('flash').toggle()
+          end,
+          desc = 'Toggle Flash Search',
+        },
+      },
     },
     {
       'vhyrro/luarocks.nvim',
@@ -338,6 +378,52 @@ require('lazy').setup({
     },
 
     -- Productivity plugins
+    {
+      'folke/which-key.nvim',
+      event = 'VeryLazy',
+      opts = {
+        triggers = {},
+      },
+      config = function(_, opts)
+        local wk = require('which-key')
+        wk.setup(opts)
+        wk.add({
+          { '<leader>?', function() wk.show({ keys = '<leader>', loop = true }) end, desc = 'Show all keymaps' },
+          { '<leader>b', group = 'Buffer' },
+          { '<leader>c', group = 'Code/Copilot' },
+          { '<leader>d', group = 'Diff/Diagnostics' },
+          { '<leader>f', group = 'Find/Format' },
+          { '<leader>g', group = 'Git' },
+          { '<leader>n', group = 'NvimTree/Navigate' },
+          { '<leader>p', group = 'PR/Diagnostic' },
+          { '<leader>r', group = 'Run/Replace/Rename' },
+          { '<leader>s', group = 'Session' },
+          { '<leader>t', group = 'Test/Toggle' },
+          { '<leader>w', group = 'Save/Workspace' },
+        })
+      end,
+    },
+    {
+      'folke/persistence.nvim',
+      event = 'BufReadPre',
+      opts = {},
+      keys = {
+        {
+          '<leader>ss',
+          function()
+            require('persistence').load()
+          end,
+          desc = 'Restore session',
+        },
+        {
+          '<leader>sd',
+          function()
+            require('persistence').stop()
+          end,
+          desc = 'Stop session auto-save',
+        },
+      },
+    },
     {
       'epwalsh/pomo.nvim',
       version = '*',

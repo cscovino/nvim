@@ -11,7 +11,7 @@ system_prompt = system_prompt
   .. '\nDo not print the content of files, only use them to answer my question. Unless I ask you to do so explicitly.'
 
 copilot.setup({
-  model = 'claude-opus-4.5',
+  model = 'claude-opus-4.6',
 
   system_prompt = system_prompt,
 
