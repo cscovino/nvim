@@ -5,9 +5,9 @@ local map = vim.keymap.set
 
 -- General mappings
 map('n', '<leader>w', '<Cmd>w<CR>', { desc = 'Save' })
-map('n', '<leader>wq', '<Cmd>wq<CR>', { desc = 'Save and quit' })
+map('n', '<leader>W', '<Cmd>wq<CR>', { desc = 'Save and quit' })
 map('n', '<leader>q', '<Cmd>q<CR>', { desc = 'Quit' })
-map('n', '<leader>qu', '<Cmd>q!<CR>', { desc = 'Force quit' })
+map('n', '<leader>Q', '<Cmd>q!<CR>', { desc = 'Force quit' })
 map('n', '<leader>tt', '<Cmd>ToggleTerm direction=float<CR>', { desc = 'Toggle terminal' })
 map('n', '<leader>cl', '<Cmd>noh<CR>', { desc = 'Clear highlights' })
 map('n', '<leader>rd', '<Cmd>e!<CR>', { desc = 'Reload file (discard)' })

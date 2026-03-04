@@ -21,12 +21,7 @@ require('lazy').setup({
         vim.g.copilot_no_tab_map = true
       end,
       config = function()
-        vim.keymap.set(
-          'i',
-          '<S-Tab><S-Tab>',
-          'copilot#Accept("\\<S-Tab>")',
-          { expr = true, replace_keycodes = false }
-        )
+        vim.keymap.set('i', '<S-Tab><S-Tab>', 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false })
       end,
     },
     {
@@ -241,8 +236,8 @@ require('lazy').setup({
         { '<leader>gm', '<Cmd>G commit<CR>', desc = 'Git commit' },
         { '<leader>gp', '<Cmd>G push<CR>', desc = 'Git push' },
         { '<leader>gl', '<Cmd>G pull<CR>', desc = 'Git pull' },
-        { '<leader>gst', '<Cmd>G stash<CR>', desc = 'Git stash' },
-        { '<leader>gsp', '<Cmd>G stash pop<CR>', desc = 'Git stash pop' },
+        { '<leader>gS', '<Cmd>G stash<CR>', desc = 'Git stash' },
+        { '<leader>gP', '<Cmd>G stash pop<CR>', desc = 'Git stash pop' },
         { '<leader>gdf', '<Cmd>Gdiffsplit<CR>', desc = 'Git diff split' },
       },
     },
@@ -403,7 +398,13 @@ require('lazy').setup({
         local wk = require('which-key')
         wk.setup(opts)
         wk.add({
-          { '<leader>?', function() wk.show({ keys = '<leader>', loop = true }) end, desc = 'Show all keymaps' },
+          {
+            '<leader>?',
+            function()
+              wk.show({ keys = '<leader>', loop = true })
+            end,
+            desc = 'Show all keymaps',
+          },
           { '<leader>b', group = 'Buffer' },
           { '<leader>c', group = 'Code/Copilot' },
           { '<leader>d', group = 'Diff/Diagnostics' },
