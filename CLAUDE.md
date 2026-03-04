@@ -29,7 +29,7 @@ Entry point is `init.lua`, which requires modules in a specific order:
 
 ## LSP Servers
 
-Configured in `lua/lsp/language-servers.lua`: astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, ts_ls.
+Configured in `lua/lsp/language-servers.lua`: astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, vtsls.
 
 ## Formatters/Linters (null-ls)
 

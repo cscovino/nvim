@@ -10,7 +10,7 @@ vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist, { desc = 'Diagnosti
 local on_attach = function(_, bufnr)
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-  -- Only custom keymaps here; gd, gD, K, gi, gr, <C-k> are Neovim 0.11 defaults
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Go to definition' })
   vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = 'Add workspace folder' })
   vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = 'Remove workspace folder' })
   vim.keymap.set('n', '<leader>wl', function()
@@ -35,7 +35,7 @@ local servers = {
   'jsonls',
   'lua_ls',
   'pyright',
-  'ts_ls',
+  'vtsls',
 }
 
 for _, lsp in ipairs(servers) do
@@ -45,6 +45,13 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
+
+lspconfig.glsl_analyzer = {
+  on_attach = on_attach,
+  flags = lsp_flags,
+  capabilities = capabilities,
+  filetypes = { 'glsl' },
+}
 
 lspconfig.lua_ls = {
   on_attach = on_attach,

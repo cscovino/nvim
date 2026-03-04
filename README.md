@@ -80,7 +80,7 @@ lua/
 
 ## LSP Servers
 
-astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, ts_ls
+astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, vtsls
 
 ## Formatters & Linters
 
