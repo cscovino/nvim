@@ -60,8 +60,8 @@ require('lazy').setup({
       end,
     },
 
-    -- Game plugin
-    -- { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
+    -- Game plugins
+    { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 
     -- Style plugins
     -- { 'EdenEast/nightfox.nvim', lazy = true },
@@ -194,7 +194,17 @@ require('lazy').setup({
         require('config.twilight')
       end,
     },
-    -- 'folke/trouble.nvim',
+    {
+      'folke/trouble.nvim',
+      cmd = 'Trouble',
+      keys = {
+        { '<leader>xx', '<Cmd>Trouble diagnostics toggle<CR>', desc = 'Diagnostics (Trouble)' },
+        { '<leader>xd', '<Cmd>Trouble diagnostics toggle filter.buf=0<CR>', desc = 'Buffer diagnostics (Trouble)' },
+        { '<leader>xl', '<Cmd>Trouble loclist toggle<CR>', desc = 'Loclist (Trouble)' },
+        { '<leader>xq', '<Cmd>Trouble qflist toggle<CR>', desc = 'Quickfix (Trouble)' },
+      },
+      opts = {},
+    },
     -- Code actions: using built-in vim.lsp.buf.code_action()
     {
       'stevearc/conform.nvim',
@@ -272,6 +282,11 @@ require('lazy').setup({
       end,
     },
     { 'nvim-neotest/nvim-nio', lazy = true },
+    {
+      'echasnovski/mini.move',
+      event = 'VeryLazy',
+      opts = {},
+    },
     {
       'kylechui/nvim-surround',
       version = '*', -- Use for stability; omit to use `main` branch for the latest features
@@ -400,6 +415,7 @@ require('lazy').setup({
           { '<leader>s', group = 'Session' },
           { '<leader>t', group = 'Test/Toggle' },
           { '<leader>w', group = 'Save/Workspace' },
+          { '<leader>x', group = 'Trouble' },
         })
       end,
     },
