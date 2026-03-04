@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.2.1](https://github.com/cscovino/nvim/compare/fba76583310df27d4849a219e0966e083a061dea..2.2.1) - 2026-03-04
+#### Bug Fixes
+- 🐛 checkhealth warnings - ([fba7658](https://github.com/cscovino/nvim/commit/fba76583310df27d4849a219e0966e083a061dea)) - Carlos Scovino
+
+- - -
+
 ## [2.2.0](https://github.com/cscovino/nvim/compare/1d7b4ad73a1e3cc757a91da2e7f4dc3bdd21ee73..2.2.0) - 2026-03-04
 #### Features
 - 📦️ add mini.move, trouble.nvim, and vim-be-good plugins - ([36763fa](https://github.com/cscovino/nvim/commit/36763fac4d25e23e3c24ba3b74fb991e24449ad6)) - Carlos Scovino
