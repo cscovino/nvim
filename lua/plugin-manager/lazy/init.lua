@@ -45,11 +45,11 @@ require('lazy').setup({
     -- MCP Hub
     {
       'ravitemer/mcphub.nvim',
-      lazy = true,
+      cmd = 'MCPHub',
       dependencies = {
         'nvim-lua/plenary.nvim',
       },
-      build = 'npm install -g mcp-hub@latest',
+      build = 'pnpm add -g mcp-hub@latest',
       config = function()
         require('config.mcp-hub')
       end,
@@ -542,5 +542,8 @@ require('lazy').setup({
         require('lsp.nvim-cmp')
       end,
     },
+  },
+  ui = {
+    border = 'rounded',
   },
 })

@@ -17,6 +17,7 @@ vim.filetype.add({
 
 local set = vim.opt
 
+set.winborder = 'rounded'
 set.background = 'dark'
 set.clipboard = 'unnamedplus'
 set.cmdheight = 1
