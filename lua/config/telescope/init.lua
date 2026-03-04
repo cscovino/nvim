@@ -116,4 +116,6 @@ local function create_conventional_commit(opts)
     :find()
 end
 
-vim.keymap.set('n', 'cc', create_conventional_commit, { desc = 'Create conventional commit' })
+local M = {}
+M.create_conventional_commit = create_conventional_commit
+return M

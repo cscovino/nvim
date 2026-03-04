@@ -9,5 +9,3 @@ spectre.setup({
     },
   },
 })
-
-vim.keymap.set('n', '<leader>rp', spectre.toggle, { desc = 'Toggle Spectre' })

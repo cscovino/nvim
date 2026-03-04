@@ -14,47 +14,77 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   spec = {
     -- Copilot plugin
-    'github/copilot.vim',
+    {
+      'github/copilot.vim',
+      event = 'InsertEnter',
+      init = function()
+        vim.g.copilot_no_tab_map = true
+      end,
+      config = function()
+        vim.keymap.set(
+          'i',
+          '<S-Tab><S-Tab>',
+          'copilot#Accept("\\<S-Tab>")',
+          { expr = true, replace_keycodes = false }
+        )
+      end,
+    },
     {
       'CopilotC-Nvim/CopilotChat.nvim',
+      cmd = 'CopilotChat',
+      keys = {
+        { '<leader>cp', '<Cmd>CopilotChat<CR>', desc = 'CopilotChat' },
+        { '<leader>prd', desc = 'PR Description' },
+        { '<leader>cmsg', desc = 'Commit Message' },
+      },
       dependencies = {
         { 'github/copilot.vim' },
         { 'nvim-lua/plenary.nvim', branch = 'master' },
       },
       build = 'make tiktoken',
+      config = function()
+        require('config.copilot-chat')
+      end,
     },
 
     -- MCP Hub
     {
       'ravitemer/mcphub.nvim',
+      lazy = true,
       dependencies = {
         'nvim-lua/plenary.nvim',
       },
-      build = 'npm install -g mcp-hub@latest', -- Installs `mcp-hub` node binary globally
+      build = 'npm install -g mcp-hub@latest',
+      config = function()
+        require('config.mcp-hub')
+      end,
     },
 
     -- Game plugin
-    'ThePrimeagen/vim-be-good',
+    { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 
     -- Style plugins
-    'EdenEast/nightfox.nvim',
+    { 'EdenEast/nightfox.nvim', lazy = true },
     { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true },
-    'folke/tokyonight.nvim',
-    { 'catppuccin/nvim', as = 'catppuccin' },
+    { 'folke/tokyonight.nvim', lazy = true },
+    { 'catppuccin/nvim', as = 'catppuccin', lazy = true },
     'nvim-tree/nvim-web-devicons',
-    'onsails/lspkind.nvim',
+    { 'glepnir/oceanic-material', lazy = true },
+    { 'Yggdroot/indentLine', event = 'BufReadPost' },
+    { 'voldikss/vim-floaterm', cmd = 'FloatermToggle' },
+    { 'norcalli/nvim-colorizer.lua', event = 'BufReadPost' },
     {
-      'romgrk/barbar.nvim',
-      dependencies = {
-        'lewis6991/gitsigns.nvim',
-        'nvim-tree/nvim-web-devicons',
-      },
+      'nvim-lualine/lualine.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('config.lualine')
+      end,
     },
-    'glepnir/oceanic-material',
-    'Yggdroot/indentLine',
-    'voldikss/vim-floaterm',
-    'norcalli/nvim-colorizer.lua',
-    'nvim-lualine/lualine.nvim',
+    {
+      'rcarriga/nvim-notify',
+      lazy = true,
+      opts = { background_colour = '#000' },
+    },
     {
       'folke/noice.nvim',
       event = 'VeryLazy',
@@ -72,30 +102,92 @@ require('lazy').setup({
         },
       },
       dependencies = {
-        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
         'MunifTanjim/nui.nvim',
-        -- OPTIONAL:
-        --   `nvim-notify` is only needed, if you want to use the notification view.
-        --   If not available, we use `mini` as the fallback
         'rcarriga/nvim-notify',
       },
     },
     'xiyaowong/nvim-transparent',
+    {
+      'romgrk/barbar.nvim',
+      event = 'BufReadPost',
+      dependencies = {
+        'lewis6991/gitsigns.nvim',
+        'nvim-tree/nvim-web-devicons',
+      },
+      keys = {
+        { '<leader>,', '<Cmd>BufferPrevious<CR>', desc = 'Buffer previous' },
+        { '<leader>.', '<Cmd>BufferNext<CR>', desc = 'Buffer next' },
+        { '<leader><', '<Cmd>BufferMovePrevious<CR>', desc = 'Buffer move prev' },
+        { '<leader>>', '<Cmd>BufferMoveNext<CR>', desc = 'Buffer move next' },
+        { '<leader>!', '<Cmd>BufferGoto 1<CR>', desc = 'Buffer 1' },
+        { '<leader>@', '<Cmd>BufferGoto 2<CR>', desc = 'Buffer 2' },
+        { '<leader>#', '<Cmd>BufferGoto 3<CR>', desc = 'Buffer 3' },
+        { '<leader>$', '<Cmd>BufferGoto 4<CR>', desc = 'Buffer 4' },
+        { '<leader>%', '<Cmd>BufferGoto 5<CR>', desc = 'Buffer 5' },
+        { '<leader>^', '<Cmd>BufferGoto 6<CR>', desc = 'Buffer 6' },
+        { '<leader>&', '<Cmd>BufferGoto 7<CR>', desc = 'Buffer 7' },
+        { '<leader>*', '<Cmd>BufferGoto 8<CR>', desc = 'Buffer 8' },
+        { '<leader>(', '<Cmd>BufferGoto 9<CR>', desc = 'Buffer 9' },
+        { '<leader>)', '<Cmd>BufferLast<CR>', desc = 'Buffer last' },
+        { '<leader>bp', '<Cmd>BufferPin<CR>', desc = 'Buffer pin' },
+        { '<leader>bc', '<Cmd>BufferClose<CR>', desc = 'Buffer close' },
+        { '<leader>abc', '<Cmd>BufferCloseAllButCurrentOrPinned<CR>', desc = 'Close other buffers' },
+        { '<C-p>', '<Cmd>BufferPick<CR>', desc = 'Buffer pick' },
+        { '<leader>bb', '<Cmd>BufferOrderByBufferNumber<CR>', desc = 'Order by number' },
+        { '<leader>bd', '<Cmd>BufferOrderByDirectory<CR>', desc = 'Order by directory' },
+        { '<leader>bl', '<Cmd>BufferOrderByLanguage<CR>', desc = 'Order by language' },
+        { '<leader>bw', '<Cmd>BufferOrderByWindowNumber<CR>', desc = 'Order by window' },
+      },
+      config = function()
+        require('config.barbar')
+      end,
+    },
 
     -- IDE plugins
-    'nvim-treesitter/nvim-treesitter',
-    'nvim-treesitter/nvim-treesitter-refactor',
-    'folke/twilight.nvim',
+    {
+      'nvim-treesitter/nvim-treesitter',
+      event = 'BufReadPost',
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter-refactor',
+        'windwp/nvim-ts-autotag',
+        'JoosepAlviste/nvim-ts-context-commentstring',
+      },
+      config = function()
+        require('config.treesitter')
+      end,
+    },
+    { 'nvim-treesitter/nvim-treesitter-context', event = 'BufReadPost' },
+    { 'tpope/vim-commentary', event = 'BufReadPost' },
+    {
+      'folke/twilight.nvim',
+      cmd = 'Twilight',
+      keys = {
+        { '<leader>tw', '<Cmd>Twilight<CR>', desc = 'Toggle Twilight' },
+      },
+      config = function()
+        require('config.twilight')
+      end,
+    },
     -- 'folke/trouble.nvim',
     {
       'weilbith/nvim-code-action-menu',
       cmd = 'CodeActionMenu',
     },
-    'windwp/nvim-ts-autotag',
-    'nvim-treesitter/nvim-treesitter-context',
-    'tpope/vim-commentary',
-    'JoosepAlviste/nvim-ts-context-commentstring',
-    { 'nvimtools/none-ls.nvim', dependencies = { 'nvimtools/none-ls-extras.nvim' } },
+    {
+      'stevearc/conform.nvim',
+      event = 'BufWritePre',
+      cmd = 'ConformInfo',
+      config = function()
+        require('config.conform')
+      end,
+    },
+    {
+      'mfussenegger/nvim-lint',
+      event = { 'BufWritePost', 'BufReadPost' },
+      config = function()
+        require('config.lint')
+      end,
+    },
     {
       'f-person/git-blame.nvim',
       event = 'VeryLazy',
@@ -106,10 +198,39 @@ require('lazy').setup({
         virtual_text_column = 1,
       },
     },
-    'tpope/vim-fugitive',
-    'nvim-pack/nvim-spectre',
-    'mbbill/undotree',
-    'cohama/lexima.vim',
+    {
+      'tpope/vim-fugitive',
+      cmd = { 'G', 'Git', 'Gdiffsplit' },
+      keys = {
+        { '<leader>gj', '<Cmd>diffget //3<CR>', desc = 'Diffget right' },
+        { '<leader>gf', '<Cmd>diffget //2<CR>', desc = 'Diffget left' },
+        { '<leader>gs', '<Cmd>G<CR>', desc = 'Git status' },
+        { '<leader>gm', '<Cmd>G commit<CR>', desc = 'Git commit' },
+        { '<leader>gp', '<Cmd>G push<CR>', desc = 'Git push' },
+        { '<leader>gl', '<Cmd>G pull<CR>', desc = 'Git pull' },
+        { '<leader>gst', '<Cmd>G stash<CR>', desc = 'Git stash' },
+        { '<leader>gsp', '<Cmd>G stash pop<CR>', desc = 'Git stash pop' },
+        { '<leader>gdf', '<Cmd>Gdiffsplit<CR>', desc = 'Git diff split' },
+      },
+    },
+    {
+      'nvim-pack/nvim-spectre',
+      cmd = 'Spectre',
+      keys = {
+        {
+          '<leader>rp',
+          function()
+            require('spectre').toggle()
+          end,
+          desc = 'Toggle Spectre',
+        },
+      },
+      config = function()
+        require('config.spectre')
+      end,
+    },
+    { 'mbbill/undotree', cmd = 'UndotreeShow' },
+    { 'cohama/lexima.vim', event = 'InsertEnter' },
     { 'nvim-neotest/nvim-nio', lazy = true },
     {
       'kylechui/nvim-surround',
@@ -123,7 +244,7 @@ require('lazy').setup({
     },
     {
       'vhyrro/luarocks.nvim',
-      priority = 1000,
+      lazy = true,
       config = true,
       opts = {
         rocks = { 'lua-curl', 'nvim-nio', 'mimetypes', 'xml2lua' },
@@ -134,11 +255,42 @@ require('lazy').setup({
       ft = 'http',
       dependencies = { 'luarocks.nvim' },
       config = function()
-        require('rest-nvim').setup()
+        require('config.rest')
       end,
     },
     {
       'nvim-neotest/neotest',
+      keys = {
+        {
+          '<leader>ts',
+          function()
+            require('neotest').summary.toggle()
+            local win = vim.fn.bufwinid('Neotest Summary')
+            if win > -1 then
+              vim.api.nvim_set_current_win(win)
+            end
+          end,
+          desc = 'Toggle test summary',
+        },
+        {
+          '<leader>to',
+          function()
+            require('neotest').output_panel.toggle()
+            local win = vim.fn.bufwinid('Neotest Output Panel')
+            if win > -1 then
+              vim.api.nvim_set_current_win(win)
+            end
+          end,
+          desc = 'Toggle test output',
+        },
+        {
+          '<leader>rt',
+          function()
+            require('neotest').run.run()
+          end,
+          desc = 'Run nearest test',
+        },
+      },
       dependencies = {
         'nvim-neotest/nvim-nio',
         'nvim-lua/plenary.nvim',
@@ -151,55 +303,7 @@ require('lazy').setup({
         'marilari88/neotest-vitest',
       },
       config = function()
-        -- get neotest namespace (api call creates or returns namespace)
-        local neotest_ns = vim.api.nvim_create_namespace('neotest')
-        vim.diagnostic.config({
-          virtual_text = {
-            format = function(diagnostic)
-              local message = diagnostic.message:gsub('\n', ' '):gsub('\t', ' '):gsub('%s+', ' '):gsub('^%s+', '')
-              return message
-            end,
-          },
-        }, neotest_ns)
-        local neotest = require('neotest')
-        neotest.setup({
-          adapters = {
-            require('neotest-vitest')({
-              -- Filter directories when searching for test files. Useful in large projects (see Filter directories notes).
-              filter_dir = function(name, rel_path, root)
-                return name ~= 'node_modules'
-              end,
-            }),
-            require('neotest-jest')({
-              jestCommand = 'npm run test',
-              jestConfigFile = 'package.json',
-              env = { CI = true },
-              cwd = function(path)
-                return vim.fn.getcwd()
-              end,
-            }),
-          },
-          -- your neotest config here
-          consumers = {
-            always_open_output = function(client)
-              local async = require('neotest.async')
-
-              client.listeners.results = function(adapter_id, results)
-                local file_path = async.fn.expand('%:p')
-                local row = async.fn.getpos('.')[2] - 1
-                local position = client:get_nearest(file_path, row, {})
-                if not position then
-                  return
-                end
-                local pos_id = position:data().id
-                if not results[pos_id] then
-                  return
-                end
-                neotest.output_panel.open({ position_id = pos_id, adapter = adapter_id })
-              end
-            end,
-          },
-        })
+        require('config.neotest')
       end,
     },
 
@@ -212,50 +316,99 @@ require('lazy').setup({
       dependencies = {
         'rcarriga/nvim-notify',
       },
+      config = function()
+        require('config.pomo')
+      end,
     },
-    -- {
-    --   'phaazon/mind.nvim',
-    --   branch = 'v2.2',
-    --   dependencies = { 'nvim-lua/plenary.nvim' },
-    --   config = function()
-    --     require('mind').setup()
-    --   end,
-    -- },
 
     -- File Explorer plugins
-    { 'nvim-tree/nvim-tree.lua', dependencies = { 'nvim-tree/nvim-web-devicons' } },
+    {
+      'nvim-tree/nvim-tree.lua',
+      cmd = 'NvimTreeToggle',
+      keys = {
+        { '<leader>nt', '<Cmd>NvimTreeToggle<CR>', desc = 'Toggle NvimTree' },
+      },
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      config = function()
+        require('config.nvimtree')
+      end,
+    },
     {
       'nvim-telescope/telescope.nvim',
       tag = '0.1.6',
-      dependencies = { 'nvim-lua/plenary.nvim' },
-    },
-    {
-      'nvim-telescope/telescope-fzf-native.nvim',
-      build = 'make',
-    },
-    'nvim-telescope/telescope-ui-select.nvim',
-    {
-      'olacin/telescope-gitmoji.nvim',
+      cmd = 'Telescope',
+      keys = {
+        { '<leader>ff', '<Cmd>Telescope find_files<CR>', desc = 'Find files' },
+        { '<leader>fg', '<Cmd>Telescope live_grep<CR>', desc = 'Live grep' },
+        { '<leader>fb', '<Cmd>Telescope buffers<CR>', desc = 'Buffers' },
+        { '<leader>fh', '<Cmd>Telescope help_tags<CR>', desc = 'Help tags' },
+        { '<leader>cs', '<Cmd>Telescope colorscheme<CR>', desc = 'Colorscheme' },
+        { '<leader>ch', '<Cmd>Telescope command_history<CR>', desc = 'Command history' },
+        { '<leader>gc', '<Cmd>Telescope git_branches<CR>', desc = 'Git branches' },
+        { '<leader>dd', '<Cmd>Telescope diagnostics<CR>', desc = 'Diagnostics' },
+        { '<leader>gr', '<Cmd>Telescope lsp_references<CR>', desc = 'LSP references' },
+        { '<leader>ds', '<Cmd>Telescope lsp_document_symbols<CR>', desc = 'Document symbols' },
+        {
+          'cc',
+          function()
+            require('config.telescope').create_conventional_commit()
+          end,
+          desc = 'Conventional commit',
+        },
+      },
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+        'nvim-telescope/telescope-ui-select.nvim',
+        {
+          'olacin/telescope-gitmoji.nvim',
+          dependencies = { 'nvim-lua/plenary.nvim' },
+        },
+        'olacin/telescope-cc.nvim',
+      },
       config = function()
-        require('telescope').load_extension('gitmoji')
+        require('config.telescope')
       end,
-      dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
     },
-    { 'olacin/telescope-cc.nvim' },
     'christoomey/vim-tmux-navigator',
 
     -- LSP plugins
-    'neovim/nvim-lspconfig',
     {
-      'L3MON4D3/LuaSnip',
-      version = 'v2.*',
-      build = 'make install_jsregexp',
+      'folke/lazydev.nvim',
+      ft = 'lua',
+      opts = {
+        library = {
+          { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+        },
+      },
     },
-    'hrsh7th/nvim-cmp',
-    'hrsh7th/cmp-path',
-    'hrsh7th/cmp-buffer',
-    'hrsh7th/cmp-nvim-lsp',
-    'hrsh7th/cmp-nvim-lua',
-    'saadparwaiz1/cmp_luasnip',
+    {
+      'neovim/nvim-lspconfig',
+      event = { 'BufReadPre', 'BufNewFile' },
+      dependencies = { 'hrsh7th/cmp-nvim-lsp' },
+      config = function()
+        require('lsp.language-servers')
+      end,
+    },
+    {
+      'hrsh7th/nvim-cmp',
+      event = 'InsertEnter',
+      dependencies = {
+        {
+          'L3MON4D3/LuaSnip',
+          version = 'v2.*',
+          build = 'make install_jsregexp',
+        },
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-buffer',
+        'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-nvim-lua',
+        'saadparwaiz1/cmp_luasnip',
+        'onsails/lspkind.nvim',
+      },
+      config = function()
+        require('lsp.nvim-cmp')
+      end,
+    },
   },
 })

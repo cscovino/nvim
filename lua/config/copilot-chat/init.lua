@@ -11,13 +11,32 @@ system_prompt = system_prompt
   .. '\nDo not print the content of files, only use them to answer my question. Unless I ask you to do so explicitly.'
 
 copilot.setup({
-  model = 'claude-sonnet-4.5',
+  model = 'claude-opus-4.5',
 
   system_prompt = system_prompt,
 
   sticky = {
     '##neovim://workspace',
     '##neovim://buffer',
+  },
+
+  prompts = {
+    PRDesc = {
+      prompt = 'Give a PR description based on the staged changes and use the template that is in the folder .github/',
+      description = 'Generate a PR description based on the staged changes and the template in .github/',
+      resources = {
+        'gitdiff:staged',
+        'file:.github/pull_request_template.md',
+      },
+      mapping = '<leader>prd',
+    },
+    Commit = {
+      prompt = 'Write commit message for the change with commitizen convention. Write only the title',
+      resources = {
+        'gitdiff:staged',
+      },
+      mapping = '<leader>cmsg',
+    },
   },
 
   window = {

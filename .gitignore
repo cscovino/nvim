@@ -1,4 +1,5 @@
 plugin/
 undodir/
 /**/.DS_Store
+.mcphub/
 
