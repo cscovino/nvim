@@ -1,3 +1,8 @@
+-- Disable unused providers
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_perl_provider = 0
+
 local set = vim.opt
 
 set.background = 'dark'
@@ -35,4 +40,3 @@ set.foldmethod = 'expr'
 set.foldexpr = 'nvim_treesitter#foldexpr()'
 set.foldlevelstart = 99
 
-vim.cmd('syntax enable')

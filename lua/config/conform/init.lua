@@ -11,8 +11,8 @@ require('conform').setup({
     json = { 'prettierd' },
     yaml = { 'prettierd' },
     markdown = { 'prettierd' },
-    astro = { 'prettierd' },
-    go = { 'goimports_reviser', 'golines' },
+    -- astro = { 'prettierd' },
+    -- go = { 'goimports_reviser', 'golines' },
   },
   format_on_save = {
     timeout_ms = 3000,

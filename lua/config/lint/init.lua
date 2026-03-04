@@ -1,7 +1,7 @@
 local lint = require('lint')
 
 lint.linters_by_ft = {
-  go = { 'golangcilint' },
+  -- go = { 'golangcilint' },
   yaml = { 'yamllint' },
   glsl = { 'glslc' },
 }

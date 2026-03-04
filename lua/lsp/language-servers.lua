@@ -8,14 +8,10 @@ end)
 vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist)
 
 local on_attach = function(_, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
+  -- Only custom keymaps here; gd, gD, K, gi, gr, <C-k> are Neovim 0.11 defaults
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
   vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   vim.keymap.set('n', '<leader>wl', function()
@@ -23,8 +19,6 @@ local on_attach = function(_, bufnr)
   end, bufopts)
   vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-  -- vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-  -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, bufopts)
 end
 
@@ -32,12 +26,12 @@ local lspconfig = vim.lsp.config
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lsp_flags = { debounce_text_changes = 150 }
 local servers = {
-  'astro',
+  -- 'astro',
   'cssls',
   'dockerls',
   'glsl_analyzer',
-  'golangci_lint_ls',
-  'gopls',
+  -- 'golangci_lint_ls',
+  -- 'gopls',
   'html',
   'jsonls',
   'lua_ls',
@@ -54,6 +48,9 @@ for _, lsp in ipairs(servers) do
 end
 
 lspconfig.lua_ls = {
+  on_attach = on_attach,
+  flags = lsp_flags,
+  capabilities = capabilities,
   settings = {
     Lua = {
       runtime = {

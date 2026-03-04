@@ -27,20 +27,10 @@ require('nvim-treesitter.configs').setup({
     additional_vim_regex_highlighting = false,
   },
 
-  autotag = {
-    enable = true,
-  },
-
   refactor = {
     highlight_definitions = {
       enable = true,
       clear_on_cursor_move = true,
-    },
-    smart_rename = {
-      enable = true,
-      keymaps = {
-        smart_rename = '<leader>rn',
-      },
     },
   },
 })

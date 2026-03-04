@@ -61,18 +61,36 @@ require('lazy').setup({
     },
 
     -- Game plugin
-    { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
+    -- { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 
     -- Style plugins
-    { 'EdenEast/nightfox.nvim', lazy = true },
+    -- { 'EdenEast/nightfox.nvim', lazy = true },
     { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true },
-    { 'folke/tokyonight.nvim', lazy = true },
-    { 'catppuccin/nvim', as = 'catppuccin', lazy = true },
+    -- { 'folke/tokyonight.nvim', lazy = true },
+    -- { 'catppuccin/nvim', as = 'catppuccin', lazy = true },
     'nvim-tree/nvim-web-devicons',
-    { 'glepnir/oceanic-material', lazy = true },
-    { 'Yggdroot/indentLine', event = 'BufReadPost' },
-    { 'voldikss/vim-floaterm', cmd = 'FloatermToggle' },
-    { 'norcalli/nvim-colorizer.lua', event = 'BufReadPost' },
+    -- { 'glepnir/oceanic-material', lazy = true },
+    {
+      'lukas-reineke/indent-blankline.nvim',
+      main = 'ibl',
+      event = 'BufReadPost',
+      opts = {
+        indent = { char = { '|', '¦', '┆', '┊' } },
+      },
+    },
+    {
+      'akinsho/toggleterm.nvim',
+      version = '*',
+      cmd = 'ToggleTerm',
+      keys = {
+        { '<leader>tt', '<Cmd>ToggleTerm direction=float<CR>', desc = 'Toggle terminal' },
+      },
+      opts = {
+        open_mapping = false,
+        direction = 'float',
+      },
+    },
+    { 'NvChad/nvim-colorizer.lua', event = 'BufReadPost', opts = {} },
     {
       'nvim-lualine/lualine.nvim',
       event = 'VeryLazy',
@@ -106,7 +124,13 @@ require('lazy').setup({
         'rcarriga/nvim-notify',
       },
     },
-    'xiyaowong/nvim-transparent',
+    {
+      'xiyaowong/nvim-transparent',
+      event = 'VeryLazy',
+      config = function()
+        require('config.transparent')
+      end,
+    },
     {
       'romgrk/barbar.nvim',
       event = 'BufReadPost',
@@ -149,15 +173,17 @@ require('lazy').setup({
       event = 'BufReadPost',
       dependencies = {
         'nvim-treesitter/nvim-treesitter-refactor',
-        'windwp/nvim-ts-autotag',
-        'JoosepAlviste/nvim-ts-context-commentstring',
       },
       config = function()
         require('config.treesitter')
       end,
     },
+    {
+      'windwp/nvim-ts-autotag',
+      event = 'BufReadPost',
+      opts = {},
+    },
     { 'nvim-treesitter/nvim-treesitter-context', event = 'BufReadPost' },
-    { 'tpope/vim-commentary', event = 'BufReadPost' },
     {
       'folke/twilight.nvim',
       cmd = 'Twilight',
@@ -169,10 +195,7 @@ require('lazy').setup({
       end,
     },
     -- 'folke/trouble.nvim',
-    {
-      'weilbith/nvim-code-action-menu',
-      cmd = 'CodeActionMenu',
-    },
+    -- Code actions: using built-in vim.lsp.buf.code_action()
     {
       'stevearc/conform.nvim',
       event = 'BufWritePre',
@@ -214,23 +237,31 @@ require('lazy').setup({
       },
     },
     {
-      'nvim-pack/nvim-spectre',
-      cmd = 'Spectre',
+      'MagicDuck/grug-far.nvim',
+      cmd = 'GrugFar',
       keys = {
         {
           '<leader>rp',
           function()
-            require('spectre').toggle()
+            require('grug-far').open()
           end,
-          desc = 'Toggle Spectre',
+          desc = 'Search and replace (grug-far)',
         },
       },
-      config = function()
-        require('config.spectre')
-      end,
+      opts = {},
     },
     { 'mbbill/undotree', cmd = 'UndotreeShow' },
-    { 'cohama/lexima.vim', event = 'InsertEnter' },
+    {
+      'windwp/nvim-autopairs',
+      event = 'InsertEnter',
+      config = function()
+        local autopairs = require('nvim-autopairs')
+        autopairs.setup({})
+        local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+        local cmp = require('cmp')
+        cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      end,
+    },
     { 'nvim-neotest/nvim-nio', lazy = true },
     {
       'kylechui/nvim-surround',
@@ -295,7 +326,6 @@ require('lazy').setup({
         'nvim-neotest/nvim-nio',
         'nvim-lua/plenary.nvim',
         'nvim-treesitter/nvim-treesitter',
-        'antoinemadec/FixCursorHold.nvim',
         'nvim-neotest/neotest-plenary',
         -- 'nvim-neotest/neotest-vim-test',
         'nvim-neotest/neotest-go',
@@ -335,7 +365,6 @@ require('lazy').setup({
     },
     {
       'nvim-telescope/telescope.nvim',
-      tag = '0.1.6',
       cmd = 'Telescope',
       keys = {
         { '<leader>ff', '<Cmd>Telescope find_files<CR>', desc = 'Find files' },
