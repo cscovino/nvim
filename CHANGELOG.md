@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.1.0](https://github.com/cscovino/nvim/compare/f868d91cb8b7a42021e1cd121a101ea38c61aefe..2.1.0) - 2026-03-04
+#### Continuous Integration
+- 👷 add explicit push step for realease workflow - ([f83f159](https://github.com/cscovino/nvim/commit/f83f159067e3c441c7886cdeb734987edfa57370)) - Carlos Scovino
+#### Features
+- 📦️ modernize plugin configuration and clean up deprecated plugins - ([4f01d4e](https://github.com/cscovino/nvim/commit/4f01d4ed103e018e84dd0c0f8eb28da1a8e8eef3)) - Carlos Scovino
+#### Miscellaneous Chores
+- 🔖 add readme and changelog files - ([f868d91](https://github.com/cscovino/nvim/commit/f868d91cb8b7a42021e1cd121a101ea38c61aefe)) - Carlos Scovino
+
+- - -
+
 ## [2.0.0](https://github.com/cscovino/nvim/compare/798e2d197088356f5db40fdf3b69a810b66785c4..2.0.0) - 2026-03-04
 #### Features
 - (**CopilotChat**) update and set custom config - ([24b19e1](https://github.com/cscovino/nvim/commit/24b19e1f48ace9478575f465c633b27e7c93bd3a)) - Carlos Scovino
