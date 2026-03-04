@@ -1,0 +1,8 @@
+from_latest_tag = true
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+repository = "nvim"
+owner = "cscovino"
