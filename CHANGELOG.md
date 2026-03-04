@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.2.2](https://github.com/cscovino/nvim/compare/ab7f2fa62332ec62a50b64944c470aa910453475..2.2.2) - 2026-03-04
+#### Bug Fixes
+- 🐛 go to definition mapping - ([ab7f2fa](https://github.com/cscovino/nvim/commit/ab7f2fa62332ec62a50b64944c470aa910453475)) - Carlos Scovino
+
+- - -
+
 ## [2.2.1](https://github.com/cscovino/nvim/compare/fba76583310df27d4849a219e0966e083a061dea..2.2.1) - 2026-03-04
 #### Bug Fixes
 - 🐛 checkhealth warnings - ([fba7658](https://github.com/cscovino/nvim/commit/fba76583310df27d4849a219e0966e083a061dea)) - Carlos Scovino
