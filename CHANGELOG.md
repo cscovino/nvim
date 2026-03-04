@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.2.3](https://github.com/cscovino/nvim/compare/4576d8cafadb6b4cf0cc0f17a487fdbb8c619d74..2.2.3) - 2026-03-04
+#### Bug Fixes
+- 🐛 mcphub plugin and border for floating windows - ([4576d8c](https://github.com/cscovino/nvim/commit/4576d8cafadb6b4cf0cc0f17a487fdbb8c619d74)) - Carlos Scovino
+
+- - -
+
 ## [2.2.2](https://github.com/cscovino/nvim/compare/ab7f2fa62332ec62a50b64944c470aa910453475..2.2.2) - 2026-03-04
 #### Bug Fixes
 - 🐛 go to definition mapping - ([ab7f2fa](https://github.com/cscovino/nvim/commit/ab7f2fa62332ec62a50b64944c470aa910453475)) - Carlos Scovino
