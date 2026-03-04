@@ -16,8 +16,13 @@ jobs:
           fetch-depth: 0
 
       - name: Bump version and create tag
+        id: release
         uses: cocogitto/cocogitto-action@v3
         with:
           release: true
           git-user: 'github-actions[bot]'
           git-user-email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Push changes and tags
+        if: steps.release.outputs.version != ''
+        run: git push && git push --tags
