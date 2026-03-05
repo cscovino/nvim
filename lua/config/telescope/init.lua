@@ -36,6 +36,7 @@ telescope.load_extension('fzf')
 telescope.load_extension('ui-select')
 telescope.load_extension('gitmoji')
 telescope.load_extension('conventional_commits')
+telescope.load_extension('noice')
 
 local function create_conventional_commit(opts)
   opts = opts or {}

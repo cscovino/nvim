@@ -112,6 +112,7 @@ require('lazy').setup({
         presets = {
           command_palette = true,
           long_message_to_split = true,
+          lsp_doc_border = true,
         },
       },
       dependencies = {
@@ -468,6 +469,7 @@ require('lazy').setup({
     },
     {
       'nvim-telescope/telescope.nvim',
+      event = 'VeryLazy',
       cmd = 'Telescope',
       keys = {
         { '<leader>ff', '<Cmd>Telescope find_files<CR>', desc = 'Find files' },
@@ -480,6 +482,7 @@ require('lazy').setup({
         { '<leader>dd', '<Cmd>Telescope diagnostics<CR>', desc = 'Diagnostics' },
         { '<leader>gr', '<Cmd>Telescope lsp_references<CR>', desc = 'LSP references' },
         { '<leader>ds', '<Cmd>Telescope lsp_document_symbols<CR>', desc = 'Document symbols' },
+        { '<leader>fn', '<Cmd>Telescope noice<CR>', desc = 'Notification history' },
         {
           'cc',
           function()
