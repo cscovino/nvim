@@ -181,6 +181,15 @@ require('lazy').setup({
     },
     { 'nvim-treesitter/nvim-treesitter-context', event = 'BufReadPost' },
     {
+      'MeanderingProgrammer/render-markdown.nvim',
+      ft = 'markdown',
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter',
+        'nvim-tree/nvim-web-devicons',
+      },
+      opts = {},
+    },
+    {
       'folke/twilight.nvim',
       cmd = 'Twilight',
       keys = {
