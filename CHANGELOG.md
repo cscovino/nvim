@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.4.0](https://github.com/cscovino/nvim/compare/f5df7a25b04bac0bb4c01ac1824e705e428d0825..2.4.0) - 2026-03-05
+#### Features
+- 📦️ add markdown render plugin - ([f5df7a2](https://github.com/cscovino/nvim/commit/f5df7a25b04bac0bb4c01ac1824e705e428d0825)) - Carlos Scovino
+
+- - -
+
 ## [2.3.0](https://github.com/cscovino/nvim/compare/50dc16eff4d7056b3939fb37194227597f992c7d..2.3.0) - 2026-03-05
 #### Features
 - ✨ add noice telescope extension and lsp doc border preset - ([50dc16e](https://github.com/cscovino/nvim/commit/50dc16eff4d7056b3939fb37194227597f992c7d)) - Carlos Scovino
