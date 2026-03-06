@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.5.0](https://github.com/cscovino/nvim/compare/f2401b9835726bbb9bcc936b6fdd4372774d3851..2.5.0) - 2026-03-06
+#### Bug Fixes
+- **(neotest)** 🐛 simplify jest command to use npx jest directly - ([ceab75c](https://github.com/cscovino/nvim/commit/ceab75cdbe6bf6c85f422a97e46f7e62a47719e6)) - Carlos Scovino
+#### Documentation
+- 📝 update the plugins and configs references - ([a4ff2e4](https://github.com/cscovino/nvim/commit/a4ff2e4466a5f3d767754c94b132f6ffad94d9c7)) - Carlos Scovino
+#### Features
+- **(lsp)** ✨ add eslint language server - ([f2401b9](https://github.com/cscovino/nvim/commit/f2401b9835726bbb9bcc936b6fdd4372774d3851)) - Carlos Scovino
+
+- - -
+
 ## [2.4.0](https://github.com/cscovino/nvim/compare/f5df7a25b04bac0bb4c01ac1824e705e428d0825..2.4.0) - 2026-03-05
 #### Features
 - 📦️ add markdown render plugin - ([f5df7a2](https://github.com/cscovino/nvim/commit/f5df7a25b04bac0bb4c01ac1824e705e428d0825)) - Carlos Scovino
