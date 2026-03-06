@@ -47,6 +47,7 @@ set.tabstop = 2
 set.termguicolors = true
 set.undodir = vim.fn.expand('~/.config/nvim/undodir')
 set.undofile = true
+set.signcolumn = 'yes'
 set.wrap = false
 
 set.foldmethod = 'expr'
