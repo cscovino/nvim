@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.6.0](https://github.com/cscovino/nvim/compare/1d3d84248baff122179409383a3a9ac2555d001d..2.6.0) - 2026-03-06
+#### Features
+- **(dap)** ✨ add debug adapter protocol for js/ts - ([1d3d842](https://github.com/cscovino/nvim/commit/1d3d84248baff122179409383a3a9ac2555d001d)) - Carlos Scovino
+
+- - -
+
 ## [2.5.0](https://github.com/cscovino/nvim/compare/f2401b9835726bbb9bcc936b6fdd4372774d3851..2.5.0) - 2026-03-06
 #### Bug Fixes
 - **(neotest)** 🐛 simplify jest command to use npx jest directly - ([ceab75c](https://github.com/cscovino/nvim/commit/ceab75cdbe6bf6c85f422a97e46f7e62a47719e6)) - Carlos Scovino
