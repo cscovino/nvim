@@ -5,7 +5,7 @@ Personal Neovim configuration written entirely in Lua. Uses [lazy.nvim](https://
 ## Structure
 
 ```
-init.lua                          # Entry point
+init.lua                          # Entry point (settings → mappings → lazy → colorscheme)
 lua/
 ├── settings/                     # Core options (indent, search, folds, undodir)
 ├── mappings/                     # Keymaps (leader: Space, localleader: \)
@@ -13,7 +13,7 @@ lua/
 ├── lsp/
 │   ├── language-servers.lua      # lspconfig for all servers
 │   └── nvim-cmp.lua              # Completion (nvim-cmp + LuaSnip + lspkind)
-└── config/<plugin>/init.lua      # Per-plugin configuration
+└── config/<plugin>/init.lua      # Per-plugin configuration (incl. color-scheme/)
 ```
 
 ## Plugins
@@ -28,7 +28,7 @@ lua/
 | nvim-tree | File explorer (floating window) |
 | noice + nvim-notify | Enhanced UI for messages, cmdline, and popups |
 | nvim-transparent | Transparent background |
-| indentLine | Indent guides |
+| indent-blankline | Indent guides |
 | nvim-colorizer | Inline color preview |
 | twilight | Dim inactive code |
 
@@ -39,12 +39,15 @@ lua/
 | treesitter | Syntax highlighting, folding, refactor, autotag |
 | telescope | Fuzzy finder (files, grep, buffers, git branches, diagnostics) |
 | nvim-surround | Surround text objects |
-| vim-commentary | Toggle comments |
-| lexima | Auto pairs |
-| spectre | Search and replace |
+| nvim-autopairs | Auto pairs |
+| flash.nvim | Quick navigation (`s` / `S`) |
+| grug-far | Search and replace |
+| mini.move | Move lines/selections |
 | undotree | Undo history |
+| trouble | Diagnostics list |
+| which-key | Keymap hints (`<leader>?` to show all) |
 | vim-tmux-navigator | Seamless tmux/nvim navigation |
-| floaterm | Floating terminal |
+| toggleterm | Floating terminal |
 | vim-be-good | Practice game |
 
 ### Git
@@ -54,6 +57,7 @@ lua/
 | vim-fugitive | Git commands |
 | git-blame | Inline git blame |
 | gitsigns | Git signs in gutter |
+| diffview | Side-by-side diff and file history |
 
 ### LSP & Completion
 
@@ -75,21 +79,28 @@ lua/
 | CopilotChat | AI chat (model: claude-opus-4.5) |
 | mcphub | MCP server integration |
 | rest.nvim | HTTP client |
-| neotest | Test runner (Go, Jest, Vitest) |
+| neotest | Test runner (Jest, Vitest) |
+| render-markdown | Markdown rendering in buffer |
 | pomo | Pomodoro timer |
 
 ## LSP Servers
 
-astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, vtsls
+Active: cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls
 
-## Formatters & Linters
+Inactive (commented out): astro, golangci_lint_ls, gopls
+
+## Formatters (conform.nvim)
 
 | Tool | Languages |
 |------|-----------|
 | stylua | Lua |
-| prettierd | JS/TS/CSS/HTML |
-| goimports_reviser + golines | Go |
-| golangci_lint | Go |
+| prettierd | JS/TS/JSX/TSX/CSS/SCSS/HTML/JSON/YAML/Markdown |
+
+## Linters (nvim-lint)
+
+| Tool | Languages |
+|------|-----------|
+| eslint (via LSP) | JS/TS |
 | glslc | GLSL |
 | yamllint | YAML |
 
@@ -102,12 +113,18 @@ Leader key is `<Space>`.
 | Key | Action |
 |-----|--------|
 | `<leader>w` | Save |
+| `<leader>W` | Save & quit |
 | `<leader>q` | Quit |
-| `<leader>wq` | Save & quit |
+| `<leader>Q` | Force quit |
 | `<leader>cl` | Clear search highlight |
-| `<leader>tt` | Open terminal tab |
+| `<leader>tt` | Toggle floating terminal |
 | `<leader>ca` | Code action |
 | `<leader>ut` | Undo tree |
+| `<leader>rd` | Reload file (discard changes) |
+| `<leader>rf` | Refresh file |
+| `<leader>rp` | Search and replace (grug-far) |
+| `<leader>tw` | Toggle Twilight |
+| `s` / `S` | Flash jump / treesitter |
 
 ### Navigation & Buffers
 
@@ -116,6 +133,8 @@ Leader key is `<Space>`.
 | `<leader>,` / `<leader>.` | Previous / next buffer |
 | `<leader>!` - `<leader>)` | Go to buffer 1-9 / last |
 | `<C-p>` | Pick buffer |
+| `<leader><` / `<leader>>` | Move buffer left / right |
+| `<leader>bp` | Pin buffer |
 | `<leader>bc` | Close buffer |
 | `<leader>abc` | Close all but current/pinned |
 
@@ -128,10 +147,12 @@ Leader key is `<Space>`.
 | `<leader>fb` | Buffers |
 | `<leader>fh` | Help tags |
 | `<leader>cs` | Color schemes |
+| `<leader>ch` | Command history |
 | `<leader>dd` | Diagnostics |
 | `<leader>gr` | LSP references |
 | `<leader>ds` | Document symbols |
 | `<leader>gc` | Git branches |
+| `<leader>fn` | Notification history (noice) |
 | `cc` | Conventional commit (type + gitmoji + scope + message) |
 
 ### Git (Fugitive)
@@ -143,7 +164,21 @@ Leader key is `<Space>`.
 | `<leader>gp` | Git push |
 | `<leader>gl` | Git pull |
 | `<leader>gdf` | Git diff split |
-| `<leader>gst` / `<leader>gsp` | Stash / stash pop |
+| `<leader>gS` / `<leader>gP` | Stash / stash pop |
+| `<leader>dv` | Diffview open |
+| `<leader>dh` | Diffview file history |
+
+### LSP
+
+| Key | Action |
+|-----|--------|
+| `gd` | Go to definition |
+| `<leader>D` | Type definition |
+| `<leader>rn` | Rename symbol |
+| `<leader>f` | Format buffer |
+| `<leader>e` | Diagnostic float |
+| `<leader>pd` / `<leader>nd` | Previous / next diagnostic |
+| `<leader>lc` | Diagnostic loclist |
 
 ### AI
 
@@ -153,7 +188,23 @@ Leader key is `<Space>`.
 | `<leader>prd` | Generate PR description |
 | `<leader>cmsg` | Generate commit message |
 
-### Testing
+### Diagnostics (Trouble)
+
+| Key | Action |
+|-----|--------|
+| `<leader>xx` | Toggle diagnostics |
+| `<leader>xd` | Buffer diagnostics |
+| `<leader>xl` | Location list |
+| `<leader>xq` | Quickfix list |
+
+### Sessions (persistence)
+
+| Key | Action |
+|-----|--------|
+| `<leader>ss` | Restore session |
+| `<leader>sd` | Stop session auto-save |
+
+### Testing (neotest)
 
 | Key | Action |
 |-----|--------|
@@ -177,6 +228,5 @@ nvim
 - Git
 - A [Nerd Font](https://www.nerdfonts.com/) for icons
 - ripgrep (for Telescope live grep)
-- Node.js (for prettierd, LSP servers)
-- Go (for Go tooling)
+- Node.js (for prettierd, ESLint, LSP servers)
 - stylua (for Lua formatting)

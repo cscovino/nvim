@@ -13,11 +13,11 @@ Entry point is `init.lua`, which requires modules in a specific order:
 1. **`lua/settings/`** - Core Neovim options (indentation, search, folds, undodir)
 2. **`lua/mappings/`** - All keymaps; leader is `<Space>`, localleader is `\`
 3. **`lua/plugin-manager/lazy/`** - lazy.nvim bootstrap and full plugin spec
-4. **`lua/lsp/`** - LSP configuration split into three files:
+4. **`lua/config/color-scheme/gruvbox`** - Color scheme setup (loaded after plugins)
+5. **`lua/lsp/`** - LSP configuration split into two files:
    - `language-servers.lua` - lspconfig setup for all servers, `on_attach` keymaps, diagnostic config
    - `nvim-cmp.lua` - Completion engine (nvim-cmp + LuaSnip + lspkind)
-   - `null-ls.lua` - Formatting (stylua, prettierd, goimports, golines) and diagnostics via none-ls; **format-on-save** is enabled
-5. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`
+6. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`
 
 ## Key Conventions
 
@@ -29,18 +29,48 @@ Entry point is `init.lua`, which requires modules in a specific order:
 
 ## LSP Servers
 
-Configured in `lua/lsp/language-servers.lua`: astro, cssls, dockerls, glsl_analyzer, golangci_lint_ls, gopls, html, jsonls, lua_ls, pyright, vtsls.
+Configured in `lua/lsp/language-servers.lua`: cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls.
 
-## Formatters/Linters (null-ls)
+Commented out (inactive): astro, golangci_lint_ls, gopls.
 
-stylua (Lua), prettierd (JS/TS/CSS/HTML), goimports_reviser + golines (Go), golangci_lint (Go), glslc (GLSL), yamllint (YAML).
+## Formatting (conform.nvim)
+
+Configured in `lua/config/conform/init.lua` with **format-on-save** enabled:
+
+- stylua (Lua)
+- prettierd (JS/TS/JSX/TSX/CSS/SCSS/HTML/JSON/YAML/Markdown)
+
+Commented out (inactive): astro (prettierd), Go (goimports_reviser + golines).
+
+## Linting (nvim-lint)
+
+Configured in `lua/config/lint/init.lua`, runs on BufWritePost/BufReadPost:
+
+- yamllint (YAML)
+- glslc (GLSL)
+
+Commented out (inactive): golangcilint (Go).
+
+JS/TS linting is handled by the eslint LSP server.
+
+## Testing (neotest)
+
+Configured in `lua/config/neotest/init.lua` with two adapters (order = priority):
+
+1. **neotest-vitest** — auto-detects vitest projects
+2. **neotest-jest** — runs `npx jest`, auto-detects `jest.config.*`
+
+Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>ts` (summary), `<leader>to` (output panel), `<leader>rt` (run nearest test).
 
 ## Notable Custom Behavior
 
 - **Conventional commits with gitmoji**: `cc` in normal mode opens a Telescope picker flow (commit type -> gitmoji -> scope -> message) defined in `lua/config/telescope/init.lua`
 - **CopilotChat**: configured with claude-opus-4.5 model, MCP hub integration, custom prompts for PR descriptions (`<leader>prd`) and commit messages (`<leader>cmsg`)
-- **NvimTree** opens automatically on VimEnter as a floating window
+- **NvimTree** as floating window with `<leader>nt`
 - **Barbar** buffer tabs with `<leader>,`/`.` for prev/next, `<leader>!`-`)` for direct goto
+- **Grug-far** for search and replace (`<leader>rp`)
+- **Flash.nvim** for quick navigation (`s` / `S`)
+- **Trouble** for diagnostics list (`<leader>xx`)
 
 ## Commands
 
