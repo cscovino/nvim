@@ -28,6 +28,7 @@ local servers = {
   -- 'astro',
   'cssls',
   'dockerls',
+  'eslint',
   'glsl_analyzer',
   -- 'golangci_lint_ls',
   -- 'gopls',
