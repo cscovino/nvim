@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.7.0](https://github.com/cscovino/nvim/compare/f04f8030a0771652ec8a4c3701b5c6076c4dece9..2.7.0) - 2026-03-08
+#### Features
+- **(term)** ✨ use built-in buffer tab and add buffer rename keymap - ([f04f803](https://github.com/cscovino/nvim/commit/f04f8030a0771652ec8a4c3701b5c6076c4dece9)) - Carlos Scovino
+
+- - -
+
 ## [2.6.0](https://github.com/cscovino/nvim/compare/1d3d84248baff122179409383a3a9ac2555d001d..2.6.0) - 2026-03-06
 #### Features
 - **(dap)** ✨ add debug adapter protocol for js/ts - ([1d3d842](https://github.com/cscovino/nvim/commit/1d3d84248baff122179409383a3a9ac2555d001d)) - Carlos Scovino
