@@ -47,7 +47,7 @@ lua/
 | trouble | Diagnostics list |
 | which-key | Keymap hints (`<leader>?` to show all) |
 | vim-tmux-navigator | Seamless tmux/nvim navigation |
-| toggleterm | Floating terminal |
+| *(built-in)* | Terminal in buffer tab (`<leader>tt` toggle) |
 | vim-be-good | Practice game |
 
 ### Git
@@ -117,7 +117,7 @@ Leader key is `<Space>`.
 | `<leader>q` | Quit |
 | `<leader>Q` | Force quit |
 | `<leader>cl` | Clear search highlight |
-| `<leader>tt` | Toggle floating terminal |
+| `<leader>tt` | Toggle terminal (buffer tab) |
 | `<leader>ca` | Code action |
 | `<leader>ut` | Undo tree |
 | `<leader>rd` | Reload file (discard changes) |
@@ -137,6 +137,7 @@ Leader key is `<Space>`.
 | `<leader>bp` | Pin buffer |
 | `<leader>bc` | Close buffer |
 | `<leader>abc` | Close all but current/pinned |
+| `<leader>bn` | Rename buffer tab |
 
 ### Telescope
 

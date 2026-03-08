@@ -73,18 +73,6 @@ require('lazy').setup({
         indent = { char = { '|', '¦', '┆', '┊' } },
       },
     },
-    {
-      'akinsho/toggleterm.nvim',
-      version = '*',
-      cmd = 'ToggleTerm',
-      keys = {
-        { '<leader>tt', '<Cmd>ToggleTerm direction=float<CR>', desc = 'Toggle terminal' },
-      },
-      opts = {
-        open_mapping = false,
-        direction = 'float',
-      },
-    },
     { 'NvChad/nvim-colorizer.lua', event = 'BufReadPost', opts = {} },
     {
       'nvim-lualine/lualine.nvim',
