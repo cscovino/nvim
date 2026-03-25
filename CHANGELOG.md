@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.8.0](https://github.com/cscovino/nvim/compare/ee31240fe5bd32c28bd4f36a4896734bc53dbfaa..2.8.0) - 2026-03-25
+#### Bug Fixes
+- **(flash)** 🐛 remove visual mode from flash treesitter keymap - ([b0117a6](https://github.com/cscovino/nvim/commit/b0117a6bfdfb352a4f1ee6fc25603e170b6df4a3)) - Carlos Scovino
+#### Features
+- **(lualine)** ✨ show relative file path in statusline - ([00db5ab](https://github.com/cscovino/nvim/commit/00db5abdf9f9e83a9acb25381f794bf20b9ac3d8)) - Carlos Scovino
+- **(mappings)** ✨ support multiple terminal buffers and add new term keymap - ([ee31240](https://github.com/cscovino/nvim/commit/ee31240fe5bd32c28bd4f36a4896734bc53dbfaa)) - Carlos Scovino
+
+- - -
+
 ## [2.7.0](https://github.com/cscovino/nvim/compare/f04f8030a0771652ec8a4c3701b5c6076c4dece9..2.7.0) - 2026-03-08
 #### Features
 - **(term)** ✨ use built-in buffer tab and add buffer rename keymap - ([f04f803](https://github.com/cscovino/nvim/commit/f04f8030a0771652ec8a4c3701b5c6076c4dece9)) - Carlos Scovino
