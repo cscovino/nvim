@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.12.0](https://github.com/cscovino/nvim/compare/3b20b07f96bf6094e842c0c49c74a2bf1cd39073..2.12.0) - 2026-05-18
+#### Features
+- ♻️ change exit terminal mode mapping - ([3b20b07](https://github.com/cscovino/nvim/commit/3b20b07f96bf6094e842c0c49c74a2bf1cd39073)) - Carlos Scovino
+
+- - -
+
 ## [2.11.0](https://github.com/cscovino/nvim/compare/ae6de2ab7a5ebcc176b66fa34c09c560af39ba98..2.11.0) - 2026-05-18
 #### Features
 - ✨ add claude code plugin - ([ae6de2a](https://github.com/cscovino/nvim/commit/ae6de2ab7a5ebcc176b66fa34c09c560af39ba98)) - Carlos Scovino
