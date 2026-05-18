@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.11.0](https://github.com/cscovino/nvim/compare/ae6de2ab7a5ebcc176b66fa34c09c560af39ba98..2.11.0) - 2026-05-18
+#### Features
+- ✨ add claude code plugin - ([ae6de2a](https://github.com/cscovino/nvim/commit/ae6de2ab7a5ebcc176b66fa34c09c560af39ba98)) - Carlos Scovino
+
+- - -
+
 ## [2.10.0](https://github.com/cscovino/nvim/compare/39469d745fe180ede89a31368167d778a06c92c5..2.10.0) - 2026-05-18
 #### Features
 - ✨ add opencode plugin - ([39469d7](https://github.com/cscovino/nvim/commit/39469d745fe180ede89a31368167d778a06c92c5)) - Carlos Scovino
