@@ -78,6 +78,8 @@ lua/
 | copilot.vim     | GitHub Copilot (accept: `<S-Tab><S-Tab>`) |
 | codecompanion   | AI chat + inline edits (adapter: Copilot, model: claude-opus-4.6) |
 | opencode.nvim   | Bridge to the `opencode` CLI agent        |
+| claudecode.nvim | Bridge to the `claude` CLI (Anthropic Claude Code) |
+| snacks.nvim     | Terminal/input modules (claudecode dep)   |
 | mcphub          | MCP server integration                    |
 | rest.nvim       | HTTP client                               |
 | neotest         | Test runner (Jest, Vitest)                |
@@ -137,7 +139,7 @@ Leader key is `<Space>`.
 | `<leader><` / `<leader>>` | Move buffer left / right     |
 | `<leader>bp`              | Pin buffer                   |
 | `<leader>bc`              | Close buffer                 |
-| `<leader>abc`             | Close all but current/pinned |
+| `<leader>bo`              | Close all but current/pinned |
 | `<leader>bn`              | Rename buffer tab            |
 
 ### Telescope
@@ -194,6 +196,16 @@ Leader key is `<Space>`.
 | `<leader>ot`  | n / t  | Toggle OpenCode terminal              |
 | `<leader>oa`  | n / x  | Ask OpenCode about current line/selection |
 | `<leader>op`  | n / x  | OpenCode prompts picker               |
+| `<leader>ac`  | n      | Toggle Claude Code terminal           |
+| `<leader>af`  | n      | Focus Claude Code                     |
+| `<leader>ar`  | n      | Resume Claude session                 |
+| `<leader>aC`  | n      | Continue Claude session               |
+| `<leader>am`  | n      | Select Claude model                   |
+| `<leader>ab`  | n      | Add current buffer to Claude          |
+| `<leader>as`  | v      | Send selection to Claude              |
+| `<leader>as`  | n      | Add file from tree (file-tree ft only) |
+| `<leader>aa`  | n      | Accept Claude diff                    |
+| `<leader>ad`  | n      | Deny Claude diff                      |
 
 Inside the CodeCompanion chat buffer: `ga` change adapter, `gM` change model, `gS` change system prompt, `gx` clear, `?` show all keymaps.
 

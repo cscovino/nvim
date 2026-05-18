@@ -99,6 +99,41 @@ require('lazy').setup({
       end,
     },
 
+    -- Snacks (terminal/input modules used by claudecode.nvim)
+    {
+      'folke/snacks.nvim',
+      priority = 1000,
+      lazy = false,
+      opts = {
+        input = { enabled = true },
+        terminal = {},
+      },
+    },
+
+    -- Claude Code (Anthropic CLI bridge)
+    {
+      'coder/claudecode.nvim',
+      dependencies = { 'folke/snacks.nvim' },
+      config = true,
+      keys = {
+        { '<leader>ac', '<Cmd>ClaudeCode<CR>', desc = 'Toggle Claude Code' },
+        { '<leader>af', '<Cmd>ClaudeCodeFocus<CR>', desc = 'Focus Claude' },
+        { '<leader>ar', '<Cmd>ClaudeCode --resume<CR>', desc = 'Resume Claude' },
+        { '<leader>aC', '<Cmd>ClaudeCode --continue<CR>', desc = 'Continue Claude' },
+        { '<leader>am', '<Cmd>ClaudeCodeSelectModel<CR>', desc = 'Select Claude model' },
+        { '<leader>ab', '<Cmd>ClaudeCodeAdd %<CR>', desc = 'Add current buffer' },
+        { '<leader>as', '<Cmd>ClaudeCodeSend<CR>', mode = 'v', desc = 'Send selection to Claude' },
+        {
+          '<leader>as',
+          '<Cmd>ClaudeCodeTreeAdd<CR>',
+          desc = 'Add file from tree',
+          ft = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw' },
+        },
+        { '<leader>aa', '<Cmd>ClaudeCodeDiffAccept<CR>', desc = 'Accept diff' },
+        { '<leader>ad', '<Cmd>ClaudeCodeDiffDeny<CR>', desc = 'Deny diff' },
+      },
+    },
+
     -- Game plugins
     { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 
@@ -183,7 +218,7 @@ require('lazy').setup({
         { '<leader>)', '<Cmd>BufferLast<CR>', desc = 'Buffer last' },
         { '<leader>bp', '<Cmd>BufferPin<CR>', desc = 'Buffer pin' },
         { '<leader>bc', '<Cmd>BufferClose<CR>', desc = 'Buffer close' },
-        { '<leader>abc', '<Cmd>BufferCloseAllButCurrentOrPinned<CR>', desc = 'Close other buffers' },
+        { '<leader>bo', '<Cmd>BufferCloseAllButCurrentOrPinned<CR>', desc = 'Close other buffers' },
         { '<C-p>', '<Cmd>BufferPick<CR>', desc = 'Buffer pick' },
         { '<leader>bb', '<Cmd>BufferOrderByBufferNumber<CR>', desc = 'Order by number' },
         { '<leader>bd', '<Cmd>BufferOrderByDirectory<CR>', desc = 'Order by directory' },
@@ -569,6 +604,7 @@ require('lazy').setup({
             end,
             desc = 'Show all keymaps',
           },
+          { '<leader>a', group = 'AI/Claude' },
           { '<leader>b', group = 'Buffer' },
           { '<leader>c', group = 'Code/Copilot' },
           { '<leader>d', group = 'Debug/Diff/Diagnostics' },
