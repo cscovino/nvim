@@ -50,6 +50,42 @@ require('lazy').setup({
       end,
     },
 
+    -- OpenCode (AI coding agent — external CLI bridge)
+    {
+      'nickjvandyke/opencode.nvim',
+      version = '*',
+      keys = {
+        {
+          '<leader>ot',
+          function()
+            require('opencode').toggle()
+          end,
+          mode = { 'n', 't' },
+          desc = 'OpenCode toggle',
+        },
+        {
+          '<leader>oa',
+          function()
+            require('opencode').ask('@this: ', { submit = true })
+          end,
+          mode = { 'n', 'x' },
+          desc = 'OpenCode ask',
+        },
+        {
+          '<leader>op',
+          function()
+            require('opencode').select()
+          end,
+          mode = { 'n', 'x' },
+          desc = 'OpenCode prompts',
+        },
+      },
+      config = function()
+        vim.g.opencode_opts = {}
+        vim.o.autoread = true
+      end,
+    },
+
     -- MCP Hub
     {
       'ravitemer/mcphub.nvim',
@@ -539,6 +575,7 @@ require('lazy').setup({
           { '<leader>f', group = 'Find/Format' },
           { '<leader>g', group = 'Git' },
           { '<leader>n', group = 'NvimTree/Navigate' },
+          { '<leader>o', group = 'OpenCode' },
           { '<leader>p', group = 'PR/Diagnostic' },
           { '<leader>r', group = 'Run/Replace/Rename' },
           { '<leader>s', group = 'Session' },

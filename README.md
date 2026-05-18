@@ -77,6 +77,7 @@ lua/
 | --------------- | ----------------------------------------- |
 | copilot.vim     | GitHub Copilot (accept: `<S-Tab><S-Tab>`) |
 | codecompanion   | AI chat + inline edits (adapter: Copilot, model: claude-opus-4.6) |
+| opencode.nvim   | Bridge to the `opencode` CLI agent        |
 | mcphub          | MCP server integration                    |
 | rest.nvim       | HTTP client                               |
 | neotest         | Test runner (Jest, Vitest)                |
@@ -190,8 +191,11 @@ Leader key is `<Space>`.
 | `<leader>ci`  | v      | Inline edit on visual selection       |
 | `<leader>prd` | n      | Generate PR description (slash `/prd`) |
 | `<leader>cmg` | n      | Generate commit message (slash `/cmg`) |
+| `<leader>ot`  | n / t  | Toggle OpenCode terminal              |
+| `<leader>oa`  | n / x  | Ask OpenCode about current line/selection |
+| `<leader>op`  | n / x  | OpenCode prompts picker               |
 
-Inside the chat buffer: `ga` change adapter, `gM` change model, `gS` change system prompt, `gx` clear, `?` show all keymaps.
+Inside the CodeCompanion chat buffer: `ga` change adapter, `gM` change model, `gS` change system prompt, `gx` clear, `?` show all keymaps.
 
 ### Diagnostics (Trouble)
 
