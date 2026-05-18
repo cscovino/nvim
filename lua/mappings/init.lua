@@ -45,7 +45,7 @@ end, { desc = 'New terminal' })
 map('n', '<leader>cl', '<Cmd>noh<CR>', { desc = 'Clear highlights' })
 map('n', '<leader>rd', '<Cmd>e!<CR>', { desc = 'Reload file (discard)' })
 map('n', '<leader>rf', '<Cmd>e<CR>', { desc = 'Refresh file' })
-map('t', '<Esc><Esc>', '<C-\\><C-N>', { desc = 'Exit terminal mode' })
+map('t', '<C-x>', '<C-\\><C-N>', { desc = 'Exit terminal mode' })
 
 map('n', '<leader>bn', function()
   vim.ui.input({ prompt = 'Buffer name: ' }, function(name)
