@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.1.0](https://github.com/cscovino/nvim/compare/d0ad9fa9d19efbe29335625ec7910c0252a89fc1..3.1.0) - 2026-05-18
+#### Features
+- **(codecompanion)** 💬 add background notification - ([d0ad9fa](https://github.com/cscovino/nvim/commit/d0ad9fa9d19efbe29335625ec7910c0252a89fc1)) - Carlos Scovino
+
+- - -
+
 ## [3.0.0](https://github.com/cscovino/nvim/compare/1a4702369badec8e7370f58b361119080b70a6c3..3.0.0) - 2026-05-18
 #### Refactoring
 - ♻️ consolidate AI plugins into CodeCompanion with CLI bridge - ([1a47023](https://github.com/cscovino/nvim/commit/1a4702369badec8e7370f58b361119080b70a6c3)) - Carlos Scovino
