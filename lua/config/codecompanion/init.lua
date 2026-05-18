@@ -147,3 +147,5 @@ require('codecompanion').setup({
     },
   },
 })
+
+require('config.codecompanion.notifier').setup()

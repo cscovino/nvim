@@ -1,6 +1,7 @@
 local PomoNotifier = {}
 local util = require('pomo.util')
 local Popup = require('nui.popup')
+local notifier = require('utils.notifier')
 
 PomoNotifier.new = function(timer, opts)
   local self = setmetatable({}, { __index = PomoNotifier })
@@ -28,23 +29,12 @@ PomoNotifier.new = function(timer, opts)
 end
 
 PomoNotifier.start = function(self)
+  local message = string.format('%s started for %s', self.timer.name, util.format_time(self.timer.time_limit))
   if string.match(self.timer.name, 'Break') then
     self.popup:mount()
-    os.execute(
-      string.format(
-        [[terminal-notifier -title "Pomodoro BREAK! 🍅" -message "%s started for %s" -sound Sosumi]],
-        self.timer.name,
-        util.format_time(self.timer.time_limit)
-      )
-    )
+    notifier.notify({ title = 'Pomodoro BREAK! 🍅', message = message, sound = 'Sosumi' })
   else
-    os.execute(
-      string.format(
-        [[terminal-notifier -title "Pomodoro WORK 🙁" -message "%s started for %s" -sound Ping]],
-        self.timer.name,
-        util.format_time(self.timer.time_limit)
-      )
-    )
+    notifier.notify({ title = 'Pomodoro WORK 🙁', message = message, sound = 'Ping' })
     vim.notify(string.format('Starting %s, for %ds', self.timer.name, self.timer.time_limit))
   end
 end
