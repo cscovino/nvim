@@ -27,17 +27,50 @@ require('lazy').setup({
     {
       'olimorris/codecompanion.nvim',
       version = '^19.0.0',
-      cmd = { 'CodeCompanion', 'CodeCompanionChat', 'CodeCompanionActions', 'CodeCompanionCmd' },
+      cmd = {
+        'CodeCompanion',
+        'CodeCompanionChat',
+        'CodeCompanionActions',
+        'CodeCompanionCmd',
+        'CodeCompanionCLI',
+      },
       keys = {
-        { '<leader>cp', '<Cmd>CodeCompanionChat Toggle<CR>', desc = 'CodeCompanion chat' },
-        { '<leader>co', '<Cmd>CodeCompanionActions<CR>', desc = 'CodeCompanion actions' },
-        { '<leader>prd', '<Cmd>CodeCompanion /prd<CR>', desc = 'PR Description' },
-        { '<leader>cmg', '<Cmd>CodeCompanion /cmg<CR>', desc = 'Commit Message' },
+        { '<leader>ac', '<Cmd>CodeCompanionChat Toggle<CR>', desc = 'Agent chat' },
+        { '<leader>aa', '<Cmd>CodeCompanionActions<CR>', desc = 'Agent actions' },
+        { '<leader>apd', '<Cmd>CodeCompanion /prd<CR>', desc = 'Agent PR description' },
+        { '<leader>amg', '<Cmd>CodeCompanion /cmg<CR>', desc = 'Agent commit message' },
         {
-          '<leader>ci',
+          '<leader>ai',
           '<Cmd>CodeCompanion<CR>',
           mode = { 'v' },
-          desc = 'CodeCompanion inline (visual)',
+          desc = 'Agent inline (visual)',
+        },
+        {
+          '<leader>at',
+          function()
+            local agents = vim.tbl_keys(require('codecompanion.config').interactions.cli.agents)
+            table.sort(agents)
+            vim.ui.select(agents, { prompt = 'CodeCompanion CLI agent:' }, function(choice)
+              if not choice then
+                return
+              end
+              local cli = require('codecompanion.interactions.cli')
+              local existing = cli.find_by_agent(choice)
+              if existing then
+                if existing.ui:is_visible() then
+                  existing.ui:hide()
+                else
+                  existing.ui:open()
+                end
+                return
+              end
+              local instance = cli.create({ agent = choice })
+              if instance then
+                instance.ui:open()
+              end
+            end)
+          end,
+          desc = 'Agent toggle CLI (pick agent)',
         },
       },
       dependencies = {
@@ -47,42 +80,6 @@ require('lazy').setup({
       },
       config = function()
         require('config.codecompanion')
-      end,
-    },
-
-    -- OpenCode (AI coding agent — external CLI bridge)
-    {
-      'nickjvandyke/opencode.nvim',
-      version = '*',
-      keys = {
-        {
-          '<leader>ot',
-          function()
-            require('opencode').toggle()
-          end,
-          mode = { 'n', 't' },
-          desc = 'OpenCode toggle',
-        },
-        {
-          '<leader>oa',
-          function()
-            require('opencode').ask('@this: ', { submit = true })
-          end,
-          mode = { 'n', 'x' },
-          desc = 'OpenCode ask',
-        },
-        {
-          '<leader>op',
-          function()
-            require('opencode').select()
-          end,
-          mode = { 'n', 'x' },
-          desc = 'OpenCode prompts',
-        },
-      },
-      config = function()
-        vim.g.opencode_opts = {}
-        vim.o.autoread = true
       end,
     },
 
@@ -97,41 +94,6 @@ require('lazy').setup({
       config = function()
         require('config.mcp-hub')
       end,
-    },
-
-    -- Snacks (terminal/input modules used by claudecode.nvim)
-    {
-      'folke/snacks.nvim',
-      priority = 1000,
-      lazy = false,
-      opts = {
-        input = { enabled = true },
-        terminal = {},
-      },
-    },
-
-    -- Claude Code (Anthropic CLI bridge)
-    {
-      'coder/claudecode.nvim',
-      dependencies = { 'folke/snacks.nvim' },
-      config = true,
-      keys = {
-        { '<leader>ac', '<Cmd>ClaudeCode<CR>', desc = 'Toggle Claude Code' },
-        { '<leader>af', '<Cmd>ClaudeCodeFocus<CR>', desc = 'Focus Claude' },
-        { '<leader>ar', '<Cmd>ClaudeCode --resume<CR>', desc = 'Resume Claude' },
-        { '<leader>aC', '<Cmd>ClaudeCode --continue<CR>', desc = 'Continue Claude' },
-        { '<leader>am', '<Cmd>ClaudeCodeSelectModel<CR>', desc = 'Select Claude model' },
-        { '<leader>ab', '<Cmd>ClaudeCodeAdd %<CR>', desc = 'Add current buffer' },
-        { '<leader>as', '<Cmd>ClaudeCodeSend<CR>', mode = 'v', desc = 'Send selection to Claude' },
-        {
-          '<leader>as',
-          '<Cmd>ClaudeCodeTreeAdd<CR>',
-          desc = 'Add file from tree',
-          ft = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw' },
-        },
-        { '<leader>aa', '<Cmd>ClaudeCodeDiffAccept<CR>', desc = 'Accept diff' },
-        { '<leader>ad', '<Cmd>ClaudeCodeDiffDeny<CR>', desc = 'Deny diff' },
-      },
     },
 
     -- Game plugins
@@ -604,14 +566,13 @@ require('lazy').setup({
             end,
             desc = 'Show all keymaps',
           },
-          { '<leader>a', group = 'AI/Claude' },
+          { '<leader>a', group = 'AI' },
           { '<leader>b', group = 'Buffer' },
-          { '<leader>c', group = 'Code/Copilot' },
+          { '<leader>c', group = 'Code' },
           { '<leader>d', group = 'Debug/Diff/Diagnostics' },
           { '<leader>f', group = 'Find/Format' },
           { '<leader>g', group = 'Git' },
           { '<leader>n', group = 'NvimTree/Navigate' },
-          { '<leader>o', group = 'OpenCode' },
           { '<leader>p', group = 'PR/Diagnostic' },
           { '<leader>r', group = 'Run/Replace/Rename' },
           { '<leader>s', group = 'Session' },

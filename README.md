@@ -73,18 +73,17 @@ lua/
 
 ### AI & Tools
 
-| Plugin          | Purpose                                   |
-| --------------- | ----------------------------------------- |
-| copilot.vim     | GitHub Copilot (accept: `<S-Tab><S-Tab>`) |
-| codecompanion   | AI chat + inline edits (adapter: Copilot, model: claude-opus-4.6) |
-| opencode.nvim   | Bridge to the `opencode` CLI agent        |
-| claudecode.nvim | Bridge to the `claude` CLI (Anthropic Claude Code) |
-| snacks.nvim     | Terminal/input modules (claudecode dep)   |
-| mcphub          | MCP server integration                    |
-| rest.nvim       | HTTP client                               |
-| neotest         | Test runner (Jest, Vitest)                |
-| render-markdown | Markdown rendering in buffer              |
-| pomo            | Pomodoro timer                            |
+| Plugin          | Purpose                                                                                |
+| --------------- | -------------------------------------------------------------------------------------- |
+| copilot.vim     | GitHub Copilot (accept: `<S-Tab><S-Tab>`)                                              |
+| codecompanion   | AI chat + inline edits + CLI bridge (adapter: Copilot, model: claude-opus-4.6)         |
+| mcphub          | MCP server integration                                                                 |
+| rest.nvim       | HTTP client                                                                            |
+| neotest         | Test runner (Jest, Vitest)                                                             |
+| render-markdown | Markdown rendering in buffer                                                           |
+| pomo            | Pomodoro timer                                                                         |
+
+CodeCompanion also exposes `:CodeCompanionCLI`, an ACP bridge to external CLI agents. Two agents are wired up out of the box: `claude_code` (the `claude` CLI, default) and `opencode` (the `opencode` CLI). Pick per command with `:CodeCompanionCLI agent=<name>`.
 
 ## LSP Servers
 
@@ -186,28 +185,18 @@ Leader key is `<Space>`.
 
 ### AI
 
-| Key           | Mode   | Action                                |
-| ------------- | ------ | ------------------------------------- |
-| `<leader>cp`  | n      | Toggle CodeCompanion chat             |
-| `<leader>co`  | n      | CodeCompanion Actions palette         |
-| `<leader>ci`  | v      | Inline edit on visual selection       |
-| `<leader>prd` | n      | Generate PR description (slash `/prd`) |
-| `<leader>cmg` | n      | Generate commit message (slash `/cmg`) |
-| `<leader>ot`  | n / t  | Toggle OpenCode terminal              |
-| `<leader>oa`  | n / x  | Ask OpenCode about current line/selection |
-| `<leader>op`  | n / x  | OpenCode prompts picker               |
-| `<leader>ac`  | n      | Toggle Claude Code terminal           |
-| `<leader>af`  | n      | Focus Claude Code                     |
-| `<leader>ar`  | n      | Resume Claude session                 |
-| `<leader>aC`  | n      | Continue Claude session               |
-| `<leader>am`  | n      | Select Claude model                   |
-| `<leader>ab`  | n      | Add current buffer to Claude          |
-| `<leader>as`  | v      | Send selection to Claude              |
-| `<leader>as`  | n      | Add file from tree (file-tree ft only) |
-| `<leader>aa`  | n      | Accept Claude diff                    |
-| `<leader>ad`  | n      | Deny Claude diff                      |
+All CodeCompanion mappings live under `<leader>a` (group: "AI").
 
-Inside the CodeCompanion chat buffer: `ga` change adapter, `gM` change model, `gS` change system prompt, `gx` clear, `?` show all keymaps.
+| Key           | Mode | Action                                                |
+| ------------- | ---- | ----------------------------------------------------- |
+| `<leader>ac`  | n    | Toggle CodeCompanion chat                             |
+| `<leader>aa`  | n    | CodeCompanion actions palette                         |
+| `<leader>ai`  | v    | Inline edit on visual selection                       |
+| `<leader>at`  | n    | Toggle CodeCompanion CLI (picks agent via `vim.ui.select`) |
+| `<leader>amg` | n    | Generate commit message (slash `/cmg`)                |
+| `<leader>apd` | n    | Generate PR description (slash `/prd`)                |
+
+Inside the CodeCompanion chat buffer: `ga` change adapter + model, `gs` toggle system prompt, `gx` clear messages, `gd` debug info (current adapter/model), `?` show all keymaps.
 
 ### Diagnostics (Trouble)
 

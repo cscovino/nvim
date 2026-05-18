@@ -30,7 +30,7 @@ require('codecompanion').setup({
     },
   },
 
-  strategies = {
+  interactions = {
     chat = {
       adapter = 'copilot',
       keymaps = {
@@ -44,6 +44,23 @@ require('codecompanion').setup({
     },
     inline = { adapter = 'copilot' },
     cmd = { adapter = 'copilot' },
+    cli = {
+      agent = 'claude_code',
+      agents = {
+        claude_code = {
+          cmd = 'claude',
+          args = {},
+          description = 'Claude Code CLI',
+          provider = 'terminal',
+        },
+        opencode = {
+          cmd = 'opencode',
+          args = {},
+          description = 'OpenCode CLI',
+          provider = 'terminal',
+        },
+      },
+    },
   },
 
   prompt_library = {
@@ -128,16 +145,5 @@ require('codecompanion').setup({
     diff = {
       provider = 'default',
     },
-  },
-
-  opts = {
-    log_level = 'ERROR',
-    system_prompt = function(opts)
-      local default = require('codecompanion.config').config.opts.system_prompt(opts)
-      return default
-        .. '\nYou are integrated into Neovim. Use files in the current working directory and subdirectories to answer questions.'
-        .. '\nDo not print your thoughts, only the final answer, unless I ask for them explicitly.'
-        .. '\nDo not print the content of files; use them to answer the question unless I ask explicitly.'
-    end,
   },
 })
