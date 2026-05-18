@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [2.9.0](https://github.com/cscovino/nvim/compare/0c61026d5f96110196f427acc9054e18ee401338..2.9.0) - 2026-05-18
+#### Features
+- ✨ replace CopilotChat with CodeCompanion - ([0c61026](https://github.com/cscovino/nvim/commit/0c61026d5f96110196f427acc9054e18ee401338)) - Carlos Scovino
+
+- - -
+
 ## [2.8.0](https://github.com/cscovino/nvim/compare/ee31240fe5bd32c28bd4f36a4896734bc53dbfaa..2.8.0) - 2026-03-25
 #### Bug Fixes
 - **(flash)** 🐛 remove visual mode from flash treesitter keymap - ([b0117a6](https://github.com/cscovino/nvim/commit/b0117a6bfdfb352a4f1ee6fc25603e170b6df4a3)) - Carlos Scovino
