@@ -65,7 +65,7 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 ## Notable Custom Behavior
 
 - **Conventional commits with gitmoji**: `cc` in normal mode opens a Telescope picker flow (commit type -> gitmoji -> scope -> message) defined in `lua/config/telescope/init.lua`
-- **CopilotChat**: configured with claude-opus-4.5 model, MCP hub integration, custom prompts for PR descriptions (`<leader>prd`) and commit messages (`<leader>cmsg`)
+- **CodeCompanion** (`olimorris/codecompanion.nvim`): configured with the Copilot adapter (model: `claude-opus-4.6`), MCP hub integration, and prompt-library slash commands for PR descriptions (`<leader>prd` → `/prd`) and commit messages (`<leader>cmg` → `/cmg`). Chat opens as a vertical split (`<leader>cp`); inline edit on visual selection (`<leader>ci`); actions palette (`<leader>co`). Inside the chat buffer use `ga` to change adapter and `gM` to change model.
 - **NvimTree** as floating window with `<leader>nt`
 - **Barbar** buffer tabs with `<leader>,`/`.` for prev/next, `<leader>!`-`)` for direct goto, `<leader>bn` to rename a buffer tab
 - **Grug-far** for search and replace (`<leader>rp`)

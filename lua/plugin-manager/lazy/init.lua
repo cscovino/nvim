@@ -25,20 +25,28 @@ require('lazy').setup({
       end,
     },
     {
-      'CopilotC-Nvim/CopilotChat.nvim',
-      cmd = 'CopilotChat',
+      'olimorris/codecompanion.nvim',
+      version = '^19.0.0',
+      cmd = { 'CodeCompanion', 'CodeCompanionChat', 'CodeCompanionActions', 'CodeCompanionCmd' },
       keys = {
-        { '<leader>cp', '<Cmd>CopilotChat<CR>', desc = 'CopilotChat' },
-        { '<leader>prd', desc = 'PR Description' },
-        { '<leader>cmsg', desc = 'Commit Message' },
+        { '<leader>cp', '<Cmd>CodeCompanionChat Toggle<CR>', desc = 'CodeCompanion chat' },
+        { '<leader>co', '<Cmd>CodeCompanionActions<CR>', desc = 'CodeCompanion actions' },
+        { '<leader>prd', '<Cmd>CodeCompanion /prd<CR>', desc = 'PR Description' },
+        { '<leader>cmg', '<Cmd>CodeCompanion /cmg<CR>', desc = 'Commit Message' },
+        {
+          '<leader>ci',
+          '<Cmd>CodeCompanion<CR>',
+          mode = { 'v' },
+          desc = 'CodeCompanion inline (visual)',
+        },
       },
       dependencies = {
         { 'github/copilot.vim' },
         { 'nvim-lua/plenary.nvim', branch = 'master' },
+        'nvim-treesitter/nvim-treesitter',
       },
-      build = 'make tiktoken',
       config = function()
-        require('config.copilot-chat')
+        require('config.codecompanion')
       end,
     },
 
@@ -167,15 +175,45 @@ require('lazy').setup({
       event = 'BufReadPost',
       opts = {},
     },
-    { 'nvim-treesitter/nvim-treesitter-context', event = 'BufReadPost' },
+    {
+      'nvim-treesitter/nvim-treesitter-context',
+      event = 'BufReadPost',
+      keys = {
+        {
+          '<leader>ct',
+          function()
+            local ok, tsc = pcall(require, 'treesitter-context')
+            if ok then
+              tsc.toggle()
+            end
+          end,
+          desc = 'Toggle treesitter context',
+        },
+        {
+          '<leader>cml',
+          function()
+            vim.ui.input({ prompt = 'Context max_lines: ' }, function(input)
+              local n = tonumber(input)
+              if n and n >= 1 then
+                require('treesitter-context.config').update({ max_lines = n })
+                vim.notify('Context max_lines set to ' .. n)
+              end
+            end)
+          end,
+          desc = 'Set context max lines',
+        },
+      },
+    },
     {
       'MeanderingProgrammer/render-markdown.nvim',
-      ft = 'markdown',
+      ft = { 'markdown', 'codecompanion' },
       dependencies = {
         'nvim-treesitter/nvim-treesitter',
         'nvim-tree/nvim-web-devicons',
       },
-      opts = {},
+      opts = {
+        file_types = { 'markdown', 'codecompanion' },
+      },
     },
     {
       'folke/twilight.nvim',
@@ -281,16 +319,77 @@ require('lazy').setup({
       'mfussenegger/nvim-dap',
       enabled = true,
       keys = {
-        { '<leader>db', function() require('dap').toggle_breakpoint() end, desc = 'Toggle breakpoint' },
-        { '<leader>dB', function() require('dap').set_breakpoint(vim.fn.input('Condition: ')) end, desc = 'Conditional breakpoint' },
-        { '<leader>dc', function() require('dap').continue() end, desc = 'Continue / Start' },
-        { '<leader>di', function() require('dap').step_into() end, desc = 'Step into' },
-        { '<leader>do', function() require('dap').step_over() end, desc = 'Step over' },
-        { '<leader>dO', function() require('dap').step_out() end, desc = 'Step out' },
-        { '<leader>dr', function() require('dap').restart() end, desc = 'Restart' },
-        { '<leader>dt', function() require('dap').terminate() end, desc = 'Terminate' },
-        { '<leader>du', function() require('dapui').toggle() end, desc = 'Toggle DAP UI' },
-        { '<leader>de', function() require('dapui').eval() end, desc = 'Eval', mode = { 'n', 'v' } },
+        {
+          '<leader>db',
+          function()
+            require('dap').toggle_breakpoint()
+          end,
+          desc = 'Toggle breakpoint',
+        },
+        {
+          '<leader>dB',
+          function()
+            require('dap').set_breakpoint(vim.fn.input('Condition: '))
+          end,
+          desc = 'Conditional breakpoint',
+        },
+        {
+          '<leader>dc',
+          function()
+            require('dap').continue()
+          end,
+          desc = 'Continue / Start',
+        },
+        {
+          '<leader>di',
+          function()
+            require('dap').step_into()
+          end,
+          desc = 'Step into',
+        },
+        {
+          '<leader>do',
+          function()
+            require('dap').step_over()
+          end,
+          desc = 'Step over',
+        },
+        {
+          '<leader>dO',
+          function()
+            require('dap').step_out()
+          end,
+          desc = 'Step out',
+        },
+        {
+          '<leader>dr',
+          function()
+            require('dap').restart()
+          end,
+          desc = 'Restart',
+        },
+        {
+          '<leader>dt',
+          function()
+            require('dap').terminate()
+          end,
+          desc = 'Terminate',
+        },
+        {
+          '<leader>du',
+          function()
+            require('dapui').toggle()
+          end,
+          desc = 'Toggle DAP UI',
+        },
+        {
+          '<leader>de',
+          function()
+            require('dapui').eval()
+          end,
+          desc = 'Eval',
+          mode = { 'n', 'v' },
+        },
       },
       dependencies = {
         {
