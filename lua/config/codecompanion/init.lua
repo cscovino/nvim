@@ -48,14 +48,14 @@ require('codecompanion').setup({
       agent = 'claude_code',
       agents = {
         claude_code = {
-          cmd = 'claude',
-          args = {},
+          cmd = 'env',
+          args = { 'CODECOMPANION_CLI=1', 'claude' },
           description = 'Claude Code CLI',
           provider = 'terminal',
         },
         opencode = {
-          cmd = 'opencode',
-          args = {},
+          cmd = 'env',
+          args = { 'CODECOMPANION_CLI=1', 'opencode' },
           description = 'OpenCode CLI',
           provider = 'terminal',
         },
