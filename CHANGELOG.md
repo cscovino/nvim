@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.2.0](https://github.com/cscovino/nvim/compare/24b743a79e7618670bac20f272b9c013deb92487..3.2.0) - 2026-05-19
+#### Features
+- **(codecompanion)** ✨ set CODECOMPANION_CLI env var for agent CLI commands - ([24b743a](https://github.com/cscovino/nvim/commit/24b743a79e7618670bac20f272b9c013deb92487)) - Carlos Scovino
+
+- - -
+
 ## [3.1.0](https://github.com/cscovino/nvim/compare/d0ad9fa9d19efbe29335625ec7910c0252a89fc1..3.1.0) - 2026-05-18
 #### Features
 - **(codecompanion)** 💬 add background notification - ([d0ad9fa](https://github.com/cscovino/nvim/commit/d0ad9fa9d19efbe29335625ec7910c0252a89fc1)) - Carlos Scovino
