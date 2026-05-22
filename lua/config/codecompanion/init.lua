@@ -140,7 +140,7 @@ require('codecompanion').setup({
       },
     },
     action_palette = {
-      provider = 'telescope',
+      provider = 'snacks',
     },
     diff = {
       provider = 'default',

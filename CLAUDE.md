@@ -12,20 +12,21 @@ Entry point is `init.lua`, which requires modules in a specific order:
 
 1. **`lua/settings/`** - Core Neovim options (indentation, search, folds, undodir)
 2. **`lua/mappings/`** - All keymaps; leader is `<Space>`, localleader is `\`
-3. **`lua/plugin-manager/lazy/`** - lazy.nvim bootstrap and full plugin spec
-4. **`lua/config/color-scheme/gruvbox`** - Color scheme setup (loaded after plugins)
-5. **`lua/lsp/`** - LSP configuration split into two files:
-   - `language-servers.lua` - lspconfig setup for all servers, `on_attach` keymaps, diagnostic config
-   - `blink.lua` - Completion engine (blink.cmp + built-in `vim.snippet`)
-6. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`
+3. **`lua/plugin-manager/lazy/`** - lazy.nvim bootstrap. Plugin specs are split into `lua/plugins/<category>.lua` files (`ai`, `ui`, `editor`, `git`, `lsp`, `tools`) and auto-imported via `{ import = 'plugins' }`.
+4. **`lua/config/color-scheme/persist.lua`** - Reads/writes the chosen colorscheme to `~/.local/state/nvim/colorscheme`; falls back to gruvbox. Loaded after plugins.
+5. **`lua/lsp/language-servers.lua`** - 0.12 native API: `vim.lsp.config('*', ...)` defaults, per-server overrides, single `vim.lsp.enable({...})`, `LspAttach` autocmd for keymaps + document highlight.
+6. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`. Includes `config/blink/init.lua` (completion engine: blink.cmp + built-in `vim.snippet` + lazydev + blink-cmp-copilot sources).
 
 ## Key Conventions
 
 - **Lua formatting**: stylua with 2-space indent, single quotes (`stylua.toml` at root)
 - **All config is Lua** - no vimscript files
 - **Indentation**: 2 spaces (`shiftwidth=2`, `tabstop=2`, `expandtab`)
+- **Plugin config location rule**: small configs (`opts = {}`, simple `init`/`config` < ~5 lines) stay **inline** in the plugin spec under `lua/plugins/<category>.lua`. Non-trivial configs (autocmds, custom keymaps inside `config`, large `opts` tables, setup logic) live in `lua/config/<plugin>/init.lua` and are wired via `config = function() require('config.X') end`.
+- **Treesitter** is on the **`main` branch** (new async parser API, required for Neovim 0.12). Configured via `require('nvim-treesitter').install({...})` + a `FileType` autocmd that calls `vim.treesitter.start` and sets `indentexpr`.
 - **Treesitter folding** is enabled (`foldmethod=expr` with `nvim_treesitter#foldexpr()`)
 - **Copilot** (`zbirenbaum/copilot.lua`): ghost text disabled, suggestions appear in the blink.cmp completion menu via `blink-cmp-copilot`. Accept with `<CR>` like any other completion.
+- **Snacks.nvim** modules enabled: `picker`, `explorer`, `notifier`, `terminal`, `image`, `gh`, `git`, `lazygit`. `vim.ui.select` is overridden to use `Snacks.picker.select`.
 
 ## LSP Servers
 

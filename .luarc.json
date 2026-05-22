@@ -1,0 +1,17 @@
+{
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "library": [
+      "${3rd}/luv/library",
+      "~/.local/share/nvim/lazy/snacks.nvim",
+      "~/.local/share/nvim/lazy/nvim-treesitter-context"
+    ],
+    "checkThirdParty": false
+  },
+  "diagnostics": {
+    "globals": ["vim", "Snacks"],
+    "disable": ["different-requires"]
+  }
+}
