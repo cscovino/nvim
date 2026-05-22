@@ -7,82 +7,69 @@ vim.keymap.set('n', '<leader>nd', function()
 end, { desc = 'Next diagnostic' })
 vim.keymap.set('n', '<leader>lc', vim.diagnostic.setloclist, { desc = 'Diagnostic loclist' })
 
-local on_attach = function(_, bufnr)
-  vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspAttach', { clear = true }),
+  callback = function(args)
+    local bufnr = args.buf
+    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Go to definition' })
-  vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, { buffer = bufnr, desc = 'Add workspace folder' })
-  vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, { buffer = bufnr, desc = 'Remove workspace folder' })
-  vim.keymap.set('n', '<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, { buffer = bufnr, desc = 'List workspace folders' })
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, { buffer = bufnr, desc = 'Type definition' })
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { buffer = bufnr, desc = 'Rename symbol' })
-  vim.keymap.set('n', '<leader>f', vim.lsp.buf.format, { buffer = bufnr, desc = 'Format buffer' })
-end
+    local map = function(lhs, rhs, desc)
+      vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+    end
 
-local lspconfig = vim.lsp.config
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local lsp_flags = { debounce_text_changes = 150 }
-local servers = {
-  -- 'astro',
-  'cssls',
-  'dockerls',
-  'eslint',
-  'glsl_analyzer',
-  -- 'golangci_lint_ls',
-  -- 'gopls',
-  'html',
-  'jsonls',
-  'lua_ls',
-  'pyright',
-  'vtsls',
-}
+    map('gd', vim.lsp.buf.definition, 'Go to definition')
+    map('<leader>wa', vim.lsp.buf.add_workspace_folder, 'Add workspace folder')
+    map('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Remove workspace folder')
+    map('<leader>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, 'List workspace folders')
+    map('<leader>D', vim.lsp.buf.type_definition, 'Type definition')
+    map('<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
+    map('<leader>f', vim.lsp.buf.format, 'Format buffer')
 
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp] = {
-    on_attach = on_attach,
-    flags = lsp_flags,
-    capabilities = capabilities,
-  }
-end
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client:supports_method('textDocument/documentHighlight') then
+      local hl_group = vim.api.nvim_create_augroup('UserLspHighlight', { clear = false })
+      vim.api.nvim_clear_autocmds({ group = hl_group, buffer = bufnr })
+      vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+        group = hl_group,
+        buffer = bufnr,
+        callback = vim.lsp.buf.document_highlight,
+      })
+      vim.api.nvim_create_autocmd('CursorMoved', {
+        group = hl_group,
+        buffer = bufnr,
+        callback = vim.lsp.buf.clear_references,
+      })
+    end
+  end,
+})
 
-lspconfig.glsl_analyzer = {
-  on_attach = on_attach,
-  flags = lsp_flags,
-  capabilities = capabilities,
+vim.lsp.config('*', {
+  capabilities = require('blink.cmp').get_lsp_capabilities(),
+  flags = { debounce_text_changes = 150 },
+})
+
+vim.lsp.config('glsl_analyzer', {
   filetypes = { 'glsl' },
-}
+})
 
-lspconfig.lua_ls = {
-  on_attach = on_attach,
-  flags = lsp_flags,
-  capabilities = capabilities,
+vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
-      runtime = {
-        version = 'LuaJIT',
-      },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file('', true),
-        checkThirdParty = false,
-      },
-      telemetry = {
-        enable = false,
-      },
+      runtime = { version = 'LuaJIT' },
+      diagnostics = { globals = { 'vim' } },
+      telemetry = { enable = false },
     },
   },
-}
+})
 
 vim.diagnostic.config({
   signs = {
     text = {
-      [vim.diagnostic.severity.ERROR] = '',
-      [vim.diagnostic.severity.WARN] = ' ',
-      [vim.diagnostic.severity.INFO] = ' ',
+      [vim.diagnostic.severity.ERROR] = '',
+      [vim.diagnostic.severity.WARN] = ' ',
+      [vim.diagnostic.severity.INFO] = ' ',
       [vim.diagnostic.severity.HINT] = '⚡',
     },
   },
@@ -99,6 +86,14 @@ vim.diagnostic.config({
   },
 })
 
-for _, lsp in ipairs(servers) do
-  vim.lsp.enable(lsp)
-end
+vim.lsp.enable({
+  'cssls',
+  'dockerls',
+  'eslint',
+  'glsl_analyzer',
+  'html',
+  'jsonls',
+  'lua_ls',
+  'pyright',
+  'vtsls',
+})

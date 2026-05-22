@@ -16,7 +16,7 @@ Entry point is `init.lua`, which requires modules in a specific order:
 4. **`lua/config/color-scheme/gruvbox`** - Color scheme setup (loaded after plugins)
 5. **`lua/lsp/`** - LSP configuration split into two files:
    - `language-servers.lua` - lspconfig setup for all servers, `on_attach` keymaps, diagnostic config
-   - `nvim-cmp.lua` - Completion engine (nvim-cmp + LuaSnip + lspkind)
+   - `blink.lua` - Completion engine (blink.cmp + built-in `vim.snippet`)
 6. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`
 
 ## Key Conventions
@@ -25,7 +25,7 @@ Entry point is `init.lua`, which requires modules in a specific order:
 - **All config is Lua** - no vimscript files
 - **Indentation**: 2 spaces (`shiftwidth=2`, `tabstop=2`, `expandtab`)
 - **Treesitter folding** is enabled (`foldmethod=expr` with `nvim_treesitter#foldexpr()`)
-- **Copilot accept** is remapped to `<S-Tab><S-Tab>` (tab is used by nvim-cmp)
+- **Copilot** (`zbirenbaum/copilot.lua`): ghost text disabled, suggestions appear in the blink.cmp completion menu via `blink-cmp-copilot`. Accept with `<CR>` like any other completion.
 
 ## LSP Servers
 
@@ -64,14 +64,14 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 
 ## Notable Custom Behavior
 
-- **Conventional commits with gitmoji**: `cc` in normal mode opens a Telescope picker flow (commit type -> gitmoji -> scope -> message) defined in `lua/config/telescope/init.lua`
+- **Conventional commits with gitmoji**: `cc` in normal mode opens a Snacks.picker flow (commit type -> gitmoji -> scope -> message) defined in `lua/config/commits/init.lua`. Pure `vim.ui.select` + `vim.ui.input` chain; runs `git commit` via `vim.fn.system`.
 - **CodeCompanion** (`olimorris/codecompanion.nvim`): configured with the Copilot adapter (model: `claude-opus-4.6`), MCP hub integration, and prompt-library slash commands for PR descriptions (`<leader>apd` → `/prd`) and commit messages (`<leader>amg` → `/cmg`). Chat opens as a vertical split (`<leader>ac`); inline edit on visual selection (`<leader>ai`); actions palette (`<leader>aa`). Inside the chat buffer press `ga` to change the adapter and/or model (one picker handles both), `gs` to toggle the system prompt, `gd` for debug info (shows the current adapter/model), and `?` to list all chat keymaps.
 - **CodeCompanion CLI** (`:CodeCompanionCLI`): ACP-based bridge to external CLI agents, configured under `interactions.cli.agents` in `lua/config/codecompanion/init.lua`. Two agents are wired up: `claude_code` (runs `claude`, default) and `opencode` (runs `opencode`). Toggle with `<leader>at` — picks the agent via `vim.ui.select`, then toggles the CLI terminal buffer. Override per-command with `:CodeCompanionCLI agent=<name> <prompt>`, open the prompt input with `:CodeCompanionCLI Ask`.
-- **NvimTree** as floating window with `<leader>nt`
+- **Snacks.explorer** (picker-based file tree) with `<leader>nt`
 - **Barbar** buffer tabs with `<leader>,`/`.` for prev/next, `<leader>!`-`)` for direct goto, `<leader>bn` to rename a buffer tab
 - **Grug-far** for search and replace (`<leader>rp`)
 - **Flash.nvim** for quick navigation (`s` / `S`)
-- **Terminal toggle** with `<leader>tt` — opens a built-in terminal as a buffer tab (navigable via barbar tab switching, no plugin needed)
+- **Terminal toggle** with `<leader>tt` — opens a floating Snacks terminal
 - **Trouble** for diagnostics list (`<leader>xx`)
 
 ## Commands

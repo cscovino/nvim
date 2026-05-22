@@ -1,39 +1,36 @@
-require('nvim-treesitter.configs').setup({
-  ensure_installed = {
-    'astro',
-    'bash',
-    'css',
-    'dockerfile',
-    'gitignore',
-    'glsl',
-    'go',
-    'html',
-    'http',
-    'javascript',
-    'json',
-    'lua',
-    'markdown',
-    'python',
-    'regex',
-    'scss',
-    'typescript',
-  },
+local parsers = {
+  'astro',
+  'bash',
+  'css',
+  'dockerfile',
+  'gitignore',
+  'glsl',
+  'go',
+  'html',
+  'http',
+  'javascript',
+  'json',
+  'lua',
+  'markdown',
+  'markdown_inline',
+  'python',
+  'regex',
+  'scss',
+  'typescript',
+  'tsx',
+  'vim',
+  'vimdoc',
+  'yaml',
+}
 
-  sync_install = false,
-  auto_install = true,
-  ignore_install = {},
+require('nvim-treesitter').install(parsers)
 
-  modules = {},
-
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = false,
-  },
-
-  refactor = {
-    highlight_definitions = {
-      enable = true,
-      clear_on_cursor_move = true,
-    },
-  },
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('UserTreesitterStart', { clear = true }),
+  callback = function(args)
+    local ok = pcall(vim.treesitter.start, args.buf)
+    if ok then
+      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
 })

@@ -15,14 +15,14 @@ require('lazy').setup({
   spec = {
     -- Copilot plugin
     {
-      'github/copilot.vim',
+      'zbirenbaum/copilot.lua',
+      cmd = 'Copilot',
       event = 'InsertEnter',
-      init = function()
-        vim.g.copilot_no_tab_map = true
-      end,
-      config = function()
-        vim.keymap.set('i', '<S-Tab><S-Tab>', 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false })
-      end,
+      opts = {
+        suggestion = { enabled = false },
+        panel = { enabled = false },
+        filetypes = { ['*'] = true },
+      },
     },
     {
       'olimorris/codecompanion.nvim',
@@ -74,7 +74,7 @@ require('lazy').setup({
         },
       },
       dependencies = {
-        { 'github/copilot.vim' },
+        'zbirenbaum/copilot.lua',
         { 'nvim-lua/plenary.nvim', branch = 'master' },
         'nvim-treesitter/nvim-treesitter',
       },
@@ -100,12 +100,11 @@ require('lazy').setup({
     { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 
     -- Style plugins
-    -- { 'EdenEast/nightfox.nvim', lazy = true },
     { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true },
-    -- { 'folke/tokyonight.nvim', lazy = true },
-    -- { 'catppuccin/nvim', as = 'catppuccin', lazy = true },
+    { 'EdenEast/nightfox.nvim', lazy = true },
+    { 'folke/tokyonight.nvim', lazy = true },
+    { 'catppuccin/nvim', name = 'catppuccin', lazy = true },
     'nvim-tree/nvim-web-devicons',
-    -- { 'glepnir/oceanic-material', lazy = true },
     {
       'lukas-reineke/indent-blankline.nvim',
       main = 'ibl',
@@ -123,33 +122,6 @@ require('lazy').setup({
       end,
     },
     {
-      'rcarriga/nvim-notify',
-      lazy = true,
-      opts = { background_colour = '#000' },
-    },
-    {
-      'folke/noice.nvim',
-      event = 'VeryLazy',
-      opts = {
-        lsp = {
-          override = {
-            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-            ['vim.lsp.util.stylize_markdown'] = true,
-            ['cmp.entry.get_documentation'] = true,
-          },
-        },
-        presets = {
-          command_palette = true,
-          long_message_to_split = true,
-          lsp_doc_border = true,
-        },
-      },
-      dependencies = {
-        'MunifTanjim/nui.nvim',
-        'rcarriga/nvim-notify',
-      },
-    },
-    {
       'xiyaowong/nvim-transparent',
       event = 'VeryLazy',
       config = function()
@@ -158,7 +130,7 @@ require('lazy').setup({
     },
     {
       'romgrk/barbar.nvim',
-      event = 'BufReadPost',
+      event = 'VeryLazy',
       dependencies = {
         'lewis6991/gitsigns.nvim',
         'nvim-tree/nvim-web-devicons',
@@ -195,10 +167,9 @@ require('lazy').setup({
     -- IDE plugins
     {
       'nvim-treesitter/nvim-treesitter',
-      event = 'BufReadPost',
-      dependencies = {
-        'nvim-treesitter/nvim-treesitter-refactor',
-      },
+      branch = 'main',
+      lazy = false,
+      build = ':TSUpdate',
       config = function()
         require('config.treesitter')
       end,
@@ -246,6 +217,9 @@ require('lazy').setup({
       },
       opts = {
         file_types = { 'markdown', 'codecompanion' },
+        ignore = function(buf)
+          return vim.bo[buf].buftype ~= ''
+        end,
       },
     },
     {
@@ -286,31 +260,6 @@ require('lazy').setup({
       end,
     },
     {
-      'f-person/git-blame.nvim',
-      event = 'VeryLazy',
-      opts = {
-        enabled = true,
-        message_template = ' <summary> • <date> • <author> • <<sha>>',
-        date_format = '%d-%m-%Y %H:%M',
-        virtual_text_column = 1,
-      },
-    },
-    {
-      'tpope/vim-fugitive',
-      cmd = { 'G', 'Git', 'Gdiffsplit' },
-      keys = {
-        { '<leader>gj', '<Cmd>diffget //3<CR>', desc = 'Diffget right' },
-        { '<leader>gf', '<Cmd>diffget //2<CR>', desc = 'Diffget left' },
-        { '<leader>gs', '<Cmd>G<CR>', desc = 'Git status' },
-        { '<leader>gm', '<Cmd>G commit<CR>', desc = 'Git commit' },
-        { '<leader>gp', '<Cmd>G push<CR>', desc = 'Git push' },
-        { '<leader>gl', '<Cmd>G pull<CR>', desc = 'Git pull' },
-        { '<leader>gS', '<Cmd>G stash<CR>', desc = 'Git stash' },
-        { '<leader>gP', '<Cmd>G stash pop<CR>', desc = 'Git stash pop' },
-        { '<leader>gdf', '<Cmd>Gdiffsplit<CR>', desc = 'Git diff split' },
-      },
-    },
-    {
       'sindrets/diffview.nvim',
       cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
       keys = {
@@ -335,15 +284,9 @@ require('lazy').setup({
     },
     { 'mbbill/undotree', cmd = 'UndotreeShow' },
     {
-      'windwp/nvim-autopairs',
+      'echasnovski/mini.pairs',
       event = 'InsertEnter',
-      config = function()
-        local autopairs = require('nvim-autopairs')
-        autopairs.setup({})
-        local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-        local cmp = require('cmp')
-        cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-      end,
+      opts = {},
     },
     { 'nvim-neotest/nvim-nio', lazy = true },
 
@@ -444,14 +387,27 @@ require('lazy').setup({
       opts = {},
     },
     {
-      'kylechui/nvim-surround',
-      version = '*', -- Use for stability; omit to use `main` branch for the latest features
+      'echasnovski/mini.ai',
+      event = 'BufReadPost',
+      opts = { n_lines = 500 },
+    },
+    {
+      'echasnovski/mini.surround',
       event = 'VeryLazy',
-      config = function()
-        require('nvim-surround').setup({
-          -- Configuration here, or leave empty to use defaults
-        })
-      end,
+      opts = {
+        mappings = {
+          add = 'ys',
+          delete = 'ds',
+          find = '',
+          find_left = '',
+          highlight = '',
+          replace = 'cs',
+          update_n_lines = '',
+          suffix_last = '',
+          suffix_next = '',
+        },
+        search_method = 'cover_or_next',
+      },
     },
     {
       'folke/flash.nvim',
@@ -609,7 +565,7 @@ require('lazy').setup({
       lazy = true,
       cmd = { 'TimerStart', 'TimerRepeat', 'TimerSession' },
       dependencies = {
-        'rcarriga/nvim-notify',
+        'MunifTanjim/nui.nvim',
       },
       config = function()
         require('config.pomo')
@@ -618,52 +574,69 @@ require('lazy').setup({
 
     -- File Explorer plugins
     {
-      'nvim-tree/nvim-tree.lua',
-      cmd = 'NvimTreeToggle',
-      keys = {
-        { '<leader>nt', '<Cmd>NvimTreeToggle<CR>', desc = 'Toggle NvimTree' },
+      'folke/snacks.nvim',
+      priority = 1000,
+      lazy = false,
+      ---@type snacks.Config
+      opts = {
+        picker = {
+          enabled = true,
+          previewers = {
+            diff = {
+              style = 'fancy',
+              wo = {
+                wrap = false,
+                breakindent = false,
+                linebreak = false,
+                showbreak = '',
+              },
+            },
+          },
+        },
+        explorer = { enabled = true },
+        notifier = { enabled = true, timeout = 3000 },
+        terminal = { enabled = true },
+        image = { enabled = true },
+        gh = { enabled = true },
+        git = { enabled = true },
+        lazygit = { enabled = true },
       },
-      dependencies = { 'nvim-tree/nvim-web-devicons' },
-      config = function()
-        require('config.nvimtree')
-      end,
-    },
-    {
-      'nvim-telescope/telescope.nvim',
-      event = 'VeryLazy',
-      cmd = 'Telescope',
       keys = {
-        { '<leader>ff', '<Cmd>Telescope find_files<CR>', desc = 'Find files' },
-        { '<leader>fg', '<Cmd>Telescope live_grep<CR>', desc = 'Live grep' },
-        { '<leader>fb', '<Cmd>Telescope buffers<CR>', desc = 'Buffers' },
-        { '<leader>fh', '<Cmd>Telescope help_tags<CR>', desc = 'Help tags' },
-        { '<leader>cs', '<Cmd>Telescope colorscheme<CR>', desc = 'Colorscheme' },
-        { '<leader>ch', '<Cmd>Telescope command_history<CR>', desc = 'Command history' },
-        { '<leader>gc', '<Cmd>Telescope git_branches<CR>', desc = 'Git branches' },
-        { '<leader>dd', '<Cmd>Telescope diagnostics<CR>', desc = 'Diagnostics' },
-        { '<leader>gr', '<Cmd>Telescope lsp_references<CR>', desc = 'LSP references' },
-        { '<leader>ds', '<Cmd>Telescope lsp_document_symbols<CR>', desc = 'Document symbols' },
-        { '<leader>fn', '<Cmd>Telescope noice<CR>', desc = 'Notification history' },
+        { '<leader>ff', function() Snacks.picker.files() end, desc = 'Find files' },
+        { '<leader>fg', function() Snacks.picker.grep() end, desc = 'Live grep' },
+        { '<leader>fb', function() Snacks.picker.buffers() end, desc = 'Buffers' },
+        { '<leader>fh', function() Snacks.picker.help() end, desc = 'Help tags' },
+        { '<leader>cs', function() Snacks.picker.colorschemes() end, desc = 'Colorscheme' },
+        { '<leader>ch', function() Snacks.picker.command_history() end, desc = 'Command history' },
+        { '<leader>gc', function() Snacks.picker.git_branches() end, desc = 'Git branches' },
+        { '<leader>dd', function() Snacks.picker.diagnostics() end, desc = 'Diagnostics' },
+        { '<leader>gr', function() Snacks.picker.lsp_references() end, desc = 'LSP references' },
+        { '<leader>ds', function() Snacks.picker.lsp_symbols() end, desc = 'Document symbols' },
+        { '<leader>nt', function() Snacks.explorer() end, desc = 'Toggle file explorer' },
+        { '<leader>tt', function() Snacks.terminal() end, desc = 'Toggle terminal' },
+        { '<leader>fN', function() Snacks.notifier.show_history() end, desc = 'Notification history' },
+        { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
+        { '<leader>gs', function() Snacks.picker.git_status() end, desc = 'Git status' },
+        { '<leader>gi', function() Snacks.picker.gh_issue() end, desc = 'GitHub issues' },
+        { '<leader>gp', function() Snacks.picker.gh_pr() end, desc = 'GitHub PRs' },
+        { '<leader>gb', function() Snacks.git.blame_line() end, desc = 'Git blame line (popup)' },
+        { '<leader>gl', function() Snacks.terminal('git pull') end, desc = 'Git pull' },
+        { '<leader>gP', function() Snacks.terminal('git push') end, desc = 'Git push' },
         {
           'cc',
           function()
-            require('config.telescope').create_conventional_commit()
+            require('config.commits').create_conventional_commit()
           end,
           desc = 'Conventional commit',
         },
       },
-      dependencies = {
-        'nvim-lua/plenary.nvim',
-        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-        'nvim-telescope/telescope-ui-select.nvim',
-        {
-          'olacin/telescope-gitmoji.nvim',
-          dependencies = { 'nvim-lua/plenary.nvim' },
-        },
-        'olacin/telescope-cc.nvim',
-      },
-      config = function()
-        require('config.telescope')
+      init = function()
+        vim.api.nvim_create_autocmd('User', {
+          pattern = 'VeryLazy',
+          callback = function()
+            vim.ui.select = Snacks.picker.select
+          end,
+        })
       end,
     },
     'christoomey/vim-tmux-navigator',
@@ -681,30 +654,22 @@ require('lazy').setup({
     {
       'neovim/nvim-lspconfig',
       event = { 'BufReadPre', 'BufNewFile' },
-      dependencies = { 'hrsh7th/cmp-nvim-lsp' },
+      dependencies = { 'saghen/blink.cmp' },
       config = function()
         require('lsp.language-servers')
       end,
     },
     {
-      'hrsh7th/nvim-cmp',
+      'saghen/blink.cmp',
+      version = '1.*',
       event = 'InsertEnter',
       dependencies = {
-        {
-          'L3MON4D3/LuaSnip',
-          version = 'v2.*',
-          build = 'make install_jsregexp',
-        },
-        'hrsh7th/cmp-path',
-        'hrsh7th/cmp-buffer',
-        'hrsh7th/cmp-nvim-lsp',
-        'hrsh7th/cmp-nvim-lua',
-        'saadparwaiz1/cmp_luasnip',
-        'onsails/lspkind.nvim',
+        'giuxtaposition/blink-cmp-copilot',
       },
-      config = function()
-        require('lsp.nvim-cmp')
+      opts = function()
+        return require('lsp.blink')
       end,
+      opts_extend = { 'sources.default' },
     },
   },
   ui = {
