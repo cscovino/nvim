@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.3.0](https://github.com/cscovino/nvim/compare/6b16251ed8935f84476a451ff3ce6f2cbe602124..3.3.0) - 2026-05-22
+#### Features
+- 🏗️ update project folder architecture - ([353ad8e](https://github.com/cscovino/nvim/commit/353ad8e229e862ef8213923542eff4f661d2dc01)) - Carlos Scovino
+#### Miscellaneous Chores
+- 🚀 compatibility with neovim 0.12.* - ([6b16251](https://github.com/cscovino/nvim/commit/6b16251ed8935f84476a451ff3ce6f2cbe602124)) - Carlos Scovino
+
+- - -
+
 ## [3.2.0](https://github.com/cscovino/nvim/compare/24b743a79e7618670bac20f272b9c013deb92487..3.2.0) - 2026-05-19
 #### Features
 - **(codecompanion)** ✨ set CODECOMPANION_CLI env var for agent CLI commands - ([24b743a](https://github.com/cscovino/nvim/commit/24b743a79e7618670bac20f272b9c013deb92487)) - Carlos Scovino
