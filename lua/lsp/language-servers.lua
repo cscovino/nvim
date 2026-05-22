@@ -18,14 +18,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     map('gd', vim.lsp.buf.definition, 'Go to definition')
+    map('gD', vim.lsp.buf.declaration, 'Go to declaration')
+    map('gr', function()
+      Snacks.picker.lsp_references()
+    end, 'Go to references')
+    map('gi', vim.lsp.buf.implementation, 'Go to implementation')
+    map('K', vim.lsp.buf.hover, 'Hover documentation')
+    map('<C-k>', vim.lsp.buf.signature_help, 'Signature help')
+    map('<leader>D', vim.lsp.buf.type_definition, 'Type definition')
+    map('<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
+    map('<leader>f', vim.lsp.buf.format, 'Format buffer')
     map('<leader>wa', vim.lsp.buf.add_workspace_folder, 'Add workspace folder')
     map('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Remove workspace folder')
     map('<leader>wl', function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, 'List workspace folders')
-    map('<leader>D', vim.lsp.buf.type_definition, 'Type definition')
-    map('<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
-    map('<leader>f', vim.lsp.buf.format, 'Format buffer')
 
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     if client and client:supports_method('textDocument/documentHighlight') then
@@ -87,6 +94,7 @@ vim.diagnostic.config({
 })
 
 vim.lsp.enable({
+  'astro',
   'cssls',
   'dockerls',
   'eslint',
