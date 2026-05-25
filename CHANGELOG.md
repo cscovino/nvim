@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.4.1](https://github.com/cscovino/nvim/compare/c53e0ffa50593d940dcb817493c8c44004206664..3.4.1) - 2026-05-25
+#### Bug Fixes
+- **(git_branches)** 🐛 show remote and local branches - ([c53e0ff](https://github.com/cscovino/nvim/commit/c53e0ffa50593d940dcb817493c8c44004206664)) - Carlos Scovino
+
+- - -
+
 ## [3.4.0](https://github.com/cscovino/nvim/compare/28485720e74f3c5e8034026fdcaa06a03d54bc79..3.4.0) - 2026-05-22
 #### Features
 - ♻️ add LSP keymaps and enable astro lsp - ([2848572](https://github.com/cscovino/nvim/commit/28485720e74f3c5e8034026fdcaa06a03d54bc79)) - Carlos Scovino
