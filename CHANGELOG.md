@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.4.2](https://github.com/cscovino/nvim/compare/11fb7660e35ff07118d9cd33b1fa72729ee7453a..3.4.2) - 2026-05-25
+#### Bug Fixes
+- **(explorer)** 🐛 close on jump - ([11fb766](https://github.com/cscovino/nvim/commit/11fb7660e35ff07118d9cd33b1fa72729ee7453a)) - Carlos Scovino
+
+- - -
+
 ## [3.4.1](https://github.com/cscovino/nvim/compare/c53e0ffa50593d940dcb817493c8c44004206664..3.4.1) - 2026-05-25
 #### Bug Fixes
 - **(git_branches)** 🐛 show remote and local branches - ([c53e0ff](https://github.com/cscovino/nvim/commit/c53e0ffa50593d940dcb817493c8c44004206664)) - Carlos Scovino
