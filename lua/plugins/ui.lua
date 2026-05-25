@@ -91,6 +91,11 @@ return {
             },
           },
         },
+        sources = {
+          explorer = {
+            jump = { close = true },
+          },
+        },
       },
       explorer = { enabled = true },
       notifier = { enabled = true, timeout = 3000 },
