@@ -146,7 +146,7 @@ return {
       {
         '<leader>gc',
         function()
-          Snacks.picker.git_branches()
+          Snacks.picker.git_branches({ all = true })
         end,
         desc = 'Git branches',
       },
