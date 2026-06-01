@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.5.0](https://github.com/cscovino/nvim/compare/cd1b3aad623400bf740a3a41a270c87146c30ae6..3.5.0) - 2026-06-01
+#### Features
+- ✨ remove diffview plugin and add git stash keymaps - ([cd1b3aa](https://github.com/cscovino/nvim/commit/cd1b3aad623400bf740a3a41a270c87146c30ae6)) - Carlos Scovino
+
+- - -
+
 ## [3.4.2](https://github.com/cscovino/nvim/compare/11fb7660e35ff07118d9cd33b1fa72729ee7453a..3.4.2) - 2026-05-25
 #### Bug Fixes
 - **(explorer)** 🐛 close on jump - ([11fb766](https://github.com/cscovino/nvim/commit/11fb7660e35ff07118d9cd33b1fa72729ee7453a)) - Carlos Scovino
