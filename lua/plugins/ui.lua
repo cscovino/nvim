@@ -247,6 +247,20 @@ return {
         desc = 'Git push',
       },
       {
+        '<leader>gz',
+        function()
+          Snacks.terminal('git stash')
+        end,
+        desc = 'Git stash',
+      },
+      {
+        '<leader>gZ',
+        function()
+          Snacks.terminal('git stash pop')
+        end,
+        desc = 'Git stash pop',
+      },
+      {
         'cc',
         function()
           require('config.commits').create_conventional_commit()
