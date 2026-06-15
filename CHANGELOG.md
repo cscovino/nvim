@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.5.1](https://github.com/cscovino/nvim/compare/d5b63c74aab20c1261a7b15a20c88a50ec60e378..3.5.1) - 2026-06-15
+#### Bug Fixes
+- **(treesitter)** 🐛 use built-in fold expresion - ([e2c1314](https://github.com/cscovino/nvim/commit/e2c131416e60aa01a265bc34fbae4805d6923a15)) - Carlos Scovino
+#### Miscellaneous Chores
+- 📦️ update plugin versions and remove diffview.nvim - ([d5b63c7](https://github.com/cscovino/nvim/commit/d5b63c74aab20c1261a7b15a20c88a50ec60e378)) - Carlos Scovino
+
+- - -
+
 ## [3.5.0](https://github.com/cscovino/nvim/compare/cd1b3aad623400bf740a3a41a270c87146c30ae6..3.5.0) - 2026-06-01
 #### Features
 - ✨ remove diffview plugin and add git stash keymaps - ([cd1b3aa](https://github.com/cscovino/nvim/commit/cd1b3aad623400bf740a3a41a270c87146c30ae6)) - Carlos Scovino
