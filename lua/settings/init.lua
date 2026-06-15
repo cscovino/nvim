@@ -43,5 +43,5 @@ set.signcolumn = 'yes'
 set.wrap = false
 
 set.foldmethod = 'expr'
-set.foldexpr = 'nvim_treesitter#foldexpr()'
+set.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 set.foldlevelstart = 99
