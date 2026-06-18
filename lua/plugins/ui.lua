@@ -235,28 +235,28 @@ return {
       {
         '<leader>gl',
         function()
-          Snacks.terminal('git pull')
+          Snacks.terminal('git pull || { echo; echo "✗ failed — press any key"; read -n1; }')
         end,
         desc = 'Git pull',
       },
       {
         '<leader>gP',
         function()
-          Snacks.terminal('git push')
+          Snacks.terminal('git push || { echo; echo "✗ failed — press any key"; read -n1; }')
         end,
         desc = 'Git push',
       },
       {
         '<leader>gz',
         function()
-          Snacks.terminal('git stash')
+          Snacks.terminal('git stash || { echo; echo "✗ failed — press any key"; read -n1; }')
         end,
         desc = 'Git stash',
       },
       {
         '<leader>gZ',
         function()
-          Snacks.terminal('git stash pop')
+          Snacks.terminal('git stash pop || { echo; echo "✗ failed — press any key"; read -n1; }')
         end,
         desc = 'Git stash pop',
       },
