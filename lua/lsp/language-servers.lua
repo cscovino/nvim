@@ -20,7 +20,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('gd', vim.lsp.buf.definition, 'Go to definition')
     map('gD', vim.lsp.buf.declaration, 'Go to declaration')
     map('gr', function()
-      Snacks.picker.lsp_references()
+      -- Snacks comes from the ui category; fall back to the built-in list if it failed to load
+      if _G.Snacks then
+        Snacks.picker.lsp_references()
+      else
+        vim.lsp.buf.references()
+      end
     end, 'Go to references')
     map('gi', vim.lsp.buf.implementation, 'Go to implementation')
     map('K', vim.lsp.buf.hover, 'Hover documentation')

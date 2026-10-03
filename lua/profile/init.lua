@@ -80,4 +80,37 @@ function M.is_full()
   return true
 end
 
+-- The saved file's state, not the NVIM_PROFILE override: what :Profile shows and edits (D-11)
+function M.saved()
+  return vim.deepcopy(saved)
+end
+
+-- Writes only the toggles that differ from the preset (D-04). Returns an error string on failure.
+function M.save(state)
+  local categories = vim.empty_dict()
+  for _, cat in ipairs(M.TOGGLEABLE) do
+    if state.on[cat] ~= M.PRESETS[state.preset] then
+      categories[cat] = state.on[cat]
+    end
+  end
+  local json = vim.json.encode({ preset = state.preset, categories = categories }, { sort_keys = true })
+  -- io.open's error already starts with the path
+  local f, err = io.open(M.file, 'w')
+  if f then
+    local _, werr = f:write(json, '\n')
+    local _, cerr = f:close()
+    if werr or cerr then
+      err = M.file .. ': ' .. (werr or cerr)
+    end
+  end
+  if err then
+    return err
+  end
+  saved = build(state.preset, categories)
+end
+
+vim.api.nvim_create_user_command('Profile', function()
+  require('profile.menu').open()
+end, { desc = 'Pick the plugin categories to load (applies after a restart)' })
+
 return M
