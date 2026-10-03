@@ -63,6 +63,15 @@ return {
     end,
   },
   {
+    'lewis6991/gitsigns.nvim',
+    event = 'BufReadPre',
+    opts = {},
+    keys = {
+      { '<leader>gd', '<Cmd>Gitsigns preview_hunk_inline<CR>', desc = 'Git hunk preview (inline)' },
+      { '<leader>gD', '<Cmd>Gitsigns diffthis<CR>', desc = 'Git diff file' },
+    },
+  },
+  {
     'folke/twilight.nvim',
     cmd = 'Twilight',
     keys = {
