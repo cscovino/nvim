@@ -1,4 +1,4 @@
-return {
+local opts = {
   keymap = {
     preset = 'enter',
     ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
@@ -34,3 +34,13 @@ return {
   },
   fuzzy = { implementation = 'prefer_rust_with_warning' },
 }
+
+-- The copilot source needs copilot.lua, which only the ai category installs.
+if not require('profile').enabled('ai') then
+  opts.sources.default = vim.tbl_filter(function(name)
+    return name ~= 'copilot'
+  end, opts.sources.default)
+  opts.sources.providers.copilot = nil
+end
+
+return opts

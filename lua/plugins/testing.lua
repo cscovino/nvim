@@ -1,21 +1,5 @@
 return {
   {
-    'vhyrro/luarocks.nvim',
-    lazy = true,
-    config = true,
-    opts = {
-      rocks = { 'lua-curl', 'nvim-nio', 'mimetypes', 'xml2lua' },
-    },
-  },
-  {
-    'rest-nvim/rest.nvim',
-    ft = 'http',
-    dependencies = { 'luarocks.nvim' },
-    config = function()
-      require('config.rest')
-    end,
-  },
-  {
     'nvim-neotest/neotest',
     keys = {
       {
@@ -62,17 +46,4 @@ return {
       require('config.neotest')
     end,
   },
-  {
-    'epwalsh/pomo.nvim',
-    version = '*',
-    lazy = true,
-    cmd = { 'TimerStart', 'TimerRepeat', 'TimerSession' },
-    dependencies = {
-      'MunifTanjim/nui.nvim',
-    },
-    config = function()
-      require('config.pomo')
-    end,
-  },
-  { 'ThePrimeagen/vim-be-good', cmd = 'VimBeGood' },
 }
