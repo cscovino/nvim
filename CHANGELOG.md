@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [3.7.0](https://github.com/cscovino/nvim/compare/f06e2bdbd1fcd7edc2735829e279766d034704a5..3.7.0) - 2026-10-03
+#### Bug Fixes
+- 🥅 show a WARN instead of failing silently - ([dd0393e](https://github.com/cscovino/nvim/commit/dd0393e965a1dfb07c7ac0d62858a7b706a7167c)) - Carlos Scovino
+#### Features
+- **(git)** ✨ add gitsigns hunk preview and file diff keymaps - ([55ae49f](https://github.com/cscovino/nvim/commit/55ae49f395373b5d4a0f48517a5d939f93c977dc)) - Carlos Scovino
+#### Miscellaneous Chores
+- 🙈 stop tracking .planning/ - ([f06e2bd](https://github.com/cscovino/nvim/commit/f06e2bdbd1fcd7edc2735829e279766d034704a5)) - Carlos Scovino
+
+- - -
+
 ## [3.6.0](https://github.com/cscovino/nvim/compare/bf9739963225c130d34411ae951a5cdcd24ea323..3.6.0) - 2026-06-18
 #### Features
 - 🥅 show error feedback on git commands - ([bf97399](https://github.com/cscovino/nvim/commit/bf9739963225c130d34411ae951a5cdcd24ea323)) - Carlos Scovino
