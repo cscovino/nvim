@@ -1,5 +1,6 @@
 local state_file = vim.fn.stdpath('state') .. '/colorscheme'
 local default = 'gruvbox'
+local warned = false
 
 local function read_saved()
   local f = io.open(state_file, 'r')
@@ -15,10 +16,19 @@ local function read_saved()
 end
 
 local function save(name)
-  local f = io.open(state_file, 'w')
+  local f, err = io.open(state_file, 'w')
   if f then
-    f:write(name)
-    f:close()
+    local _, werr = f:write(name)
+    local _, cerr = f:close()
+    -- io.open's error already starts with the path; write/close errors are bare strerror
+    if werr or cerr then
+      err = state_file .. ': ' .. (werr or cerr)
+    end
+  end
+  -- save() runs on every ColorScheme event, including every picker preview row
+  if err and not warned then
+    warned = true
+    vim.notify('Colorscheme: could not save: ' .. err, vim.log.levels.WARN)
   end
 end
 

@@ -1,11 +1,23 @@
+-- Each prompt's condition fills these and its content reads them, so git runs once per prompt.
+local diff, template
+
 local function staged_diff()
-  return vim.fn.system('git diff --no-ext-diff --staged')
+  -- String form on purpose: through the shell a missing git is exit 127 + "command not found";
+  -- the list form would throw E475 instead.
+  local out = vim.fn.system('git diff --no-ext-diff --staged')
+  if vim.v.shell_error ~= 0 then
+    -- First line only: outside a repo git follows its error with ~100 lines of usage.
+    local reason = vim.split(vim.trim(out), '\n')[1]
+    vim.notify('CodeCompanion: git diff --staged failed: ' .. reason, vim.log.levels.WARN)
+    return nil
+  end
+  return out
 end
 
 local function read_file(path)
   local f = io.open(path, 'r')
   if not f then
-    return ''
+    return nil
   end
   local content = f:read('*a')
   f:close()
@@ -75,8 +87,19 @@ require('codecompanion').setup({
       prompts = {
         {
           role = 'user',
+          condition = function()
+            template = read_file('.github/pull_request_template.md')
+            if not template then
+              vim.notify(
+                'CodeCompanion: .github/pull_request_template.md not found, PR description not generated',
+                vim.log.levels.WARN
+              )
+              return false
+            end
+            diff = staged_diff()
+            return diff ~= nil
+          end,
           content = function()
-            local template = read_file('.github/pull_request_template.md')
             return string.format(
               [[Give a PR description based on the staged changes and use the template that is in the folder .github/.
 
@@ -92,7 +115,7 @@ require('codecompanion').setup({
 %s
 ```]],
               template,
-              staged_diff()
+              diff
             )
           end,
           opts = { contains_code = true },
@@ -111,6 +134,10 @@ require('codecompanion').setup({
       prompts = {
         {
           role = 'user',
+          condition = function()
+            diff = staged_diff()
+            return diff ~= nil
+          end,
           content = function()
             return string.format(
               [[Write a commit message for the change with the commitizen convention. Write only the title.
@@ -118,7 +145,7 @@ require('codecompanion').setup({
 ```diff
 %s
 ```]],
-              staged_diff()
+              diff
             )
           end,
           opts = { contains_code = true },

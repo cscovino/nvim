@@ -77,8 +77,10 @@ for _, language in ipairs(js_based_languages) do
         local co = coroutine.running()
         return coroutine.create(function()
           vim.ui.input({ prompt = 'URL: ', default = 'http://localhost:3000' }, function(url)
+            url = url and vim.trim(url)
             if url == nil or url == '' then
-              return
+              vim.notify('DAP: no URL given, Chrome launch aborted', vim.log.levels.WARN)
+              coroutine.resume(co, dap.ABORT)
             else
               coroutine.resume(co, url)
             end

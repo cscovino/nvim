@@ -33,7 +33,15 @@ return {
       {
         '<leader>at',
         function()
-          local agents = vim.tbl_keys(require('codecompanion.config').interactions.cli.agents)
+          local ok, cfg = pcall(function()
+            return require('codecompanion.config').interactions.cli.agents
+          end)
+          if not ok or type(cfg) ~= 'table' then
+            local reason = ok and ('interactions.cli.agents is ' .. type(cfg)) or tostring(cfg)
+            vim.notify('CodeCompanion: CLI agents lookup failed: ' .. reason, vim.log.levels.WARN)
+            return
+          end
+          local agents = vim.tbl_keys(cfg)
           table.sort(agents)
           vim.ui.select(agents, { prompt = 'CodeCompanion CLI agent:' }, function(choice)
             if not choice then

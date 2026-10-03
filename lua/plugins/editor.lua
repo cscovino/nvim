@@ -33,7 +33,13 @@ return {
           vim.ui.input({ prompt = 'Context max_lines: ' }, function(input)
             local n = tonumber(input)
             if n and n >= 1 then
-              require('treesitter-context.config').update({ max_lines = n }) ---@diagnostic disable-line: undefined-field
+              local ok, err = pcall(function()
+                require('treesitter-context.config').update({ max_lines = n }) ---@diagnostic disable-line: undefined-field
+              end)
+              if not ok then
+                vim.notify('treesitter-context: max_lines update failed: ' .. tostring(err), vim.log.levels.WARN)
+                return
+              end
               vim.notify('Context max_lines set to ' .. n)
             end
           end)
