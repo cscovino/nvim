@@ -26,6 +26,17 @@ local parsers = {
   'yaml',
 }
 
+-- Registered before the install gate, so a failure there can't take highlighting down
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('UserTreesitterStart', { clear = true }),
+  callback = function(args)
+    local ok = pcall(vim.treesitter.start, args.buf)
+    if ok then
+      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
+  end,
+})
+
 local ts = require('nvim-treesitter')
 local installed = ts.get_installed()
 local missing = vim.tbl_filter(function(lang)
@@ -36,9 +47,13 @@ end, parsers)
 -- spawns nothing
 if #missing > 0 then
   local broken = {}
-  -- executable() passes the Mac's broken pnpm shim, and vim.system raises when
-  -- the binary is absent, so executable() must come first
-  if vim.fn.executable('tree-sitter') == 0 or vim.system({ 'tree-sitter', '--version' }):wait(5000).code ~= 0 then
+  -- executable() passes the Mac's broken pnpm shim. vim.system raises when the
+  -- binary is absent or can't be exec'd (bad shebang, wrong arch), so
+  -- executable() comes first and the spawn is pcall'd
+  local ok, works = pcall(function()
+    return vim.fn.executable('tree-sitter') == 1 and vim.system({ 'tree-sitter', '--version' }):wait(5000).code == 0
+  end)
+  if not (ok and works) then
     table.insert(broken, 'tree-sitter')
   end
   if vim.fn.executable('cc') == 0 then
@@ -62,13 +77,3 @@ if #missing > 0 then
     end)
   end
 end
-
-vim.api.nvim_create_autocmd('FileType', {
-  group = vim.api.nvim_create_augroup('UserTreesitterStart', { clear = true }),
-  callback = function(args)
-    local ok = pcall(vim.treesitter.start, args.buf)
-    if ok then
-      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end
-  end,
-})
