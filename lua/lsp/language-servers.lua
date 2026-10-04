@@ -98,8 +98,27 @@ vim.diagnostic.config({
   },
 })
 
-vim.lsp.enable({
+-- These lspconfig servers have function cmds (a project node_modules lookup),
+-- so there is no cmd[1] to check
+local node_bins = {
+  astro = 'astro-ls',
+  cssls = 'vscode-css-language-server',
+  eslint = 'vscode-eslint-language-server',
+  html = 'vscode-html-language-server',
+  jsonls = 'vscode-json-language-server',
+}
+
+-- A missing function-cmd server WARNs on every buffer, so skip servers whose
+-- binary is missing. A name with no config, or with a function cmd not in
+-- node_bins, stays enabled: executable(nil) and indexing a nil config both
+-- raise and would stop every server.
+vim.lsp.enable(vim.tbl_filter(function(name)
+  local cmd = (vim.lsp.config[name] or {}).cmd
+  local bin = type(cmd) == 'table' and cmd[1] or node_bins[name]
+  return not bin or vim.fn.executable(bin) == 1
+end, {
   'astro',
+  'clangd',
   'cssls',
   'dockerls',
   'eslint',
@@ -109,4 +128,4 @@ vim.lsp.enable({
   'lua_ls',
   'pyright',
   'vtsls',
-})
+}))

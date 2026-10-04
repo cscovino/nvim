@@ -8,6 +8,11 @@ lint.linters_by_ft = {
 
 vim.api.nvim_create_autocmd({ 'BufWritePost', 'BufReadPost' }, {
   callback = function()
-    lint.try_lint()
+    -- Skip linters that aren't installed instead of an ENOENT ERROR on every save
+    lint.try_lint(nil, {
+      filter = function(linter)
+        return vim.fn.executable(linter.cmd) == 1
+      end,
+    })
   end,
 })
