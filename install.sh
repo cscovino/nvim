@@ -16,6 +16,7 @@ LUALS_VERSION=3.19.1
 RG_VERSION=15.2.0
 NODE_DIST=https://nodejs.org/dist/latest-v24.x
 PYRIGHT_VERSION=1.1.414
+PNPM_VERSION=10.33.4
 REPO_URL=https://github.com/cscovino/nvim.git
 
 DRY=0
@@ -357,7 +358,7 @@ step_lsp() {
         say "$b present"
       else
         case $b in
-          pyright-langserver) warn 'pyright-langserver not found: npm i -g pyright' ;;
+          pyright-langserver) warn 'pyright-langserver not found: pnpm add -g pyright' ;;
           clangd) warn 'clangd not found: xcode-select --install' ;;
           *) warn 'lua-language-server not found: brew install lua-language-server' ;;
         esac
@@ -367,7 +368,7 @@ step_lsp() {
   fi
   # Linux, in this order: pyright needs node, and nothing is tried after a
   # failed smoke test (D-05: a hint, no automatic fallback)
-  n22="Install Node 22 from https://nodejs.org/dist/latest-v22.x/ into ~/.local/opt/node (link node, npm, npx into ~/.local/bin), then re-run: node >= 22 is kept"
+  n22="Install Node 22 from https://nodejs.org/dist/latest-v22.x/ into ~/.local/opt/node (link node and corepack into ~/.local/bin), then re-run: node >= 22 is kept"
   if [ "$v" -ge 22 ]; then
     say "node v$v present, skipping"
     SKIPPED="$SKIPPED node"
@@ -380,7 +381,7 @@ step_lsp() {
     run tar -xzf "$TMP/node.tar.gz" -C "$TMP"
     run rm -rf "$HOME/.local/opt/node"
     run mv "$TMP/${f%.tar.gz}" "$HOME/.local/opt/node"
-    for b in node npm npx; do
+    for b in node corepack; do
       run ln -sfn "$HOME/.local/opt/node/bin/$b" "$HOME/.local/bin/$b"
     done
     INSTALLED="$INSTALLED node"
@@ -389,13 +390,28 @@ step_lsp() {
         die "Node 24 does not run on this machine (kernel $(uname -r)). $n22"
     fi
   fi
+  if command -v pnpm >/dev/null; then
+    say 'pnpm present, skipping'
+    SKIPPED="$SKIPPED pnpm"
+  else
+    if [ "$DRY" = 0 ]; then
+      command -v corepack >/dev/null ||
+        die "pnpm and corepack not found (Node >= 25 has no corepack): install pnpm $PNPM_VERSION, then re-run"
+    fi
+    say "installing pnpm $PNPM_VERSION to $HOME/.local/bin"
+    run corepack enable pnpm --install-directory "$HOME/.local/bin"
+    # Pins the version used outside projects; unpinned corepack fetches latest (pnpm 12)
+    run corepack install -g "pnpm@$PNPM_VERSION"
+    INSTALLED="$INSTALLED pnpm"
+  fi
   if command -v pyright-langserver >/dev/null; then
     say 'pyright present, skipping'
     SKIPPED="$SKIPPED pyright"
   else
     say "installing pyright $PYRIGHT_VERSION to $HOME/.local"
-    # --prefix: no sudo, no npm configuration change, bins land in ~/.local/bin
-    run npm install -g --prefix "$HOME/.local" "pyright@$PYRIGHT_VERSION"
+    # global-bin-dir: no sudo, no rc file or pnpm settings written; bins land in
+    # ~/.local/bin, which line 40 puts on PATH as pnpm add -g requires
+    run pnpm add -g --config.global-bin-dir="$HOME/.local/bin" "pyright@$PYRIGHT_VERSION"
     INSTALLED="$INSTALLED pyright"
     # pyright-langserver --version always exits 1, so test pyright itself
     if [ "$DRY" = 0 ]; then
