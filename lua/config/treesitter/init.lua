@@ -37,6 +37,7 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+local M = { parsers = parsers }
 local ts = require('nvim-treesitter')
 local installed = ts.get_installed()
 local missing = vim.tbl_filter(function(lang)
@@ -63,7 +64,7 @@ if #missing > 0 then
   if #broken == 0 then
     -- nvim-treesitter's default of up to 100 parallel compiles runs a 4 GB
     -- machine out of memory. Pass nil, never 0, on bigger machines.
-    ts.install(parsers, vim.uv.get_total_memory() < 6 * 1024 ^ 3 and { max_jobs = 2 } or nil)
+    M.task = ts.install(parsers, vim.uv.get_total_memory() < 6 * 1024 ^ 3 and { max_jobs = 2 } or nil)
   else
     -- May run before Snacks replaces vim.notify
     vim.schedule(function()
@@ -77,3 +78,5 @@ if #missing > 0 then
     end)
   end
 end
+-- install.sh waits on this task so a headless run doesn't exit mid-build; the plugin spec ignores it
+return M

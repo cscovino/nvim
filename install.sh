@@ -1,0 +1,281 @@
+#!/usr/bin/env bash
+# Sets up this Neovim config on macOS arm64 or Linux aarch64.
+# Works piped (curl ... | bash), as bash <(curl ...) or from a clone, so it never
+# reads its own path or sibling files. All logic runs inside main, called on the
+# last line: a truncated download defines functions and runs nothing.
+# Every mutating command goes through run, so --dry-run changes nothing.
+# Re-running is safe; a failed step aborts and names itself.
+set -euo pipefail
+
+NVIM_MIN=0.12.0
+# Newest tree-sitter linux-arm64 build that runs below glibc 2.39
+TS_PIN=v0.25.10
+REPO_URL=https://github.com/cscovino/nvim.git
+
+DRY=0
+YES=0
+ONLY=
+PROFILE=
+NVIM_VERSION=
+STEP=init
+OS=
+ARCH=
+GLIBC=
+TMP=
+INSTALLED=
+SKIPPED=
+NEXT=
+PROFILE_MSG='not changed'
+
+# Shadow checks must use the user's PATH, not ours
+ORIG_PATH=$PATH
+# Later steps must find what earlier steps installed
+export PATH="$HOME/.local/bin:$PATH"
+CFG=${XDG_CONFIG_HOME:-$HOME/.config}/nvim
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/nvim
+# lua/profile M.file is stdpath('state')/profile
+PROFILE_FILE=$STATE/profile
+LOG=$STATE/install.log
+LAZY_DIR=${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy
+
+say() { printf '%s\n' "$*"; }
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+  NEXT="$NEXT  $*"$'\n'
+}
+die() {
+  printf 'install.sh: %s\n' "$*" >&2
+  exit 1
+}
+# A redirect or pipe on run itself would still execute in dry-run, so anything
+# with one is a named function called as run <function>
+run() {
+  if [ "$DRY" = 1 ]; then
+    say "+ $*"
+  else
+    "$@"
+  fi
+}
+# True when version $1 >= $2
+ver_ge() { [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | sed -n 1p)" = "$2" ]; }
+# -f: an HTTP error fails instead of saving an error page
+fetch() { run curl -fsSL --retry 3 -o "$2" "$1"; }
+
+install_tree_sitter() {
+  gunzip -c "$TMP/tree-sitter.gz" >"$HOME/.local/bin/tree-sitter"
+  chmod +x "$HOME/.local/bin/tree-sitter"
+}
+
+write_profile() {
+  mkdir -p "$STATE"
+  # The exact bytes lua/profile M.save writes for a bare preset
+  printf '{"categories":{},"preset":"%s"}\n' "$1" >"$PROFILE_FILE"
+}
+
+# stdin is /dev/null: under curl | bash it is the script itself
+restore_plugins() {
+  nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
+}
+
+step_lsp() {
+  local v url w
+  if v=$(tree-sitter --version 2>/dev/null); then
+    say "$v present, skipping"
+    SKIPPED="$SKIPPED tree-sitter"
+  else
+    # A release without the .gz asset makes curl -f fail loudly
+    if [ "$OS" = Darwin ]; then
+      url=https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-macos-arm64.gz
+    elif ver_ge "$GLIBC" 2.39; then
+      url=https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-arm64.gz
+    else
+      url=https://github.com/tree-sitter/tree-sitter/releases/download/$TS_PIN/tree-sitter-linux-arm64.gz
+    fi
+    say "installing tree-sitter to $HOME/.local/bin"
+    fetch "$url" "$TMP/tree-sitter.gz"
+    run install_tree_sitter
+    INSTALLED="$INSTALLED tree-sitter"
+    if [ "$DRY" = 0 ]; then
+      "$HOME/.local/bin/tree-sitter" --version >/dev/null 2>&1 ||
+        die 'the downloaded tree-sitter does not run here; build it instead: CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli'
+      w=$(
+        PATH=$ORIG_PATH
+        hash -r
+        command -v tree-sitter || true
+      )
+      if [ -n "$w" ] && [ "$w" != "$HOME/.local/bin/tree-sitter" ]; then
+        warn "$w wins over $HOME/.local/bin/tree-sitter on your PATH; if it is the pnpm one: pnpm rm -g tree-sitter-cli"
+      fi
+    fi
+  fi
+}
+
+step_config() {
+  local preset=full
+  if [ "$OS" = Linux ]; then
+    preset=minimal
+  fi
+  if [ -d "$CFG" ]; then
+    say "config present at $CFG, keeping"
+  else
+    say "cloning $REPO_URL to $CFG"
+    run git clone "$REPO_URL" "$CFG"
+    INSTALLED="$INSTALLED config"
+  fi
+  if [ -f "$PROFILE_FILE" ] && [ -z "$PROFILE" ]; then
+    say "profile kept ($PROFILE_FILE)"
+    PROFILE_MSG=kept
+  else
+    preset=${PROFILE:-$preset}
+    say "writing profile $preset to $PROFILE_FILE"
+    run write_profile "$preset"
+    PROFILE_MSG="written ($preset)"
+  fi
+  # NVIM_PROFILE is never exported: it would drop saved category toggles and
+  # let the plugins step's clean delete their plugins
+}
+
+step_plugins() {
+  local before= after rc=0 names
+  # D-01: never re-restore an installed set, that would revert :Lazy update work
+  if [ "$ONLY" != plugins ] && [ -n "$(ls -A "$LAZY_DIR" 2>/dev/null)" ]; then
+    say "plugins present in $LAZY_DIR, skipping (--only plugins forces a restore)"
+    SKIPPED="$SKIPPED plugins"
+    return 0
+  fi
+  if [ "$DRY" = 0 ]; then
+    [ -d "$CFG" ] || die "no config at $CFG: run install.sh --only config first"
+    command -v nvim >/dev/null || die 'nvim not found: run install.sh --only nvim first'
+  fi
+  # nvim's exit code says nothing about failed clones, so this checks lazy's
+  # own state, then waits on the config's parser build (D-02, D-06)
+  read -r -d '' NVIM_INSTALL_LUA <<'EOF' || true
+local ok, err = xpcall(function()
+  local lazy = require('lazy')
+  lazy.restore({ wait = true, show = false })
+  local bad = {}
+  for _, p in ipairs(lazy.plugins()) do
+    if not p._.installed or require('lazy.core.plugin').has_errors(p) then
+      bad[#bad + 1] = p.name
+    end
+  end
+  if #bad > 0 then
+    io.stderr:write('plugin restore failed: ' .. table.concat(bad, ', ') .. '\n')
+    vim.cmd('cquit 1')
+  end
+  lazy.clean({ wait = true, show = false })
+  local ts = require('config.treesitter')
+  if ts.task then
+    -- A timeout shows up as missing parsers below
+    ts.task:pwait(60 * 60 * 1000)
+  end
+  local have = require('nvim-treesitter').get_installed('parsers')
+  local miss = vim.tbl_filter(function(l)
+    return not vim.list_contains(have, l)
+  end, ts.parsers)
+  if #miss > 0 then
+    io.stderr:write('parsers not built: ' .. table.concat(miss, ', ') .. '\n')
+    vim.cmd('cquit 2')
+  end
+end, debug.traceback)
+if not ok then
+  io.stderr:write(err .. '\n')
+  vim.cmd('cquit 3')
+end
+vim.cmd('qa')
+EOF
+  export NVIM_INSTALL_LUA
+  # D-03: compare before and after, the lockfile often has a local diff
+  if [ -d "$CFG" ]; then
+    before=$(git -C "$CFG" diff -- lazy-lock.json)
+  fi
+  say "restoring plugins and building parsers (several minutes on a slow machine), log: $LOG"
+  run mkdir -p "$STATE"
+  run restore_plugins || rc=$?
+  if [ "$rc" != 0 ]; then
+    tail -n 20 "$LOG" >&2 || true
+    names=$(grep -E '^(plugin restore failed|parsers not built):' "$LOG" | tail -n 1) || names=
+    if [ "$rc" = 2 ]; then
+      die "${names:-parsers not built}; if tree-sitter cannot build them here, use CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli, then re-run with --only plugins"
+    fi
+    die "${names:+$names; }plugins step failed (log: $LOG); fix it, then re-run with --only plugins"
+  fi
+  if [ "$DRY" = 0 ]; then
+    after=$(git -C "$CFG" diff -- lazy-lock.json)
+    [ "$after" = "$before" ] || die "plugins step changed $CFG/lazy-lock.json"
+  fi
+  INSTALLED="$INSTALLED plugins"
+}
+
+summary() {
+  say '==> summary'
+  say "installed:${INSTALLED:- none}"
+  say "skipped:${SKIPPED:- none}"
+  say "profile: $PROFILE_MSG"
+}
+
+main() {
+  local s
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --yes) YES=1 ;;
+      --dry-run) DRY=1 ;;
+      --only | --profile | --nvim-version)
+        [ $# -ge 2 ] || die "$1 needs a value"
+        case $1 in
+          --only)
+            case ${2-} in
+              nvim | deps | lsp | config | plugins) ONLY=$2 ;;
+              *) die "invalid --only value: ${2-}" ;;
+            esac
+            ;;
+          --profile)
+            case ${2-} in
+              full | minimal) PROFILE=$2 ;;
+              *) die "invalid --profile value: ${2-}" ;;
+            esac
+            ;;
+          --nvim-version) NVIM_VERSION=$2 ;;
+        esac
+        shift
+        ;;
+      *) die "unknown option: $1" ;;
+    esac
+    shift
+  done
+
+  # Detection runs before any download or file change
+  [ "$(id -u)" != 0 ] || die 'refusing to run as root: it would leave root-owned files in your home; run it as your user'
+  OS=$(uname -s)
+  ARCH=$(uname -m)
+  case $OS/$ARCH in
+    Darwin/arm64 | Linux/aarch64) ;;
+    *) die "unsupported platform $OS/$ARCH (supported: Darwin/arm64, Linux/aarch64)" ;;
+  esac
+  # getconf exits 64 on macOS, so ask only on Linux
+  if [ "$OS" = Linux ]; then
+    GLIBC=$(getconf GNU_LIBC_VERSION 2>/dev/null) || GLIBC=
+    GLIBC=${GLIBC#glibc }
+    case $GLIBC in
+      [0-9]*.[0-9]*) ;;
+      *) die 'could not read the glibc version (getconf GNU_LIBC_VERSION)' ;;
+    esac
+    ver_ge "$GLIBC" 2.28 || die "glibc $GLIBC is older than 2.28, which Neovim needs"
+  fi
+
+  TMP=$(mktemp -d)
+  trap 'rc=$?; rm -rf "$TMP"; [ "$rc" -eq 0 ] || printf "install.sh: failed during %s (exit %s)\n" "$STEP" "$rc" >&2' EXIT
+
+  [ -d "$HOME/.local/bin" ] || run mkdir -p "$HOME/.local/bin"
+  for s in lsp config plugins; do
+    if [ -z "$ONLY" ] || [ "$ONLY" = "$s" ]; then
+      STEP=$s
+      say "==> $s"
+      "step_$s"
+    fi
+  done
+  STEP=summary
+  summary
+}
+
+main "$@"
