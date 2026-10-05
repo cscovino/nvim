@@ -4,3 +4,8 @@ undodir/
 .mcphub/
 
 .planning/
+.claude/
+.gsd/
+.omc/
+.serena/
+**/.omc/
