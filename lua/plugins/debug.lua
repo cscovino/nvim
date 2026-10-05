@@ -82,7 +82,7 @@ return {
       },
       {
         'microsoft/vscode-js-debug',
-        build = 'npm install --legacy-peer-deps && npx gulp dapDebugServer && rm -rf out && mv dist out',
+        build = 'pnpm import && pnpm install --frozen-lockfile --ignore-scripts && pnpm exec gulp dapDebugServer && rm -rf out && mv dist out',
       },
     },
     config = function()
