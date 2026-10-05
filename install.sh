@@ -446,6 +446,7 @@ step_config() {
   fi
   if [ -d "$CFG" ]; then
     say "config present at $CFG, keeping"
+    SKIPPED="$SKIPPED config"
   else
     say "cloning $REPO_URL to $CFG"
     run git clone "$REPO_URL" "$CFG"
