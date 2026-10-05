@@ -12,7 +12,8 @@ Entry point is `init.lua`, which requires modules in a specific order:
 
 1. **`lua/settings/`** - Core Neovim options (indentation, search, folds, undodir)
 2. **`lua/mappings/`** - All keymaps; leader is `<Space>`, localleader is `\`
-3. **`lua/plugin-manager/lazy/`** - lazy.nvim bootstrap. Plugin specs are split into `lua/plugins/<category>.lua` files (`ai`, `ui`, `editor`, `git`, `lsp`, `tools`) and auto-imported via `{ import = 'plugins' }`.
+3. **`lua/plugin-manager/lazy/`** - lazy.nvim bootstrap. Plugin specs live in `lua/plugins/<category>.lua` (`ai`, `debug`, `editor`, `extras`, `http`, `lsp`, `testing`, `ui`), and only the categories the profile enables are imported, as `{ import = 'plugins.<cat>' }` gated by `profile.enabled(cat)`.
+   - **`lua/profile/`** - `init.lua` (presets, categories, state file) and `menu.lua` (`:Profile`). Required before `lazy.setup`. See Profiles below.
 4. **`lua/config/color-scheme/persist.lua`** - Reads/writes the chosen colorscheme to `~/.local/state/nvim/colorscheme`; falls back to gruvbox. Loaded after plugins.
 5. **`lua/lsp/language-servers.lua`** - 0.12 native API: `vim.lsp.config('*', ...)` defaults, per-server overrides, single `vim.lsp.enable({...})`, `LspAttach` autocmd for keymaps + document highlight.
 6. **`lua/config/<plugin>/`** - Per-plugin configuration, each in its own directory with `init.lua`. Includes `config/blink/init.lua` (completion engine: blink.cmp + built-in `vim.snippet` + lazydev + blink-cmp-copilot sources).
@@ -27,10 +28,21 @@ Entry point is `init.lua`, which requires modules in a specific order:
 - **Treesitter folding** is enabled (`foldmethod=expr` with `nvim_treesitter#foldexpr()`)
 - **Copilot** (`zbirenbaum/copilot.lua`): ghost text disabled, suggestions appear in the blink.cmp completion menu via `blink-cmp-copilot`. Accept with `<CR>` like any other completion.
 - **Snacks.nvim** modules enabled: `picker`, `explorer`, `notifier`, `terminal`, `image`, `gh`, `git`, `lazygit`. `vim.ui.select` is overridden to use `Snacks.picker.select`.
+- **Missing-tool guards**: LSP servers whose binary is missing and missing linters are skipped silently; the treesitter install gate (no `tree-sitter`/C compiler) is the only one that WARNs, once.
+
+## Profiles
+
+Defined in `lua/profile/init.lua`:
+
+- **`M.CATEGORIES`** lists the eight spec files. **`M.TOGGLEABLE`** is `ai`, `debug`, `extras`, `http`, `testing`; `ui`, `editor` and `lsp` are always on.
+- **`M.PRESETS`**: `full` turns every toggle on, `minimal` turns them all off.
+- **State file** `stdpath('state')/profile` holds JSON `{"categories":{...},"preset":"..."}` with only the toggles that differ from the preset. Broken JSON or an unknown preset falls back to full with one WARN. With no file, the full set loads.
+- **`NVIM_PROFILE=full|minimal`** overrides the preset for one run and drops the saved toggles.
+- **Lockfile**: non-full profiles use `stdpath('state')/lazy-lock.json`, re-copied from the repo file on every start, so they never change the repo lockfile.
 
 ## LSP Servers
 
-Configured in `lua/lsp/language-servers.lua`: cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls.
+Configured in `lua/lsp/language-servers.lua`: clangd (C, C++, CUDA), cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls.
 
 Commented out (inactive): astro, golangci_lint_ls, gopls.
 
@@ -74,10 +86,18 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 - **Flash.nvim** for quick navigation (`s` / `S`)
 - **Terminal toggle** with `<leader>tt` — opens a floating Snacks terminal
 - **Trouble** for diagnostics list (`<leader>xx`)
+- **`:Profile`** (`lua/profile/menu.lua`): preset and category toggles through `vim.ui.select`. Save writes the state file and offers `:restart`; turning a category off notes that `:Lazy clean` removes its plugins.
+- **`install.sh`**: one script for macOS arm64 and apt-based Linux aarch64. Steps: deps, nvim, lsp, config, plugins. Flags `--yes`, `--dry-run`, `--profile`, `--nvim-version`, `--only`, `-h`; without `--only` (and `--yes`) a menu picks the step. Installs go to `~/.local/opt` plus `~/.local/bin`; it never touches brew/pnpm state or the npm rc file. Safe to re-run: a failed or interrupted run is recovered by re-running it. After a plugins-step failure the re-run needs `--only plugins`, because a plain re-run skips installed plugins.
 
 ## Commands
 
 ```bash
+# Preview every install action, change nothing
+./install.sh --dry-run
+
+# Re-run the headless plugin restore and parser build
+./install.sh --only plugins
+
 # Format Lua files
 stylua lua/
 
