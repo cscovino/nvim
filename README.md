@@ -6,17 +6,23 @@ Personal Neovim configuration written entirely in Lua. Uses [lazy.nvim](https://
 
 ```
 init.lua                          # Entry point (settings → mappings → lazy → colorscheme)
+install.sh                        # One-command installer (see Install)
 lua/
 ├── settings/                     # Core options (indent, search, folds, undodir)
 ├── mappings/                     # Keymaps (leader: Space, localleader: \)
-├── plugin-manager/lazy/          # lazy.nvim bootstrap (imports lua/plugins/*)
-├── plugins/                      # Plugin specs split by category
+├── plugin-manager/lazy/          # lazy.nvim bootstrap (imports only the categories the profile enables)
+├── profile/
+│   ├── init.lua                  # Presets, categories, state file
+│   └── menu.lua                  # :Profile
+├── plugins/                      # Plugin specs, one file per category
 │   ├── ai.lua                    # copilot.lua, codecompanion, mcphub
-│   ├── ui.lua                    # colorschemes, lualine, barbar, snacks, twilight, transparent, indent-blankline, colorizer
-│   ├── editor.lua                # treesitter, render-markdown, trouble, mini.*, flash, which-key, persistence, undotree
-│   ├── git.lua                   # diffview
-│   ├── lsp.lua                   # lspconfig, blink.cmp, lazydev, conform, lint, dap
-│   └── tools.lua                 # luarocks, rest, neotest, pomo, vim-be-good
+│   ├── debug.lua                 # nvim-dap, dap-ui, vscode-js-debug
+│   ├── editor.lua                # treesitter, ts-autotag, treesitter-context, render-markdown, trouble, grug-far, mini.*, flash, which-key, persistence, vim-tmux-navigator, undotree
+│   ├── extras.lua                # pomo, vim-be-good
+│   ├── http.lua                  # luarocks, rest
+│   ├── lsp.lua                   # lazydev, lspconfig, blink.cmp, blink-cmp-copilot, conform, lint
+│   ├── testing.lua               # neotest with jest and vitest
+│   └── ui.lua                    # colorschemes, devicons, indent-blankline, colorizer, lualine, transparent, barbar, gitsigns, twilight, snacks
 ├── lsp/
 │   └── language-servers.lua      # vim.lsp.config + LspAttach autocmd
 ├── utils/                        # Cross-plugin helpers (notifier)
@@ -96,7 +102,7 @@ CodeCompanion also exposes `:CodeCompanionCLI`, an ACP bridge to external CLI ag
 
 ## LSP Servers
 
-Active: cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls
+Active: clangd, cssls, dockerls, eslint, glsl_analyzer, html, jsonls, lua_ls, pyright, vtsls
 
 Inactive (commented out): astro, golangci_lint_ls, gopls
 
@@ -251,11 +257,71 @@ Inside the CodeCompanion chat buffer: `ga` change adapter + model, `gs` toggle s
 | `<leader>ts` | Toggle test summary |
 | `<leader>to` | Toggle test output  |
 
+## Install
+
+One script sets up Neovim, system deps, language tools, this config, the profile and the plugins. It is safe to re-run: a set-up machine changes nothing.
+
+```bash
+# Straight from GitHub
+curl -fsSL https://raw.githubusercontent.com/cscovino/nvim/main/install.sh | bash
+# Same, but keeps the terminal attached so prompts and the menu work
+bash <(curl -fsSL https://raw.githubusercontent.com/cscovino/nvim/main/install.sh)
+# From a clone
+~/.config/nvim/install.sh
+
+# Add --dry-run first to see every command without changing anything
+```
+
+Without `--only` (and without `--yes`) a menu asks which part to run: everything, nvim, deps, lsp, config or plugins.
+
+| Flag                                      | Effect                                                                                                   |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `-h`                                      | Show usage                                                                                               |
+| `--yes`                                   | No prompts; keeps a working Neovim >= 0.12                                                               |
+| `--dry-run`                               | Print every command, change nothing                                                                      |
+| `--profile full\|minimal`                 | Profile to write; defaults to full on macOS and minimal on Linux; without it an existing profile is kept |
+| `--nvim-version stable\|nightly\|vX.Y.Z`  | Install that Neovim; tags >= v0.12.0                                                                     |
+| `--only nvim\|deps\|lsp\|config\|plugins` | Run one step; `--only plugins` forces a plugin restore and parser build                                  |
+
+### macOS
+
+Apple Silicon (arm64).
+
+- ripgrep and fd come from Homebrew, only if missing.
+- A working Neovim >= 0.12 (Homebrew's, for example) is kept unless you pick a version. Picked versions go to `~/.local/opt` with a `~/.local/bin/nvim` symlink. The script never uninstalls anything: when another `nvim` wins in PATH it warns and prints a removal hint.
+- The tree-sitter CLI is the latest GitHub binary in `~/.local/bin`. A broken pnpm `tree-sitter` is left in place, with a `pnpm rm -g tree-sitter-cli` hint if it still wins in PATH.
+- node, pyright, clangd and lua-language-server are not installed on macOS; a missing one gets a one-line hint.
+- The default profile is full.
+
+### Linux
+
+- Requirements: apt-based, aarch64, glibc >= 2.28. sudo is used only for `apt-get`, after a confirmation unless `--yes`.
+- Tested on a Jetson Nano with Ubuntu 20.04.
+- apt packages: `build-essential git curl fd-find clangd-18`, plus an `fd` symlink.
+- Neovim comes from `neovim/neovim-releases` when glibc < 2.35; nightly only from the official repo.
+- Into `~/.local`: Node 24 (`latest-v24.x`) with pyright, `clangd` linked to clangd-18, lua-language-server 3.19.1, ripgrep 15.2.0, and tree-sitter (v0.25.10 when glibc < 2.39).
+- The default profile is minimal.
+- Add `~/.local/bin` to PATH with the `export` line the script prints. The script never edits shell rc files.
+
+> **Jetson Nano:** use the Ubuntu 20.04 image. Stock JetPack is Ubuntu 18.04 with glibc 2.27, which the script refuses.
+> tree-sitter is pinned to v0.25.10, so `:checkhealth nvim-treesitter` shows the ERROR `tree-sitter-cli v0.26.1 is required`. That is expected: parsers still build.
+> If Node 24 does not run on the 4.9 kernel, the script stops and names Node 22 (`latest-v22.x`). If parsers do not build, it stops and names `cargo install --locked tree-sitter-cli`.
+
+### Profiles
+
+- Presets: `full` (every category) and `minimal` (ui, editor, lsp).
+- ai, debug, testing, http and extras toggle on top of the preset. `:Profile` changes and saves them (restart to apply).
+- The profile lives in `~/.local/state/nvim/profile`.
+- `NVIM_PROFILE=full nvim` (or `minimal`) overrides it for one run.
+- After a plugins-step failure, re-run with `--only plugins`: a plain re-run skips installed plugins.
+
 ## Setup
+
+Manual path, without the script:
 
 ```bash
 # Clone into Neovim config directory
-git clone https://github.com/<user>/nvim-config ~/.config/nvim
+git clone https://github.com/cscovino/nvim.git ~/.config/nvim
 
 # Open Neovim — lazy.nvim will auto-install plugins,
 # nvim-treesitter (main branch) will compile parsers on first run
