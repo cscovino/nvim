@@ -21,6 +21,7 @@ STEP=init
 OS=
 ARCH=
 GLIBC=
+TTY=0
 TMP=
 INSTALLED=
 SKIPPED=
@@ -60,6 +61,30 @@ run() {
 ver_ge() { [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | sed -n 1p)" = "$2" ]; }
 # -f: an HTTP error fails instead of saving an error page
 fetch() { run curl -fsSL --retry 3 -o "$2" "$1"; }
+# Prompts read /dev/tty: under curl | bash, stdin is the script itself
+prompt() {
+  printf '%s ' "$1" >&2
+  read -r REPLY </dev/tty || REPLY=
+}
+
+usage() {
+  cat <<'EOF'
+Usage: install.sh [options]
+  -h, --help                            show this help
+  --yes                                 take the default at every prompt
+  --dry-run                             print what would be done, change nothing
+  --profile full|minimal                write this profile (default: full on macOS, minimal on Linux)
+  --nvim-version stable|nightly|vX.Y.Z  the Neovim to install (v0.12.0 or newer)
+  --only nvim|deps|lsp|config|plugins   run one step
+Without --only and --yes, a menu asks which part to run.
+EOF
+}
+# A bad flag or value: exit 2 with the usage text
+bad() {
+  printf 'install.sh: %s\n' "$*" >&2
+  usage >&2
+  exit 2
+}
 
 install_tree_sitter() {
   gunzip -c "$TMP/tree-sitter.gz" >"$HOME/.local/bin/tree-sitter"
@@ -215,31 +240,47 @@ summary() {
 }
 
 main() {
-  local s
+  local s opt re
+  # bash 3.2 matches a quoted regex literally, so it lives in a variable
+  re='^v[0-9]+\.[0-9]+\.[0-9]+$'
   while [ $# -gt 0 ]; do
     case $1 in
+      -h | --help)
+        usage
+        exit 0
+        ;;
       --yes) YES=1 ;;
       --dry-run) DRY=1 ;;
       --only | --profile | --nvim-version)
-        [ $# -ge 2 ] || die "$1 needs a value"
+        [ $# -ge 2 ] || bad "$1 needs a value"
+        # Values reach paths and URLs, so only whitelisted ones pass
         case $1 in
           --only)
-            case ${2-} in
+            case $2 in
               nvim | deps | lsp | config | plugins) ONLY=$2 ;;
-              *) die "invalid --only value: ${2-}" ;;
+              *) bad "invalid --only value: $2" ;;
             esac
             ;;
           --profile)
-            case ${2-} in
+            case $2 in
               full | minimal) PROFILE=$2 ;;
-              *) die "invalid --profile value: ${2-}" ;;
+              *) bad "invalid --profile value: $2" ;;
             esac
             ;;
-          --nvim-version) NVIM_VERSION=$2 ;;
+          --nvim-version)
+            case $2 in
+              stable | nightly) ;;
+              *)
+                [[ $2 =~ $re ]] || bad "invalid --nvim-version value: $2 (stable, nightly or vX.Y.Z)"
+                ver_ge "${2#v}" "$NVIM_MIN" || bad "--nvim-version $2 is older than v$NVIM_MIN"
+                ;;
+            esac
+            NVIM_VERSION=$2
+            ;;
         esac
         shift
         ;;
-      *) die "unknown option: $1" ;;
+      *) bad "unknown option: $1" ;;
     esac
     shift
   done
@@ -261,6 +302,32 @@ main() {
       *) die 'could not read the glibc version (getconf GNU_LIBC_VERSION)' ;;
     esac
     ver_ge "$GLIBC" 2.28 || die "glibc $GLIBC is older than 2.28, which Neovim needs"
+  fi
+
+  # [ -r /dev/tty ] is true even with no controlling terminal; opening it is not
+  if (: </dev/tty) 2>/dev/null; then
+    TTY=1
+  fi
+  if [ "$TTY" = 0 ]; then
+    [ "$YES" = 1 ] || [ -n "$ONLY" ] || die 'no terminal for prompts: pass --yes or --only <step>'
+    # Nobody can answer, so prompts take their defaults
+    YES=1
+  fi
+  if [ -z "$ONLY" ] && [ "$YES" = 0 ]; then
+    PS3='Install which part? '
+    opt=
+    # EOF leaves opt empty, which counts as quit
+    select opt in everything nvim deps lsp config plugins quit; do
+      [ -n "$opt" ] && break
+    done </dev/tty || true
+    case ${opt:-quit} in
+      quit)
+        say 'nothing to do'
+        exit 0
+        ;;
+      everything) ;;
+      *) ONLY=$opt ;;
+    esac
   fi
 
   TMP=$(mktemp -d)
