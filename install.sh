@@ -11,6 +11,11 @@ NVIM_MIN=0.12.0
 NVIM_TAG_RE='^v[0-9]+\.[0-9]+\.[0-9]+$'
 # Newest tree-sitter linux-arm64 build that runs below glibc 2.39
 TS_PIN=v0.25.10
+# Linux tools, pinned so a bump is a one-line change
+LUALS_VERSION=3.19.1
+RG_VERSION=15.2.0
+NODE_DIST=https://nodejs.org/dist/latest-v24.x
+PYRIGHT_VERSION=1.1.414
 REPO_URL=https://github.com/cscovino/nvim.git
 
 DRY=0
@@ -98,6 +103,16 @@ latest_tag() {
   [[ $u =~ $NVIM_TAG_RE ]] || die "unexpected latest Neovim tag on $1: $u"
   printf '%s\n' "$u"
 }
+# Major version from "$1 --version"; 0 when it fails or prints no number, so
+# a broken tool counts as missing
+major() {
+  local v
+  v=$("$1" --version 2>/dev/null) || v=
+  v=${v%%$'\n'*}
+  v=${v#"${v%%[0-9]*}"}
+  v=${v%%[!0-9]*}
+  printf '%s\n' "${v:-0}"
+}
 # A bad flag or value: exit 2 with the usage text
 bad() {
   printf 'install.sh: %s\n' "$*" >&2
@@ -108,6 +123,12 @@ bad() {
 install_tree_sitter() {
   gunzip -c "$TMP/tree-sitter.gz" >"$HOME/.local/bin/tree-sitter"
   chmod +x "$HOME/.local/bin/tree-sitter"
+}
+
+write_luals_wrapper() {
+  printf '#!/bin/sh\nexec "%s" "$@"\n' "$HOME/.local/opt/lua-language-server/bin/lua-language-server" \
+    >"$HOME/.local/bin/lua-language-server"
+  chmod +x "$HOME/.local/bin/lua-language-server"
 }
 
 write_profile() {
@@ -122,8 +143,44 @@ restore_plugins() {
 }
 
 step_deps() {
-  local pair bin formula
-  if [ "$OS" = Darwin ]; then
+  local pair bin formula p missing=
+  if [ "$OS" = Linux ]; then
+    command -v apt-get >/dev/null || die 'apt-get not found: only apt-based Linux is supported'
+    for p in build-essential git curl fd-find clangd-18; do
+      case "$(dpkg-query -W -f='${Status}' "$p" 2>/dev/null || true)" in
+        *'install ok installed'*) ;;
+        *) missing="$missing $p" ;;
+      esac
+    done
+    if [ -z "$missing" ]; then
+      say 'apt packages present, skipping'
+      SKIPPED="$SKIPPED apt"
+    else
+      if [ "$YES" = 0 ]; then
+        prompt "Install with sudo apt-get:$missing? [y/N]"
+        case $REPLY in
+          y | Y | yes) ;;
+          *) die "apt install declined; still missing:$missing" ;;
+        esac
+      fi
+      say "installing with apt-get:$missing"
+      # sudo is used for these two lines only. Never apt-get's upgrade: it
+      # would upgrade the whole system
+      run sudo apt-get update
+      # $missing is a word list on purpose
+      run sudo env DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=300 install -y $missing ||
+        die 'apt-get install failed; fd-find and clangd-18 are in the universe component (sudo add-apt-repository universe), then re-run'
+      INSTALLED="$INSTALLED$missing"
+    fi
+    # Debian names the fd binary fdfind
+    if command -v fd >/dev/null; then
+      say 'fd present, skipping'
+      SKIPPED="$SKIPPED fd"
+    else
+      run ln -sfn /usr/bin/fdfind "$HOME/.local/bin/fd"
+      INSTALLED="$INSTALLED fd"
+    fi
+  else
     # Only installs what is missing; never upgrades or relinks brew packages
     for pair in rg:ripgrep fd:fd; do
       bin=${pair%%:*}
@@ -251,8 +308,14 @@ step_nvim() {
 }
 
 step_lsp() {
-  local v url w b
-  if v=$(tree-sitter --version 2>/dev/null); then
+  local v url w b f n22
+  v=$(tree-sitter --version 2>/dev/null) || v=
+  # No version number counts as missing
+  case $v in
+    *[0-9].[0-9]*) ;;
+    *) v= ;;
+  esac
+  if [ -n "$v" ]; then
     say "$v present, skipping"
     SKIPPED="$SKIPPED tree-sitter"
   else
@@ -281,14 +344,9 @@ step_lsp() {
       fi
     fi
   fi
+  v=$(major node)
   # macOS: the user manages these, so only hint
   if [ "$OS" = Darwin ]; then
-    v=$(node --version 2>/dev/null) || v=
-    v=${v#v}
-    v=${v%%.*}
-    case $v in
-      '' | *[!0-9]*) v=0 ;;
-    esac
     if [ "$v" -ge 22 ]; then
       say "node v$v present"
     else
@@ -305,6 +363,79 @@ step_lsp() {
         esac
       fi
     done
+    return 0
+  fi
+  # Linux, in this order: pyright needs node, and nothing is tried after a
+  # failed smoke test (D-05: a hint, no automatic fallback)
+  n22="Install Node 22 from https://nodejs.org/dist/latest-v22.x/ into ~/.local/opt/node (link node, npm, npx into ~/.local/bin), then re-run: node >= 22 is kept"
+  if [ "$v" -ge 22 ]; then
+    say "node v$v present, skipping"
+    SKIPPED="$SKIPPED node"
+  else
+    f=$(curl -fsSL "$NODE_DIST/SHASUMS256.txt" | sed -n 's/.* \(node-v[0-9.]*-linux-arm64\.tar\.gz\)$/\1/p') || f=
+    [ -n "$f" ] || die "no linux-arm64 tarball listed in $NODE_DIST/SHASUMS256.txt"
+    say "installing $f to $HOME/.local/opt/node"
+    fetch "$NODE_DIST/$f" "$TMP/node.tar.gz"
+    run mkdir -p "$HOME/.local/opt"
+    run tar -xzf "$TMP/node.tar.gz" -C "$TMP"
+    run rm -rf "$HOME/.local/opt/node"
+    run mv "$TMP/${f%.tar.gz}" "$HOME/.local/opt/node"
+    for b in node npm npx; do
+      run ln -sfn "$HOME/.local/opt/node/bin/$b" "$HOME/.local/bin/$b"
+    done
+    INSTALLED="$INSTALLED node"
+    if [ "$DRY" = 0 ]; then
+      "$HOME/.local/bin/node" -e 0 >/dev/null 2>&1 ||
+        die "Node 24 does not run on this machine (kernel $(uname -r)). $n22"
+    fi
+  fi
+  if command -v pyright-langserver >/dev/null; then
+    say 'pyright present, skipping'
+    SKIPPED="$SKIPPED pyright"
+  else
+    say "installing pyright $PYRIGHT_VERSION to $HOME/.local"
+    # --prefix: no sudo, no npm configuration change, bins land in ~/.local/bin
+    run npm install -g --prefix "$HOME/.local" "pyright@$PYRIGHT_VERSION"
+    INSTALLED="$INSTALLED pyright"
+    # pyright-langserver --version always exits 1, so test pyright itself
+    if [ "$DRY" = 0 ]; then
+      pyright --version >/dev/null 2>&1 || die "pyright does not run with this Node. $n22"
+    fi
+  fi
+  if command -v clangd >/dev/null; then
+    say 'clangd present, skipping'
+    SKIPPED="$SKIPPED clangd"
+  else
+    if [ "$DRY" = 0 ]; then
+      [ -x /usr/bin/clangd-18 ] || die 'clangd-18 is not installed: run with --only deps first'
+    fi
+    run ln -sfn /usr/bin/clangd-18 "$HOME/.local/bin/clangd"
+    INSTALLED="$INSTALLED clangd"
+  fi
+  if command -v lua-language-server >/dev/null; then
+    say 'lua-language-server present, skipping'
+    SKIPPED="$SKIPPED lua-language-server"
+  else
+    say "installing lua-language-server $LUALS_VERSION to $HOME/.local/opt/lua-language-server"
+    fetch "https://github.com/LuaLS/lua-language-server/releases/download/$LUALS_VERSION/lua-language-server-$LUALS_VERSION-linux-arm64.tar.gz" "$TMP/luals.tar.gz"
+    run rm -rf "$HOME/.local/opt/lua-language-server"
+    run mkdir -p "$HOME/.local/opt/lua-language-server"
+    # This tarball has no top dir
+    run tar -xzf "$TMP/luals.tar.gz" -C "$HOME/.local/opt/lua-language-server"
+    run write_luals_wrapper
+    INSTALLED="$INSTALLED lua-language-server"
+  fi
+  # apt-era ripgrep 11 is too old
+  v=$(major rg)
+  if [ "$v" -ge 15 ]; then
+    say "ripgrep $v present, skipping"
+    SKIPPED="$SKIPPED rg"
+  else
+    say "installing ripgrep $RG_VERSION to $HOME/.local/bin"
+    fetch "https://github.com/BurntSushi/ripgrep/releases/download/$RG_VERSION/ripgrep-$RG_VERSION-aarch64-unknown-linux-gnu.tar.gz" "$TMP/rg.tar.gz"
+    run tar -xzf "$TMP/rg.tar.gz" -C "$TMP"
+    run mv "$TMP/ripgrep-$RG_VERSION-aarch64-unknown-linux-gnu/rg" "$HOME/.local/bin/rg"
+    INSTALLED="$INSTALLED rg"
   fi
 }
 
