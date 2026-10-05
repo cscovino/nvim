@@ -8,6 +8,7 @@
 set -euo pipefail
 
 NVIM_MIN=0.12.0
+NVIM_TAG_RE='^v[0-9]+\.[0-9]+\.[0-9]+$'
 # Newest tree-sitter linux-arm64 build that runs below glibc 2.39
 TS_PIN=v0.25.10
 REPO_URL=https://github.com/cscovino/nvim.git
@@ -79,6 +80,24 @@ Usage: install.sh [options]
 Without --only and --yes, a menu asks which part to run.
 EOF
 }
+# stable, nightly or a vX.Y.Z tag >= NVIM_MIN. The value reaches a URL, so
+# nothing else passes. bash 3.2 matches a quoted regex literally, so it lives
+# in a variable
+valid_nvim_version() {
+  case $1 in
+    stable | nightly) return 0 ;;
+  esac
+  [[ $1 =~ $NVIM_TAG_RE ]] && ver_ge "${1#v}" "$NVIM_MIN"
+}
+# The tag releases/latest redirects to
+latest_tag() {
+  local u
+  u=$(curl -fsSLo /dev/null -w '%{url_effective}' "https://github.com/$1/releases/latest") ||
+    die "could not look up the latest Neovim release on $1"
+  u=${u##*/}
+  [[ $u =~ $NVIM_TAG_RE ]] || die "unexpected latest Neovim tag on $1: $u"
+  printf '%s\n' "$u"
+}
 # A bad flag or value: exit 2 with the usage text
 bad() {
   printf 'install.sh: %s\n' "$*" >&2
@@ -123,7 +142,14 @@ step_deps() {
 }
 
 step_nvim() {
-  local v
+  local v ok= want=$NVIM_VERSION latest= tag hint have w
+  # Fixed names, never from input: they reach rm -rf
+  local dir=nvim-macos-arm64 repo=neovim/neovim
+  if [ "$OS" = Linux ]; then
+    dir=nvim-linux-arm64
+    # neovim/neovim Linux builds need glibc 2.34; neovim-releases targets old glibc
+    ver_ge "$GLIBC" 2.35 || repo=neovim/neovim-releases
+  fi
   # Even --version creates stdpath('state')/nvim.log, which a dry run must not
   v=$(NVIM_LOG_FILE=/dev/null nvim --version 2>/dev/null) || v=
   v=${v%%$'\n'*}
@@ -134,12 +160,93 @@ step_nvim() {
       ;;
     *) v= ;;
   esac
-  # D-10: --yes keeps a working Neovim; never touches brew's neovim (D-07)
-  if [ "$YES" = 1 ] && [ -z "$NVIM_VERSION" ] && [ -n "$v" ] && ver_ge "$v" "$NVIM_MIN"; then
+  if [ -n "$v" ] && ver_ge "$v" "$NVIM_MIN"; then
+    ok=1
+  fi
+  if [ -z "$want" ] && [ "$YES" = 0 ]; then
+    latest=$(latest_tag "$repo")
+    if [ -n "$v" ]; then
+      say "Neovim installed: v$v ($(command -v nvim))"
+    else
+      say 'Neovim installed: none'
+    fi
+    say "Neovim latest: $latest ($repo)"
+    hint=$latest
+    if [ -n "$ok" ]; then
+      hint="keep v$v"
+    fi
+    prompt "Neovim version [Enter: $hint | stable | nightly | vX.Y.Z | skip]"
+    case $REPLY in
+      '') ;;
+      skip)
+        say 'skipping Neovim'
+        SKIPPED="$SKIPPED nvim"
+        return 0
+        ;;
+      *)
+        valid_nvim_version "$REPLY" || die "invalid Neovim version: $REPLY (stable, nightly or vX.Y.Z, v$NVIM_MIN or newer)"
+        want=$REPLY
+        ;;
+    esac
+  fi
+  # D-10, D-11: no choice keeps a working Neovim, else installs stable.
+  # Never touches brew's neovim (D-07)
+  if [ -z "$want" ] && [ -n "$ok" ]; then
     say "nvim v$v present, keeping (pass --nvim-version to change it)"
     SKIPPED="$SKIPPED nvim"
   else
-    die "Neovim >= $NVIM_MIN not found on PATH (installing it is not supported yet; with one installed, re-run with --yes)"
+    case ${want:-stable} in
+      stable)
+        [ -n "$latest" ] || latest=$(latest_tag "$repo")
+        tag=$latest
+        ;;
+      nightly)
+        [ "$repo" = neovim/neovim ] || die 'nightly is only published for glibc >= 2.35 (neovim/neovim); pick stable or a tag'
+        tag=nightly
+        ;;
+      *) tag=$want ;;
+    esac
+    have=$(NVIM_LOG_FILE=/dev/null "$HOME/.local/bin/nvim" --version 2>/dev/null) || have=
+    # A nightly is never up to date
+    if [ "$tag" != nightly ] && [ "${have%%$'\n'*}" = "NVIM $tag" ]; then
+      say "nvim $tag already installed, skipping"
+      SKIPPED="$SKIPPED nvim"
+    else
+      say "installing Neovim $tag from $repo to $HOME/.local/opt/$dir"
+      # Exact asset name: the repos also publish -puc builds
+      fetch "https://github.com/$repo/releases/download/$tag/$dir.tar.gz" "$TMP/nvim.tar.gz" ||
+        die "Neovim $tag: $dir.tar.gz is not published for this platform on $repo (or the download failed); neovim-releases arm64 builds start at v0.12.3"
+      # The top dir stays whole: flattening it into ~/.local mixes its runtime
+      # into the data dir's parent
+      run mkdir -p "$HOME/.local/opt"
+      run tar -xzf "$TMP/nvim.tar.gz" -C "$TMP"
+      run rm -rf "$HOME/.local/opt/$dir"
+      run mv "$TMP/$dir" "$HOME/.local/opt/$dir"
+      if [ "$OS" = Darwin ]; then
+        run xattr -cr "$HOME/.local/opt/$dir"
+      fi
+      run ln -sfn "$HOME/.local/opt/$dir/bin/nvim" "$HOME/.local/bin/nvim"
+      if [ "$DRY" = 0 ]; then
+        # No grep -q pipe: under pipefail an early exit can fail the pipeline
+        have=$(NVIM_LOG_FILE=/dev/null "$HOME/.local/opt/$dir/bin/nvim" --version 2>/dev/null) || have=
+        case $have in
+          *LuaJIT*) ;;
+          *) die 'installed nvim is not a LuaJIT build' ;;
+        esac
+      fi
+      INSTALLED="$INSTALLED nvim $tag"
+    fi
+  fi
+  # D-07: warn only; the other nvim stays
+  if [ -e "$HOME/.local/bin/nvim" ]; then
+    w=$(
+      PATH=$ORIG_PATH
+      hash -r
+      command -v nvim || true
+    )
+    if [ -n "$w" ] && [ "$w" != "$HOME/.local/bin/nvim" ]; then
+      warn "another nvim wins in your PATH: $w (put ~/.local/bin first, or remove it, e.g. brew uninstall neovim)"
+    fi
   fi
 }
 
@@ -322,9 +429,7 @@ summary() {
 }
 
 main() {
-  local s opt re
-  # bash 3.2 matches a quoted regex literally, so it lives in a variable
-  re='^v[0-9]+\.[0-9]+\.[0-9]+$'
+  local s opt
   while [ $# -gt 0 ]; do
     case $1 in
       -h | --help)
@@ -350,13 +455,7 @@ main() {
             esac
             ;;
           --nvim-version)
-            case $2 in
-              stable | nightly) ;;
-              *)
-                [[ $2 =~ $re ]] || bad "invalid --nvim-version value: $2 (stable, nightly or vX.Y.Z)"
-                ver_ge "${2#v}" "$NVIM_MIN" || bad "--nvim-version $2 is older than v$NVIM_MIN"
-                ;;
-            esac
+            valid_nvim_version "$2" || bad "invalid --nvim-version value: $2 (stable, nightly or vX.Y.Z, v$NVIM_MIN or newer)"
             NVIM_VERSION=$2
             ;;
         esac
