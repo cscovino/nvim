@@ -102,8 +102,49 @@ restore_plugins() {
   nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
 }
 
+step_deps() {
+  local pair bin formula
+  if [ "$OS" = Darwin ]; then
+    # Only installs what is missing; never upgrades or relinks brew packages
+    for pair in rg:ripgrep fd:fd; do
+      bin=${pair%%:*}
+      formula=${pair#*:}
+      if command -v "$bin" >/dev/null; then
+        say "$bin present, skipping"
+        SKIPPED="$SKIPPED $bin"
+      else
+        command -v brew >/dev/null || die 'Homebrew not found: install ripgrep and fd, then re-run'
+        say "installing $formula with brew"
+        run brew install "$formula"
+        INSTALLED="$INSTALLED $formula"
+      fi
+    done
+  fi
+}
+
+step_nvim() {
+  local v
+  # Even --version creates stdpath('state')/nvim.log, which a dry run must not
+  v=$(NVIM_LOG_FILE=/dev/null nvim --version 2>/dev/null) || v=
+  v=${v%%$'\n'*}
+  case $v in
+    'NVIM v'*)
+      v=${v#NVIM v}
+      v=${v%%[!0-9.]*}
+      ;;
+    *) v= ;;
+  esac
+  # D-10: --yes keeps a working Neovim; never touches brew's neovim (D-07)
+  if [ "$YES" = 1 ] && [ -z "$NVIM_VERSION" ] && [ -n "$v" ] && ver_ge "$v" "$NVIM_MIN"; then
+    say "nvim v$v present, keeping (pass --nvim-version to change it)"
+    SKIPPED="$SKIPPED nvim"
+  else
+    die "Neovim >= $NVIM_MIN not found on PATH (installing it is not supported yet; with one installed, re-run with --yes)"
+  fi
+}
+
 step_lsp() {
-  local v url w
+  local v url w b
   if v=$(tree-sitter --version 2>/dev/null); then
     say "$v present, skipping"
     SKIPPED="$SKIPPED tree-sitter"
@@ -132,6 +173,31 @@ step_lsp() {
         warn "$w wins over $HOME/.local/bin/tree-sitter on your PATH; if it is the pnpm one: pnpm rm -g tree-sitter-cli"
       fi
     fi
+  fi
+  # macOS: the user manages these, so only hint
+  if [ "$OS" = Darwin ]; then
+    v=$(node --version 2>/dev/null) || v=
+    v=${v#v}
+    v=${v%%.*}
+    case $v in
+      '' | *[!0-9]*) v=0 ;;
+    esac
+    if [ "$v" -ge 22 ]; then
+      say "node v$v present"
+    else
+      warn 'node >= 22 not found (copilot needs it): install it with fnm or brew'
+    fi
+    for b in pyright-langserver clangd lua-language-server; do
+      if command -v "$b" >/dev/null; then
+        say "$b present"
+      else
+        case $b in
+          pyright-langserver) warn 'pyright-langserver not found: npm i -g pyright' ;;
+          clangd) warn 'clangd not found: xcode-select --install' ;;
+          *) warn 'lua-language-server not found: brew install lua-language-server' ;;
+        esac
+      fi
+    done
   fi
 }
 
@@ -233,10 +299,26 @@ EOF
 }
 
 summary() {
+  local path_line=
   say '==> summary'
+  if [ "$DRY" = 1 ]; then
+    say 'dry run: nothing changed'
+  fi
   say "installed:${INSTALLED:- none}"
   say "skipped:${SKIPPED:- none}"
   say "profile: $PROFILE_MSG"
+  case ":$ORIG_PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) path_line=1 ;;
+  esac
+  if [ -n "$NEXT" ] || [ -n "$path_line" ]; then
+    say 'next steps:'
+    printf '%s' "$NEXT"
+    # Printed for the user to paste; rc files are never edited
+    if [ -n "$path_line" ]; then
+      say '  export PATH="$HOME/.local/bin:$PATH"'
+    fi
+  fi
 }
 
 main() {
@@ -334,7 +416,8 @@ main() {
   trap 'rc=$?; rm -rf "$TMP"; [ "$rc" -eq 0 ] || printf "install.sh: failed during %s (exit %s)\n" "$STEP" "$rc" >&2' EXIT
 
   [ -d "$HOME/.local/bin" ] || run mkdir -p "$HOME/.local/bin"
-  for s in lsp config plugins; do
+  # Fixed order, whatever the flag order or menu pick
+  for s in deps nvim lsp config plugins; do
     if [ -z "$ONLY" ] || [ "$ONLY" = "$s" ]; then
       STEP=$s
       say "==> $s"
