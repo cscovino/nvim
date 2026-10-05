@@ -299,7 +299,7 @@ Apple Silicon (arm64).
 - Tested on a Jetson Nano with Ubuntu 20.04.
 - apt packages: `build-essential git curl fd-find clangd-18`, plus an `fd` symlink.
 - Neovim comes from `neovim/neovim-releases` when glibc < 2.35; nightly only from the official repo.
-- Into `~/.local`: Node 24 (`latest-v24.x`) with pyright, `clangd` linked to clangd-18, lua-language-server 3.19.1, ripgrep 15.2.0, and tree-sitter (v0.25.10 when glibc < 2.39).
+- Into `~/.local`: Node 24 (`latest-v24.x`) with pnpm (via corepack) and pyright, `clangd` linked to clangd-18, lua-language-server 3.19.1, ripgrep 15.2.0, and tree-sitter (v0.25.10 when glibc < 2.39).
 - The default profile is minimal.
 - Add `~/.local/bin` to PATH with the `export` line the script prints. The script never edits shell rc files.
 

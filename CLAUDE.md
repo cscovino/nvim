@@ -71,7 +71,7 @@ JS/TS linting is handled by the eslint LSP server.
 Configured in `lua/config/neotest/init.lua` with two adapters (order = priority):
 
 1. **neotest-vitest** — auto-detects vitest projects
-2. **neotest-jest** — runs `npx jest`, auto-detects `jest.config.*`
+2. **neotest-jest** — runs the project's `node_modules/.bin/jest`, auto-detects `jest.config.*`
 
 Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>ts` (summary), `<leader>to` (output panel), `<leader>rt` (run nearest test).
 
@@ -87,7 +87,7 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 - **Terminal toggle** with `<leader>tt` — opens a floating Snacks terminal
 - **Trouble** for diagnostics list (`<leader>xx`)
 - **`:Profile`** (`lua/profile/menu.lua`): preset and category toggles through `vim.ui.select`. Save writes the state file and offers `:restart`; turning a category off notes that `:Lazy clean` removes its plugins.
-- **`install.sh`**: one script for macOS arm64 and apt-based Linux aarch64. Steps: deps, nvim, lsp, config, plugins. Flags `--yes`, `--dry-run`, `--profile`, `--nvim-version`, `--only`, `-h`; without `--only` (and `--yes`) a menu picks the step. Installs go to `~/.local/opt` plus `~/.local/bin`; it never touches brew/pnpm state or the npm rc file. Safe to re-run: a failed or interrupted run is recovered by re-running it. After a plugins-step failure the re-run needs `--only plugins`, because a plain re-run skips installed plugins.
+- **`install.sh`**: one script for macOS arm64 and apt-based Linux aarch64. Steps: deps, nvim, lsp, config, plugins. Flags `--yes`, `--dry-run`, `--profile`, `--nvim-version`, `--only`, `-h`; without `--only` (and `--yes`) a menu picks the step. Installs go to `~/.local/opt` plus `~/.local/bin`; on macOS it never touches brew or pnpm state, on Linux it installs pnpm through corepack, and it never edits `~/.npmrc`. Safe to re-run: a failed or interrupted run is recovered by re-running it. After a plugins-step failure the re-run needs `--only plugins`, because a plain re-run skips installed plugins.
 
 ## Commands
 

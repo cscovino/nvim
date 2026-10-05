@@ -18,7 +18,6 @@ neotest.setup({
       end,
     }),
     require('neotest-jest')({
-      jestCommand = 'npx jest',
       env = { CI = true },
       cwd = function(path)
         return vim.fn.getcwd()
