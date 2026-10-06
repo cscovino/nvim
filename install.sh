@@ -326,7 +326,7 @@ step_nvim() {
 }
 
 step_lsp() {
-  local v url w b f n22
+  local v url w b f n22 sum
   v=$(tree-sitter --version 2>/dev/null) || v=
   # No version number counts as missing
   case $v in
@@ -391,10 +391,17 @@ step_lsp() {
     say "node v$v present, skipping"
     SKIPPED="$SKIPPED node"
   else
-    f=$(curl -fsSL "$NODE_DIST/SHASUMS256.txt" | sed -n 's/.* \(node-v[0-9.]*-linux-arm64\.tar\.gz\)$/\1/p') || f=
+    # "<sha256>  <file>"; the hash checks the download below
+    f=$(curl -fsSL "$NODE_DIST/SHASUMS256.txt" | sed -n 's/^\([0-9a-f]\{64\}\)  \(node-v[0-9.]*-linux-arm64\.tar\.gz\)$/\1 \2/p') || f=
+    sum=${f%% *}
+    f=${f#* }
     [ -n "$f" ] || die "no linux-arm64 tarball listed in $NODE_DIST/SHASUMS256.txt"
     say "installing $f to $HOME/.local/opt/node"
     fetch "$NODE_DIST/$f" "$TMP/node.tar.gz"
+    if [ "$DRY" = 0 ]; then
+      w=$(sha256sum "$TMP/node.tar.gz") || w=
+      [ "${w%% *}" = "$sum" ] || die "checksum mismatch for $f against $NODE_DIST/SHASUMS256.txt"
+    fi
     run mkdir -p "$HOME/.local/opt"
     run tar -xzf "$TMP/node.tar.gz" -C "$TMP"
     run rm -rf "$HOME/.local/opt/node"
