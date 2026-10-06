@@ -497,8 +497,10 @@ step_config() {
 
 step_plugins() {
   local before= after rc=0 names
-  # D-01: never re-restore an installed set, that would revert :Lazy update work
-  if [ "$ONLY" != plugins ] && [ -n "$(ls -A "$LAZY_DIR" 2>/dev/null)" ]; then
+  # D-01: never re-restore an installed set, that would revert :Lazy update work.
+  # A failed or interrupted restore leaves the pending file, so a re-run resumes it
+  if [ "$ONLY" != plugins ] && [ ! -f "$STATE/install-plugins-pending" ] &&
+    [ -n "$(ls -A "$LAZY_DIR" 2>/dev/null)" ]; then
     say "plugins present in $LAZY_DIR, skipping (--only plugins forces a restore)"
     SKIPPED="$SKIPPED plugins"
     return 0
@@ -552,6 +554,7 @@ EOF
   fi
   say "restoring plugins and building parsers (several minutes on a slow machine), log: $LOG"
   run mkdir -p "$STATE"
+  run touch "$STATE/install-plugins-pending"
   run restore_plugins || rc=$?
   if [ "$rc" != 0 ]; then
     tail -n 20 "$LOG" >&2 || true
@@ -565,6 +568,7 @@ EOF
     after=$(git -C "$CFG" diff -- lazy-lock.json 2>/dev/null) || after=
     [ "$after" = "$before" ] || die "plugins step changed $CFG/lazy-lock.json"
   fi
+  run rm -f "$STATE/install-plugins-pending"
   INSTALLED="$INSTALLED plugins"
 }
 
