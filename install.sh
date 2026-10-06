@@ -153,9 +153,11 @@ write_profile() {
   printf '{"categories":{},"preset":"%s"}\n' "$1" >"$PROFILE_FILE"
 }
 
-# stdin is /dev/null: under curl | bash it is the script itself
+# stdin is /dev/null: under curl | bash it is the script itself. mcphub's build
+# runs pnpm add -g, which fails with no global bin dir; the env var sets one
+# without writing pnpm config
 restore_plugins() {
-  nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
+  npm_config_global_bin_dir="${PNPM_HOME:-$HOME/.local/bin}" nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
 }
 
 step_deps() {
@@ -368,6 +370,7 @@ step_lsp() {
     else
       warn 'node >= 22 not found (copilot needs it): install it with fnm or brew'
     fi
+    command -v pnpm >/dev/null || warn 'pnpm not found (the debug and ai plugin builds need it): corepack enable pnpm'
     for b in pyright-langserver clangd lua-language-server; do
       if command -v "$b" >/dev/null; then
         say "$b present"
