@@ -121,9 +121,12 @@ bad() {
   exit 2
 }
 
+# Smoke-tested in $TMP: a binary that does not run never replaces the one on PATH
 install_tree_sitter() {
-  gunzip -c "$TMP/tree-sitter.gz" >"$HOME/.local/bin/tree-sitter"
-  chmod +x "$HOME/.local/bin/tree-sitter"
+  gunzip -c "$TMP/tree-sitter.gz" >"$TMP/tree-sitter"
+  chmod +x "$TMP/tree-sitter"
+  "$TMP/tree-sitter" --version >/dev/null 2>&1 || return 1
+  mv "$TMP/tree-sitter" "$HOME/.local/bin/tree-sitter"
 }
 
 write_luals_wrapper() {
@@ -330,11 +333,11 @@ step_lsp() {
     fi
     say "installing tree-sitter to $HOME/.local/bin"
     fetch "$url" "$TMP/tree-sitter.gz"
-    run install_tree_sitter
+    # --root ~/.local: the cargo build must replace ~/.local/bin/tree-sitter, which wins on PATH
+    run install_tree_sitter ||
+      die 'the downloaded tree-sitter does not run here; build it instead: CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli --root "$HOME/.local"'
     INSTALLED="$INSTALLED tree-sitter"
     if [ "$DRY" = 0 ]; then
-      "$HOME/.local/bin/tree-sitter" --version >/dev/null 2>&1 ||
-        die 'the downloaded tree-sitter does not run here; build it instead: CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli'
       w=$(
         PATH=$ORIG_PATH
         hash -r
@@ -542,7 +545,7 @@ EOF
     tail -n 20 "$LOG" >&2 || true
     names=$(grep -E '^(plugin restore failed|parsers not built):' "$LOG" | tail -n 1) || names=
     if [ "$rc" = 2 ]; then
-      die "${names:-parsers not built}; if tree-sitter cannot build them here, use CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli, then re-run with --only plugins"
+      die "${names:-parsers not built}; if tree-sitter cannot build them here, use CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli --root \"\$HOME/.local\", then re-run with --only plugins"
     fi
     die "${names:+$names; }plugins step failed (log: $LOG); fix it, then re-run with --only plugins"
   fi
