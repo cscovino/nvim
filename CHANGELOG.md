@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [4.0.0](https://github.com/cscovino/nvim/compare/6356f601673cd9fb49f7defe146418b4bb7947f9..4.0.0) - 2026-10-06
+#### Bug Fixes
+- **(dap)** 🐛 build vscode-js-debug with pnpm from its frozen lockfile - ([1aa854c](https://github.com/cscovino/nvim/commit/1aa854c07ec89ccf65d7d32bdf94ecb27d0116f6)) - Carlos Scovino
+- **(guards)** 🥅 skip missing LSP servers, linters and parser tools quietly - ([d6e7350](https://github.com/cscovino/nvim/commit/d6e7350020a1e87606daffd968931251fc2563e4)) - Carlos Scovino
+- **(install)** 🐛 install pnpm via corepack on Linux and use it for pyright - ([35fe15a](https://github.com/cscovino/nvim/commit/35fe15a0dde86f3697c9487f3bafec3d05b6d03b)) - Carlos Scovino
+- **(install)** 🐛 list a kept config under skipped in the summary - ([87d4dab](https://github.com/cscovino/nvim/commit/87d4dab638bea4e4374715cf3f9eb546f115c99f)) - Carlos Scovino
+- **(treesitter)** 🥅 WARN instead of erroring when tree-sitter can't be exec'd - ([65aef14](https://github.com/cscovino/nvim/commit/65aef14fa0b0f4af2a5a78d37be62ec2a2be313d)) - Carlos Scovino
+#### Documentation
+- **(claude)** 📝 document profiles, category files, :Profile, install.sh and clangd - ([a84444d](https://github.com/cscovino/nvim/commit/a84444d7ae453e825547e9905a9420fb31d54834)) - Carlos Scovino
+- **(readme)** 📝 add Install section, update structure tree, fix clone URL, add clangd - ([9dfb1fc](https://github.com/cscovino/nvim/commit/9dfb1fc9fdeceed33a55733069a469892906d4ce)) - Carlos Scovino
+- 📝 rename CLAUDE.md to AGENTS.md - ([a5ef501](https://github.com/cscovino/nvim/commit/a5ef5012a7048b191f715fa473958bf00ecfc34f)) - Carlos Scovino
+#### Features
+- **(install)** ✨ add Linux apt deps and language tools - ([bc0df3d](https://github.com/cscovino/nvim/commit/bc0df3d8a04e3d83bbc80a94722f8ba2fdd1fb67)) - Carlos Scovino
+- **(install)** ✨ add Neovim picker and tarball install - ([837f49c](https://github.com/cscovino/nvim/commit/837f49c4f04cc355224f52acc0498820041ef802)) - Carlos Scovino
+- **(install)** ✨ add macOS path: brew deps, keep nvim, LSP hints, summary - ([de8867e](https://github.com/cscovino/nvim/commit/de8867e636dd3c9edae146676c95baaddc5dbb9b)) - Carlos Scovino
+- **(install)** ✨ add help, strict flags, TTY rule and select menu to install.sh - ([bf870b4](https://github.com/cscovino/nvim/commit/bf870b43470d39b0e626f0a17cb7baf67d33c436)) - Carlos Scovino
+- **(install)** ✨ add install.sh with tree-sitter, config, profile and headless plugin restore - ([77f5711](https://github.com/cscovino/nvim/commit/77f57112839013fae743f84d45a959c8bea18bdc)) - Carlos Scovino
+- **(profile)** ✨ add :Profile menu to pick and save plugin categories - ([d8fe31d](https://github.com/cscovino/nvim/commit/d8fe31d94f2a692d18cb0c9019343fb9bfaca6b2)) - Carlos Scovino
+- **(profile)** ✨ load plugin categories from a persisted profile - ([6356f60](https://github.com/cscovino/nvim/commit/6356f601673cd9fb49f7defe146418b4bb7947f9)) - Carlos Scovino
+#### Miscellaneous Chores
+- 🙈 ignore local agent tool state - ([8c433e0](https://github.com/cscovino/nvim/commit/8c433e01f584718a60aea16469e35ca3470b7e79)) - Carlos Scovino
+- 📦️ update lazy.nvim in lazy-lock.json - ([d2a175d](https://github.com/cscovino/nvim/commit/d2a175da8f3b3adedd1e3de29428098772010d66)) - Carlos Scovino
+#### Refactoring
+- ♻️ run jest and Next.js via project bins and pnpm - ([c13d9c3](https://github.com/cscovino/nvim/commit/c13d9c38a4e68996179422980e34328351398959)) - Carlos Scovino
+
+- - -
+
 ## [3.7.0](https://github.com/cscovino/nvim/compare/f06e2bdbd1fcd7edc2735829e279766d034704a5..3.7.0) - 2026-10-03
 #### Bug Fixes
 - 🥅 show a WARN instead of failing silently - ([dd0393e](https://github.com/cscovino/nvim/commit/dd0393e965a1dfb07c7ac0d62858a7b706a7167c)) - Carlos Scovino
