@@ -417,9 +417,10 @@ step_lsp() {
         die "pnpm and corepack not found (Node >= 25 has no corepack): install pnpm $PNPM_VERSION, then re-run"
     fi
     say "installing pnpm $PNPM_VERSION to $HOME/.local/bin"
-    run corepack enable pnpm --install-directory "$HOME/.local/bin"
-    # Pins the version used outside projects; unpinned corepack fetches latest (pnpm 12)
+    # Pins the version used outside projects; unpinned corepack fetches latest (pnpm 12).
+    # The shim comes last: after a failed pin no pnpm is on PATH, so a re-run retries
     run corepack install -g "pnpm@$PNPM_VERSION"
+    run corepack enable pnpm --install-directory "$HOME/.local/bin"
     INSTALLED="$INSTALLED pnpm"
   fi
   if command -v pyright-langserver >/dev/null; then
