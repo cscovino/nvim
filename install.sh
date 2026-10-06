@@ -135,6 +135,14 @@ write_luals_wrapper() {
   chmod +x "$HOME/.local/bin/lua-language-server"
 }
 
+# Restoring and cleaning plugins in someone else's config would delete theirs
+cfg_is_ours() {
+  case "$(git -C "$CFG" remote get-url origin 2>/dev/null || true)" in
+    *cscovino/nvim*) return 0 ;;
+  esac
+  return 1
+}
+
 write_profile() {
   mkdir -p "$STATE"
   # The exact bytes lua/profile M.save writes for a bare preset
@@ -464,6 +472,7 @@ step_config() {
     preset=minimal
   fi
   if [ -d "$CFG" ]; then
+    cfg_is_ours || die "$CFG exists but is not a clone of $REPO_URL; move it aside and re-run"
     say "config present at $CFG, keeping"
     SKIPPED="$SKIPPED config"
   else
@@ -536,7 +545,8 @@ EOF
   export NVIM_INSTALL_LUA
   # D-03: compare before and after, the lockfile often has a local diff
   if [ -d "$CFG" ]; then
-    before=$(git -C "$CFG" diff -- lazy-lock.json)
+    cfg_is_ours || die "$CFG is not a clone of $REPO_URL; move it aside, then run install.sh --only config"
+    before=$(git -C "$CFG" diff -- lazy-lock.json 2>/dev/null) || before=
   fi
   say "restoring plugins and building parsers (several minutes on a slow machine), log: $LOG"
   run mkdir -p "$STATE"
@@ -550,7 +560,7 @@ EOF
     die "${names:+$names; }plugins step failed (log: $LOG); fix it, then re-run with --only plugins"
   fi
   if [ "$DRY" = 0 ]; then
-    after=$(git -C "$CFG" diff -- lazy-lock.json)
+    after=$(git -C "$CFG" diff -- lazy-lock.json 2>/dev/null) || after=
     [ "$after" = "$before" ] || die "plugins step changed $CFG/lazy-lock.json"
   fi
   INSTALLED="$INSTALLED plugins"
