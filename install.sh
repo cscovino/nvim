@@ -39,6 +39,10 @@ PROFILE_MSG='not changed'
 ORIG_PATH=$PATH
 # Later steps must find what earlier steps installed
 export PATH="$HOME/.local/bin:$PATH"
+# The headless restore must use the saved profile and the paths below: an
+# inherited NVIM_PROFILE drops saved toggles and lets the plugins step's clean
+# delete their plugins; NVIM_APPNAME moves nvim's config, state and data
+unset NVIM_PROFILE NVIM_APPNAME
 CFG=${XDG_CONFIG_HOME:-$HOME/.config}/nvim
 STATE=${XDG_STATE_HOME:-$HOME/.local/state}/nvim
 # lua/profile M.file is stdpath('state')/profile
@@ -489,8 +493,6 @@ step_config() {
     run write_profile "$preset"
     PROFILE_MSG="written ($preset)"
   fi
-  # NVIM_PROFILE is never exported: it would drop saved category toggles and
-  # let the plugins step's clean delete their plugins
 }
 
 step_plugins() {
