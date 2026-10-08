@@ -11,12 +11,11 @@ NVIM_MIN=0.12.0
 NVIM_TAG_RE='^v[0-9]+\.[0-9]+\.[0-9]+$'
 # Newest tree-sitter linux-arm64 build that runs below glibc 2.39
 TS_PIN=v0.25.10
-# Linux tools, pinned so a bump is a one-line change
+# step_lsp tools, pinned so a bump is a one-line change; pnpm is always the latest
 LUALS_VERSION=3.19.1
 RG_VERSION=15.2.0
 NODE_DIST=https://nodejs.org/dist/latest-v24.x
 PYRIGHT_VERSION=1.1.414
-PNPM_VERSION=10.34.6
 REPO_URL=https://github.com/cscovino/nvim.git
 # Printed when the tree-sitter binary is unusable; --root ~/.local so the build replaces ~/.local/bin/tree-sitter, which wins on PATH. Command only, so the printed hint pastes as is
 TS_BUILD='git clone https://github.com/tree-sitter/tree-sitter && CARGO_BUILD_JOBS=2 cargo install --locked --path tree-sitter/crates/cli --root "$HOME/.local"'
@@ -171,10 +170,12 @@ record_pkgs() {
 }
 
 # stdin is /dev/null: under curl | bash it is the script itself. mcphub's build
-# runs pnpm add -g, which fails with no global bin dir; the env var sets one
-# without writing pnpm config
+# runs pnpm add -g, which fails with no global bin dir; the env vars set one
+# without writing pnpm config. pnpm 10 reads npm_config_*, pnpm 11+ only
+# pnpm_config_* and refuses a bin dir not on PATH: ~/.local/bin always is,
+# $PNPM_HOME/bin is not when pnpm 10's setup put $PNPM_HOME there
 restore_plugins() {
-  npm_config_global_bin_dir="${PNPM_HOME:-$HOME/.local/bin}" nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
+  npm_config_global_bin_dir="${PNPM_HOME:-$HOME/.local/bin}" pnpm_config_global_bin_dir="$HOME/.local/bin" nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
 }
 
 step_deps() {
@@ -440,15 +441,28 @@ step_lsp() {
     say 'pnpm present, skipping'
     SKIPPED="$SKIPPED pnpm"
   else
+    # npm's latest dist-tag: GitHub's latest release can be a 10.x or 11.x patch
+    v=$(curl -fsSL https://registry.npmjs.org/-/package/pnpm/dist-tags) || v=
+    v=${v#*\"latest\":\"}
+    v=${v%%\"*}
+    # The value reaches a URL and a path
+    case $v in
+      '' | *[!0-9.]*) die 'could not look up the latest pnpm on registry.npmjs.org: install pnpm by hand, then re-run' ;;
+    esac
+    say "installing pnpm $v to $HOME/.local/opt/pnpm"
+    # ponytail: TLS only, like LuaLS and tree-sitter; pnpm's own installer checks the npm registry sha512 if that is ever needed
+    fetch "https://github.com/pnpm/pnpm/releases/download/v$v/pnpm-$plat.tar.gz" "$TMP/pnpm.tar.gz" ||
+      die "pnpm $v download failed: install pnpm by hand, then re-run"
+    run rm -rf "$HOME/.local/opt/pnpm"
+    run mkdir -p "$HOME/.local/opt/pnpm"
+    # No top dir; pnpm needs the dist/ next to it
+    run tar -xzf "$TMP/pnpm.tar.gz" -C "$HOME/.local/opt/pnpm"
+    # Before the link: a pnpm on PATH counts as present, so a broken one would stick
     if [ "$DRY" = 0 ]; then
-      command -v corepack >/dev/null ||
-        die "pnpm and corepack not found (Node >= 25 has no corepack): install pnpm $PNPM_VERSION, then re-run"
+      "$HOME/.local/opt/pnpm/pnpm" --version >/dev/null 2>&1 ||
+        die "pnpm $v does not run here: install pnpm by hand, then re-run"
     fi
-    say "installing pnpm $PNPM_VERSION to $HOME/.local/bin"
-    # Pins the version used outside projects; unpinned corepack fetches latest (pnpm 12).
-    # The shim comes last: after a failed pin no pnpm is on PATH, so a re-run retries
-    run corepack install -g "pnpm@$PNPM_VERSION"
-    run corepack enable pnpm --install-directory "$HOME/.local/bin"
+    run ln -sfn "$HOME/.local/opt/pnpm/pnpm" "$HOME/.local/bin/pnpm"
     INSTALLED="$INSTALLED pnpm"
   fi
   if command -v pyright-langserver >/dev/null; then
