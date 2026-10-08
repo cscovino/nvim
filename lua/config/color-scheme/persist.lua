@@ -35,6 +35,7 @@ end
 local function apply_highlight_overrides()
   vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#504945' })
   vim.api.nvim_set_hl(0, 'SnacksPickerListCursorLine', { link = 'PmenuSel' })
+  vim.api.nvim_set_hl(0, 'DapStoppedLine', { default = true, link = 'Visual' })
 end
 
 vim.api.nvim_create_autocmd('ColorScheme', {
