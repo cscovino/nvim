@@ -153,6 +153,17 @@ write_profile() {
   printf '{"categories":{},"preset":"%s"}\n' "$1" >"$PROFILE_FILE"
 }
 
+# One "<apt|brew> <name>" line per package this script installed
+record_pkgs() {
+  local mgr=$1 p
+  shift
+  mkdir -p "$STATE"
+  for p; do
+    grep -qxF "$mgr $p" "$STATE/install-packages" 2>/dev/null ||
+      printf '%s %s\n' "$mgr" "$p" >>"$STATE/install-packages"
+  done
+}
+
 # stdin is /dev/null: under curl | bash it is the script itself. mcphub's build
 # runs pnpm add -g, which fails with no global bin dir; the env var sets one
 # without writing pnpm config
@@ -188,6 +199,7 @@ step_deps() {
       # $missing is a word list on purpose
       run sudo env DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=300 install -y $missing ||
         die 'apt-get install failed; fd-find and clangd-18 are in the universe component (sudo add-apt-repository universe), then re-run'
+      run record_pkgs apt $missing
       INSTALLED="$INSTALLED$missing"
     fi
     # Debian names the fd binary fdfind
@@ -208,8 +220,14 @@ step_deps() {
         SKIPPED="$SKIPPED $bin"
       else
         command -v brew >/dev/null || die 'Homebrew not found: install ripgrep and fd, then re-run'
+        # An installed but unlinked formula: brew install only warns and exits 0, so it must not be recorded
+        if brew list --formula --versions "$formula" >/dev/null 2>&1; then
+          warn "$formula is installed but not linked: brew link $formula"
+          continue
+        fi
         say "installing $formula with brew"
         run brew install "$formula"
+        run record_pkgs brew "$formula"
         INSTALLED="$INSTALLED $formula"
       fi
     done
