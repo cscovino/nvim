@@ -182,8 +182,9 @@ step_deps() {
   if [ "$OS" = Linux ]; then
     command -v apt-get >/dev/null || die 'apt-get not found: only apt-based Linux is supported'
     for p in build-essential git curl fd-find clangd-18; do
-      case "$(dpkg-query -W -f='${Status}' "$p" 2>/dev/null || true)" in
-        *'install ok installed'*) ;;
+      # The status word only: Status starts with the want state, e.g. 'hold ok installed'
+      case "$(dpkg-query -W -f='${db:Status-Status}' "$p" 2>/dev/null || true)" in
+        installed | triggers-awaiting | triggers-pending) ;;
         *) missing="$missing $p" ;;
       esac
     done
