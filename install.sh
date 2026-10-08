@@ -351,7 +351,7 @@ step_nvim() {
 }
 
 step_lsp() {
-  local v url w b f n22 sum
+  local v url w b f n22 sum plat
   v=$(tree-sitter --version 2>/dev/null) || v=
   # No version number counts as missing
   case $v in
@@ -386,57 +386,54 @@ step_lsp() {
       fi
     fi
   fi
-  v=$(major node)
-  # macOS: the user manages these, so only hint
-  if [ "$OS" = Darwin ]; then
-    if [ "$v" -ge 22 ]; then
-      say "node v$v present"
-    else
-      warn 'node >= 22 not found (copilot needs it): install it with fnm or brew'
-    fi
-    command -v pnpm >/dev/null || warn 'pnpm not found (the debug and ai plugin builds need it): corepack enable pnpm'
-    for b in pyright-langserver clangd lua-language-server; do
-      if command -v "$b" >/dev/null; then
-        say "$b present"
-      else
-        case $b in
-          pyright-langserver) warn 'pyright-langserver not found: pnpm add -g pyright' ;;
-          clangd) warn 'clangd not found: xcode-select --install' ;;
-          *) warn 'lua-language-server not found: brew install lua-language-server' ;;
-        esac
-      fi
-    done
-    return 0
-  fi
-  # Linux, in this order: pyright needs node, and nothing is tried after a
+  # In this order: pyright needs node and pnpm, and nothing is tried after a
   # failed smoke test (D-05: a hint, no automatic fallback)
+  plat=linux-arm64
   n22="Install Node 22 from https://nodejs.org/dist/latest-v22.x/ into ~/.local/opt/node (link node and corepack into ~/.local/bin), then re-run: node >= 22 is kept"
+  if [ "$OS" = Darwin ]; then
+    plat=darwin-arm64
+    n22='install node >= 22 with fnm or brew, then re-run'
+  fi
+  v=$(major node)
   if [ "$v" -ge 22 ]; then
     say "node v$v present, skipping"
     SKIPPED="$SKIPPED node"
   else
     # "<sha256>  <file>"; the hash checks the download below
-    f=$(curl -fsSL "$NODE_DIST/SHASUMS256.txt" | sed -n 's/^\([0-9a-f]\{64\}\)  \(node-v[0-9.]*-linux-arm64\.tar\.gz\)$/\1 \2/p') || f=
+    f=$(curl -fsSL "$NODE_DIST/SHASUMS256.txt" | sed -n 's/^\([0-9a-f]\{64\}\)  \(node-v[0-9.]*-'"$plat"'\.tar\.gz\)$/\1 \2/p') || f=
     sum=${f%% *}
     f=${f#* }
-    [ -n "$f" ] || die "no linux-arm64 tarball listed in $NODE_DIST/SHASUMS256.txt"
+    [ -n "$f" ] || die "no $plat tarball listed in $NODE_DIST/SHASUMS256.txt"
     say "installing $f to $HOME/.local/opt/node"
     fetch "$NODE_DIST/$f" "$TMP/node.tar.gz"
     if [ "$DRY" = 0 ]; then
-      w=$(sha256sum "$TMP/node.tar.gz") || w=
+      # macOS before 15 has no sha256sum
+      w=$(sha256sum "$TMP/node.tar.gz" 2>/dev/null || shasum -a 256 "$TMP/node.tar.gz") || w=
       [ "${w%% *}" = "$sum" ] || die "checksum mismatch for $f against $NODE_DIST/SHASUMS256.txt"
     fi
     run mkdir -p "$HOME/.local/opt"
     run tar -xzf "$TMP/node.tar.gz" -C "$TMP"
     run rm -rf "$HOME/.local/opt/node"
     run mv "$TMP/${f%.tar.gz}" "$HOME/.local/opt/node"
+    # Before the links: a node on PATH counts as present, so a broken one would
+    # stick and shadow the node the hint installs
+    if [ "$DRY" = 0 ]; then
+      "$HOME/.local/opt/node/bin/node" -e 0 >/dev/null 2>&1 ||
+        die "Node 24 does not run on this machine (kernel $(uname -r)). $n22"
+    fi
     for b in node corepack; do
       run ln -sfn "$HOME/.local/opt/node/bin/$b" "$HOME/.local/bin/$b"
     done
     INSTALLED="$INSTALLED node"
     if [ "$DRY" = 0 ]; then
-      "$HOME/.local/bin/node" -e 0 >/dev/null 2>&1 ||
-        die "Node 24 does not run on this machine (kernel $(uname -r)). $n22"
+      w=$(
+        PATH=$ORIG_PATH
+        hash -r
+        command -v node || true
+      )
+      if [ -n "$w" ] && [ "$w" != "$HOME/.local/bin/node" ]; then
+        warn "$w wins over $HOME/.local/bin/node on your PATH: remove it with the tool that installed it, or put ~/.local/bin first"
+      fi
     fi
   fi
   if command -v pnpm >/dev/null; then
@@ -465,12 +462,18 @@ step_lsp() {
     INSTALLED="$INSTALLED pyright"
     # pyright-langserver --version always exits 1, so test pyright itself
     if [ "$DRY" = 0 ]; then
-      pyright --version >/dev/null 2>&1 || die "pyright does not run with this Node. $n22"
+      pyright --version >/dev/null 2>&1 || {
+        # pnpm add -g already wrote these; left in place the re-run would skip pyright
+        rm -f "$HOME/.local/bin/pyright" "$HOME/.local/bin/pyright-langserver"
+        die "pyright does not run with this Node. $n22"
+      }
     fi
   fi
   if command -v clangd >/dev/null; then
     say 'clangd present, skipping'
     SKIPPED="$SKIPPED clangd"
+  elif [ "$OS" = Darwin ]; then
+    warn 'clangd not found: xcode-select --install'
   else
     if [ "$DRY" = 0 ]; then
       [ -x /usr/bin/clangd-18 ] || die 'clangd-18 is not installed: run with --only deps first'
@@ -483,13 +486,23 @@ step_lsp() {
     SKIPPED="$SKIPPED lua-language-server"
   else
     say "installing lua-language-server $LUALS_VERSION to $HOME/.local/opt/lua-language-server"
-    fetch "https://github.com/LuaLS/lua-language-server/releases/download/$LUALS_VERSION/lua-language-server-$LUALS_VERSION-linux-arm64.tar.gz" "$TMP/luals.tar.gz"
+    fetch "https://github.com/LuaLS/lua-language-server/releases/download/$LUALS_VERSION/lua-language-server-$LUALS_VERSION-$plat.tar.gz" "$TMP/luals.tar.gz"
     run rm -rf "$HOME/.local/opt/lua-language-server"
     run mkdir -p "$HOME/.local/opt/lua-language-server"
     # This tarball has no top dir
     run tar -xzf "$TMP/luals.tar.gz" -C "$HOME/.local/opt/lua-language-server"
+    # Before the wrapper: a lua-language-server on PATH counts as present, so a
+    # broken one would stick
+    if [ "$DRY" = 0 ]; then
+      "$HOME/.local/opt/lua-language-server/bin/lua-language-server" --version >/dev/null 2>&1 ||
+        die "lua-language-server $LUALS_VERSION does not run here: install it by hand, then re-run"
+    fi
     run write_luals_wrapper
     INSTALLED="$INSTALLED lua-language-server"
+  fi
+  # macOS gets rg from brew in the deps step
+  if [ "$OS" = Darwin ]; then
+    return 0
   fi
   # apt-era ripgrep 11 is too old
   v=$(major rg)
