@@ -16,8 +16,10 @@ LUALS_VERSION=3.19.1
 RG_VERSION=15.2.0
 NODE_DIST=https://nodejs.org/dist/latest-v24.x
 PYRIGHT_VERSION=1.1.414
-PNPM_VERSION=10.33.4
+PNPM_VERSION=10.34.6
 REPO_URL=https://github.com/cscovino/nvim.git
+# Printed when the tree-sitter binary is unusable; --root ~/.local so the build replaces ~/.local/bin/tree-sitter, which wins on PATH. Command only, so the printed hint pastes as is
+TS_BUILD='git clone https://github.com/tree-sitter/tree-sitter && CARGO_BUILD_JOBS=2 cargo install --locked --path tree-sitter/crates/cli --root "$HOME/.local"'
 
 DRY=0
 YES=0
@@ -127,9 +129,13 @@ bad() {
 
 # Smoke-tested in $TMP: a binary that does not run never replaces the one on PATH
 install_tree_sitter() {
-  gunzip -c "$TMP/tree-sitter.gz" >"$TMP/tree-sitter"
-  chmod +x "$TMP/tree-sitter"
-  "$TMP/tree-sitter" --version >/dev/null 2>&1 || return 1
+  gunzip -c "$TMP/tree-sitter.gz" >"$TMP/tree-sitter" || return 1
+  chmod +x "$TMP/tree-sitter" || return 1
+  # An empty file run as a program exits 0, so the version text is the check
+  case $("$TMP/tree-sitter" --version 2>/dev/null) in
+    'tree-sitter '[0-9]*) ;;
+    *) return 1 ;;
+  esac
   mv "$TMP/tree-sitter" "$HOME/.local/bin/tree-sitter"
 }
 
@@ -365,9 +371,8 @@ step_lsp() {
     fi
     say "installing tree-sitter to $HOME/.local/bin"
     fetch "$url" "$TMP/tree-sitter.gz"
-    # --root ~/.local: the cargo build must replace ~/.local/bin/tree-sitter, which wins on PATH
     run install_tree_sitter ||
-      die 'the downloaded tree-sitter does not run here; build it instead: CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli --root "$HOME/.local"'
+      die "the downloaded tree-sitter is broken or does not run here: re-run, or build it (needs a recent Rust: rustup): $TS_BUILD"
     INSTALLED="$INSTALLED tree-sitter"
     if [ "$DRY" = 0 ]; then
       w=$(
@@ -376,7 +381,7 @@ step_lsp() {
         command -v tree-sitter || true
       )
       if [ -n "$w" ] && [ "$w" != "$HOME/.local/bin/tree-sitter" ]; then
-        warn "$w wins over $HOME/.local/bin/tree-sitter on your PATH; if it is the pnpm one: pnpm rm -g tree-sitter-cli"
+        warn "$w wins over $HOME/.local/bin/tree-sitter on your PATH: remove it with the tool that installed it, or put ~/.local/bin first"
       fi
     fi
   fi
@@ -589,7 +594,7 @@ EOF
     tail -n 20 "$LOG" >&2 || true
     names=$(grep -E '^(plugin restore failed|parsers not built):' "$LOG" | tail -n 1) || names=
     if [ "$rc" = 2 ]; then
-      die "${names:-parsers not built}; if tree-sitter cannot build them here, use CARGO_BUILD_JOBS=2 cargo install --locked tree-sitter-cli --root \"\$HOME/.local\", then re-run with --only plugins"
+      die "${names:-parsers not built}; if tree-sitter cannot build them here, build it (needs a recent Rust: rustup), then re-run with --only plugins. Build command: $TS_BUILD"
     fi
     die "${names:+$names; }plugins step failed (log: $LOG); fix it, then re-run with --only plugins"
   fi
