@@ -1,5 +1,5 @@
 require('conform').setup({
-  -- A missing formatter is logged (:ConformInfo) and LSP formatting is used instead
+  -- A missing formatter is logged (:ConformInfo); LSP formatting is used instead only when an attached server can format
   notify_no_formatters = false,
   formatters_by_ft = {
     lua = { 'stylua' },
