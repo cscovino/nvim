@@ -289,7 +289,7 @@ Apple Silicon (arm64).
 
 - ripgrep and fd come from Homebrew, only if missing.
 - A working Neovim >= 0.12 (Homebrew's, for example) is kept unless you pick a version. Picked versions go to `~/.local/opt` with a `~/.local/bin/nvim` symlink. The script never uninstalls anything: when another `nvim` wins in PATH it warns and prints a removal hint.
-- The tree-sitter CLI is the latest GitHub binary in `~/.local/bin`. A broken pnpm `tree-sitter` is left in place, with a `pnpm rm -g tree-sitter-cli` hint if it still wins in PATH.
+- The tree-sitter CLI is the latest GitHub binary in `~/.local/bin`. Another `tree-sitter` that wins in PATH is left in place, with a warning to remove it with the tool that installed it or put `~/.local/bin` first.
 - node, pyright, clangd and lua-language-server are not installed on macOS; a missing one gets a one-line hint.
 - The default profile is full.
 
@@ -304,8 +304,8 @@ Apple Silicon (arm64).
 - Add `~/.local/bin` to PATH with the `export` line the script prints. The script never edits shell rc files.
 
 > **Jetson Nano:** use the Ubuntu 20.04 image. Stock JetPack is Ubuntu 18.04 with glibc 2.27, which the script refuses.
-> tree-sitter is pinned to v0.25.10, so `:checkhealth nvim-treesitter` shows the ERROR `tree-sitter-cli v0.26.1 is required`. That is expected: parsers still build.
-> If Node 24 does not run on the 4.9 kernel, the script stops and names Node 22 (`latest-v22.x`). If parsers do not build, it stops and names `cargo install --locked tree-sitter-cli`.
+> tree-sitter is pinned to v0.25.10, so `:checkhealth nvim-treesitter` shows an ERROR that tree-sitter 0.26.1 or newer is required. That is expected: parsers still build.
+> If Node 24 does not run on the 4.9 kernel, the script stops and names Node 22 (`latest-v22.x`). If parsers do not build, it stops and prints how to build tree-sitter from https://github.com/tree-sitter/tree-sitter (needs a recent Rust: rustup).
 
 ### Profiles
 
