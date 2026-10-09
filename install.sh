@@ -483,11 +483,18 @@ step_lsp() {
       }
     fi
   fi
-  if command -v clangd >/dev/null; then
+  # /usr/bin/clangd is an xcrun shim that exists without the Command Line
+  # Tools, so on macOS only xcrun can say whether clangd is really there
+  if [ "$OS" = Darwin ]; then
+    if xcrun -f clangd >/dev/null 2>&1; then
+      say 'clangd present, skipping'
+      SKIPPED="$SKIPPED clangd"
+    else
+      warn 'clangd not found: xcode-select --install'
+    fi
+  elif command -v clangd >/dev/null; then
     say 'clangd present, skipping'
     SKIPPED="$SKIPPED clangd"
-  elif [ "$OS" = Darwin ]; then
-    warn 'clangd not found: xcode-select --install'
   else
     if [ "$DRY" = 0 ]; then
       [ -x /usr/bin/clangd-18 ] || die 'clangd-18 is not installed: run with --only deps first'
