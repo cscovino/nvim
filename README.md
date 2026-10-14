@@ -7,6 +7,7 @@ Personal Neovim configuration written entirely in Lua. Uses [lazy.nvim](https://
 ```
 init.lua                          # Entry point (settings → mappings → lazy → colorscheme)
 install.sh                        # One-command installer (see Install)
+uninstall.sh                      # Removes what install.sh set up (see Uninstall)
 lua/
 ├── settings/                     # Core options (indent, search, folds, undodir)
 ├── mappings/                     # Keymaps (leader: Space, localleader: \)
@@ -288,9 +289,9 @@ Without `--only` (and without `--yes`) a menu asks which part to run: everything
 Apple Silicon (arm64).
 
 - ripgrep and fd come from Homebrew, only if missing.
-- A working Neovim >= 0.12 (Homebrew's, for example) is kept unless you pick a version. Picked versions go to `~/.local/opt` with a `~/.local/bin/nvim` symlink. The script never uninstalls anything: when another `nvim` wins in PATH it warns and prints a removal hint.
+- A working Neovim >= 0.12 (Homebrew's, for example) is kept unless you pick a version. Picked versions go to `~/.local/opt` with a `~/.local/bin/nvim` symlink. install.sh never removes another nvim: when one wins in PATH it warns and prints a removal hint. To undo an install, see [Uninstall](#uninstall).
 - The tree-sitter CLI is the latest GitHub binary in `~/.local/bin`. Another `tree-sitter` that wins in PATH is left in place, with a warning to remove it with the tool that installed it or put `~/.local/bin` first.
-- node, pyright, clangd and lua-language-server are not installed on macOS; a missing one gets a one-line hint.
+- When missing, Node 24 (checked against `SHASUMS256.txt`), the latest pnpm, pyright and lua-language-server 3.19.1 go to `~/.local`, the same as on Linux. A node >= 22, pnpm, pyright or lua-language-server you already have (fnm, Homebrew, your own pnpm) is kept. A missing clangd gets the `xcode-select --install` hint.
 - The default profile is full.
 
 ### Linux
@@ -299,7 +300,7 @@ Apple Silicon (arm64).
 - Tested on a Jetson Nano with Ubuntu 20.04.
 - apt packages: `build-essential git curl fd-find clangd-18`, plus an `fd` symlink.
 - Neovim comes from `neovim/neovim-releases` when glibc < 2.35; nightly only from the official repo.
-- Into `~/.local`: Node 24 (`latest-v24.x`) with pnpm (via corepack) and pyright, `clangd` linked to clangd-18, lua-language-server 3.19.1, ripgrep 15.2.0, and tree-sitter (v0.25.10 when glibc < 2.39).
+- Into `~/.local`: Node 24 (`latest-v24.x`), the latest pnpm (standalone, in `~/.local/opt/pnpm`) and pyright, `clangd` linked to clangd-18, lua-language-server 3.19.1, ripgrep 15.2.0, and tree-sitter (v0.25.10 when glibc < 2.39).
 - The default profile is minimal.
 - Add `~/.local/bin` to PATH with the `export` line the script prints. The script never edits shell rc files.
 
@@ -314,6 +315,31 @@ Apple Silicon (arm64).
 - The profile lives in `~/.local/state/nvim/profile`.
 - `NVIM_PROFILE=full nvim` (or `minimal`) overrides it for one run.
 - After a plugins-step failure, re-run with `--only plugins`: a plain re-run skips installed plugins.
+
+## Uninstall
+
+`uninstall.sh` removes what install.sh set up, after one y/N (default N). It keeps `~/.config/nvim` and everything outside its fixed name list.
+
+```bash
+# See the plan and every command first; changes nothing
+curl -fsSL https://raw.githubusercontent.com/cscovino/nvim/main/uninstall.sh | bash -s -- --dry-run
+# Run it (prompts read the terminal, so the piped form works too)
+curl -fsSL https://raw.githubusercontent.com/cscovino/nvim/main/uninstall.sh | bash
+# From a clone
+~/.config/nvim/uninstall.sh
+```
+
+| Flag        | Effect                                                                                                         |
+| ----------- | -------------------------------------------------------------------------------------------------------------- |
+| `-h`        | Show usage                                                                                                     |
+| `--dry-run` | Print the plan and every command, change nothing, ask nothing                                                  |
+| `--yes`     | Answer yes to the main prompt only. Unlike install.sh's `--yes`, it never removes apt/brew packages or mcp-hub |
+
+- Removes: the `~/.local/opt` dirs with install.sh's fixed names (`nvim-macos-arm64` or `nvim-linux-arm64`, `node`, `pnpm`, `lua-language-server`) and its `~/.local/bin` entries (nvim, tree-sitter, node, corepack, pnpm, pnpx, the pyright shims, lua-language-server, plus fd, clangd and rg on Linux). The links and the lua-language-server and pyright files are checked by link target or content. The `~/.local/opt` dirs, tree-sitter and Linux rg are matched by name only, so one you put there under that name goes too. pyright goes through `pnpm rm -g` first. Then `~/.cache/nvim`, `~/.local/share/nvim` and `~/.local/state/nvim`, state last (XDG paths are honored).
+- Keeps: `~/.config/nvim` (delete it with `rm -rf ~/.config/nvim`), the XDG roots, and every other file in `~/.local/bin` and `~/.local/opt`. The plan lists them under "left alone". Shell rc files are never edited.
+- Offers separately, default N: the apt/brew packages install.sh recorded in `~/.local/state/nvim/install-packages`, and a pnpm global `mcp-hub`. apt asks its own confirmation; nothing is autoremoved or purged. Without a record (installs from before it existed), it removes no packages and only prints the installed ones.
+
+> **Every nvim on the machine:** the data, state and cache dirs are shared by every Neovim that uses them, Homebrew's included. Removing them deletes sessions, shada, the profile and the saved colorscheme for all of them.
 
 ## Setup
 

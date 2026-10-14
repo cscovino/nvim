@@ -87,7 +87,8 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 - **Terminal toggle** with `<leader>tt` — opens a floating Snacks terminal
 - **Trouble** for diagnostics list (`<leader>xx`)
 - **`:Profile`** (`lua/profile/menu.lua`): preset and category toggles through `vim.ui.select`. Save writes the state file and offers `:restart`; turning a category off notes that `:Lazy clean` removes its plugins.
-- **`install.sh`**: one script for macOS arm64 and apt-based Linux aarch64. Steps: deps, nvim, lsp, config, plugins. Flags `--yes`, `--dry-run`, `--profile`, `--nvim-version`, `--only`, `-h`; without `--only` (and `--yes`) a menu picks the step. Installs go to `~/.local/opt` plus `~/.local/bin`; on macOS it never touches brew or pnpm state, on Linux it installs pnpm through corepack, and it never edits `~/.npmrc`. Safe to re-run: a failed or interrupted run is recovered by re-running it. After a plugins-step failure the re-run needs `--only plugins`, because a plain re-run skips installed plugins.
+- **`install.sh`**: one script for macOS arm64 and apt-based Linux aarch64. Steps: deps, nvim, lsp, config, plugins. Flags `--yes`, `--dry-run`, `--profile`, `--nvim-version`, `--only`, `-h`; without `--only` (and `--yes`) a menu picks the step. Installs go to `~/.local/opt` plus `~/.local/bin`; when missing, it installs Node, the latest pnpm (standalone, `~/.local/opt/pnpm`), pyright and lua-language-server on both OSes; it records the apt/brew packages it installs in `~/.local/state/nvim/install-packages`, and it never edits `~/.npmrc` or rc files. Safe to re-run: a failed or interrupted run is recovered by re-running it. After a plugins-step failure the re-run needs `--only plugins`, because a plain re-run skips installed plugins.
+- **`uninstall.sh`**: removes what install.sh set up on either OS after one y/N (default N): the `~/.local/bin` entries proven by link target or content (tree-sitter and Linux rg by name only), the `~/.local/opt` dirs with install.sh's fixed names (by name only), pyright via `pnpm rm -g`, then the nvim cache, data and state dirs (state last). Keeps `~/.config/nvim` and everything else. Flags `--dry-run`, `--yes` (main prompt only; never removes packages or mcp-hub), `-h`. Recorded apt/brew packages and a pnpm global mcp-hub are separate default-N offers. Its constants are copied from install.sh; keep them in sync.
 
 ## Commands
 
@@ -97,6 +98,9 @@ Custom consumer auto-opens the output panel after test runs. Keymaps: `<leader>t
 
 # Re-run the headless plugin restore and parser build
 ./install.sh --only plugins
+
+# Preview what uninstall.sh would remove, change nothing
+./uninstall.sh --dry-run
 
 # Format Lua files
 stylua lua/
