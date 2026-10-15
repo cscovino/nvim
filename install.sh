@@ -174,6 +174,7 @@ record_pkgs() {
 # without writing pnpm config. pnpm 10 reads npm_config_*, pnpm 11+ only
 # pnpm_config_* and refuses a bin dir not on PATH: ~/.local/bin always is,
 # $PNPM_HOME/bin is not when pnpm 10's setup put $PNPM_HOME there
+# The mcphub build in lua/plugins/ai.lua carries the same pair; keep them in sync
 restore_plugins() {
   npm_config_global_bin_dir="${PNPM_HOME:-$HOME/.local/bin}" pnpm_config_global_bin_dir="$HOME/.local/bin" nvim --headless -c 'lua assert(loadstring(vim.env.NVIM_INSTALL_LUA))()' -c 'cquit 9' </dev/null >"$LOG" 2>&1
 }

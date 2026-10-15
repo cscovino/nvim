@@ -81,7 +81,9 @@ return {
     dependencies = {
       'nvim-lua/plenary.nvim',
     },
-    build = 'pnpm add -g mcp-hub@latest',
+    -- Same env pair as install.sh restore_plugins, keep in sync: pnpm add -g
+    -- fails with no global bin dir. lazy runs this string with $SHELL -c
+    build = 'npm_config_global_bin_dir="${PNPM_HOME:-$HOME/.local/bin}" pnpm_config_global_bin_dir="$HOME/.local/bin" pnpm add -g mcp-hub@latest',
     config = function()
       require('config.mcp-hub')
     end,
