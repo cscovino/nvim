@@ -371,7 +371,9 @@ main() {
     # Same-file test, not a string match: a trailing slash, // or a symlink in p still
     # names the config. p must not be the config or a parent, walking up from it as
     # spelled and from its physical path (pwd -P), since a symlinked config can live in p.
-    # ~/.config/nvim is walked too, so no XDG value makes the clone a removed dir
+    # ~/.config/nvim is walked too. A clone made under another XDG_CONFIG_HOME is
+    # neither, so a git checkout is refused outright
+    [ ! -e "$p/.git" ] || die "refusing to remove $p: it is a git checkout (a config clone?)"
     for c in "$CFG" "$HOME/.config/nvim"; do
       for d in "$c" "$(CDPATH= cd "$c" 2>/dev/null && pwd -P)"; do
         while [ -n "$d" ]; do
