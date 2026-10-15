@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [4.1.0](https://github.com/cscovino/nvim/compare/f47ca47c936e97c9e63c3265ed83801b98a77de1..4.1.0) - 2026-10-15
+#### Bug Fixes
+- **(dap)** 🐛 define DapStoppedLine so the stopped line is visible - ([535bd96](https://github.com/cscovino/nvim/commit/535bd96e2ad53b6fb4e98667e6a858c931ccbfee)) - Carlos Scovino
+- **(install)** 🐛 detect clangd on macOS with xcrun instead of the /usr/bin shim - ([397a03f](https://github.com/cscovino/nvim/commit/397a03f6916fd9cd4ddfb2dbe967821ad90833c8)) - Carlos Scovino
+- **(install)** 🐛 count a held apt package as installed - ([821653b](https://github.com/cscovino/nvim/commit/821653b403b159e2ca95e606c0e9c6eb898c83b0)) - Carlos Scovino
+- **(install)** 🐛 reject a bad tree-sitter download and pin pnpm 10.34.6 - ([b884c5c](https://github.com/cscovino/nvim/commit/b884c5c6d32d276a6f06f8cf028275debf085926)) - Carlos Scovino
+- **(install)** 🔒️ verify the Node tarball against SHASUMS256.txt - ([1b92f71](https://github.com/cscovino/nvim/commit/1b92f715b9e887617cbffd6ad0d6b34b366ded5d)) - Carlos Scovino
+- **(install)** 🐛 pin pnpm before creating its corepack shim - ([897067e](https://github.com/cscovino/nvim/commit/897067e1aa6312c77921db61ae67141bc5fd2fd1)) - Carlos Scovino
+- **(install)** 🐛 give plugin builds a pnpm global bin dir and hint a missing pnpm on macOS - ([8eb054e](https://github.com/cscovino/nvim/commit/8eb054ec3b1eb9936c86b78c532d2c0d4f98664b)) - Carlos Scovino
+- **(install)** 🐛 resume a failed or interrupted plugin restore on re-run - ([e2e4194](https://github.com/cscovino/nvim/commit/e2e4194dad5dfc9552c41cdd3101046c72d2b938)) - Carlos Scovino
+- **(install)** 🐛 clear inherited NVIM_PROFILE and NVIM_APPNAME before the headless restore - ([b0bebde](https://github.com/cscovino/nvim/commit/b0bebde12f092eb3b47375a3dddcea0c9084b5a7)) - Carlos Scovino
+- **(install)** 🐛 refuse to keep or restore a config that is not this repo - ([b0b0a40](https://github.com/cscovino/nvim/commit/b0b0a401839b30c4108dd2fd38ef2579217d04a1)) - Carlos Scovino
+- **(install)** 🐛 smoke-test tree-sitter before moving it onto PATH - ([f47ca47](https://github.com/cscovino/nvim/commit/f47ca47c936e97c9e63c3265ed83801b98a77de1)) - Carlos Scovino
+- **(mcphub)** 🐛 give the build the same pnpm global bin dir env pair as install.sh - ([af4f037](https://github.com/cscovino/nvim/commit/af4f0378c5f92833bf3c0dd6910b65c7699309b2)) - Carlos Scovino
+#### Documentation
+- **(conform)** 📝 note the LSP fallback needs an attached formatting server - ([b650237](https://github.com/cscovino/nvim/commit/b6502371dfe43b77bfb51482d514a166cb0a6329)) - Carlos Scovino
+- **(readme)** 📝 point tree-sitter notes at the source build - ([510d53a](https://github.com/cscovino/nvim/commit/510d53ab65b9cfec64355b5a9fc363f8f4b12c3f)) - Carlos Scovino
+- 📝 document uninstall.sh and refresh install docs for macOS parity - ([f9c03e1](https://github.com/cscovino/nvim/commit/f9c03e190946b4f3dce5b2addd1d3ad1b2fec438)) - Carlos Scovino
+#### Features
+- **(install)** ✨ install the latest standalone pnpm on both OSes - ([f86a684](https://github.com/cscovino/nvim/commit/f86a684392dbad034014421c9a65facce4a5e174)) - Carlos Scovino
+- **(install)** ✨ install node, pyright and lua-language-server on macOS - ([6ad3735](https://github.com/cscovino/nvim/commit/6ad373598a00d85300556f457d716b991f3a89ef)) - Carlos Scovino
+- **(install)** ✨ record the apt and brew packages install.sh installs - ([85dff76](https://github.com/cscovino/nvim/commit/85dff76293eb63a04c48a90de5731492acc4b634)) - Carlos Scovino
+- **(uninstall)** ✨ add uninstall.sh for the owned ~/.local entries, nvim dirs and recorded packages - ([faaef2b](https://github.com/cscovino/nvim/commit/faaef2b2f97d525ddd0c664de01e5a200a57064c)) - Carlos Scovino
+
+- - -
+
 ## [4.0.0](https://github.com/cscovino/nvim/compare/6356f601673cd9fb49f7defe146418b4bb7947f9..4.0.0) - 2026-10-06
 #### Bug Fixes
 - **(dap)** 🐛 build vscode-js-debug with pnpm from its frozen lockfile - ([1aa854c](https://github.com/cscovino/nvim/commit/1aa854c07ec89ccf65d7d32bdf94ecb27d0116f6)) - Carlos Scovino
