@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [4.1.1](https://github.com/cscovino/nvim/compare/e5147ae9edbe2f48a29ab92c77cc42bea2330e63..4.1.1) - 2026-10-15
+#### Bug Fixes
+- **(uninstall)** 🐛 refuse to remove an nvim dir that is a git checkout - ([5c90404](https://github.com/cscovino/nvim/commit/5c90404f8b4d53650db381a32be53cdce1a0fa19)) - Carlos Scovino
+- **(uninstall)** 🐛 refuse a relative XDG_CONFIG_HOME and never remove ~/.config/nvim under any XDG values - ([e5147ae](https://github.com/cscovino/nvim/commit/e5147ae9edbe2f48a29ab92c77cc42bea2330e63)) - Carlos Scovino
+
+- - -
+
 ## [4.1.0](https://github.com/cscovino/nvim/compare/f47ca47c936e97c9e63c3265ed83801b98a77de1..4.1.0) - 2026-10-15
 #### Bug Fixes
 - **(dap)** 🐛 define DapStoppedLine so the stopped line is visible - ([535bd96](https://github.com/cscovino/nvim/commit/535bd96e2ad53b6fb4e98667e6a858c931ccbfee)) - Carlos Scovino
