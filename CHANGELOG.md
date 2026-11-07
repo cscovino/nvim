@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [4.1.2](https://github.com/cscovino/nvim/compare/9fde6dee04a9593f7296879fa056bc76e50573b7..4.1.2) - 2026-11-07
+#### Bug Fixes
+- **(lsp)** 🐛 ignore documentHighlight errors such as clangd's invalid AST - ([9fde6de](https://github.com/cscovino/nvim/commit/9fde6dee04a9593f7296879fa056bc76e50573b7)) - Carlos Scovino
+
+- - -
+
 ## [4.1.1](https://github.com/cscovino/nvim/compare/e5147ae9edbe2f48a29ab92c77cc42bea2330e63..4.1.1) - 2026-10-15
 #### Bug Fixes
 - **(uninstall)** 🐛 refuse to remove an nvim dir that is a git checkout - ([5c90404](https://github.com/cscovino/nvim/commit/5c90404f8b4d53650db381a32be53cdce1a0fa19)) - Carlos Scovino
