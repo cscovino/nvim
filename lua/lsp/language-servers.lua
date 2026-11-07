@@ -60,6 +60,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
 vim.lsp.config('*', {
   capabilities = require('blink.cmp').get_lsp_capabilities(),
   flags = { debounce_text_changes = 150 },
+  handlers = {
+    -- The highlight is cosmetic and fires on every CursorHold. A server that
+    -- can't parse the file (clangd: "-32001: invalid AST") would pop an error
+    -- each time; the parse failure itself still shows up in its diagnostics.
+    ['textDocument/documentHighlight'] = function(err, result, ctx, config)
+      if not err then
+        vim.lsp.handlers['textDocument/documentHighlight'](nil, result, ctx, config)
+      end
+    end,
+  },
 })
 
 vim.lsp.config('glsl_analyzer', {
